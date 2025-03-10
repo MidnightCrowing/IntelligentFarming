@@ -1,16 +1,32 @@
-package org.example
+package org.intelligentfarming
 
-//TIP 要<b>运行</b>代码，请按 <shortcut actionId="Run"/> 或
-// 点击装订区域中的 <icon src="AllIcons.Actions.Execute"/> 图标。
+import org.intelligentfarming.config.AppConfig
+import org.intelligentfarming.gui.Window
+import org.lwjgl.opengl.GL11
+import views.welcome.Welcome
+
+
 fun main() {
-    val name = "Kotlin"
-    //TIP 当文本光标位于高亮显示的文本处时按 <shortcut actionId="ShowIntentionActions"/>
-    // 查看 IntelliJ IDEA 建议如何修正。
-    println("Hello, $name!")
+    val window = Window(
+        AppConfig.APP_NAME_CN,
+        AppConfig.WINDOW_WIDTH, AppConfig.WINDOW_HEIGHT,
+        AppConfig.WINDOW_MIN_WIDTH, AppConfig.WINDOW_MIN_HEIGHT,
+    )
 
-    for (i in 1..5) {
-        //TIP 按 <shortcut actionId="Debug"/> 开始调试代码。我们已经设置了一个 <icon src="AllIcons.Debugger.Db_set_breakpoint"/> 断点
-        // 但您始终可以通过按 <shortcut actionId="ToggleLineBreakpoint"/> 添加更多断点。
-        println("i = $i")
+    val welcomeFrame = Welcome(window)
+
+    while (!window.shouldClose()) {
+        // 清除缓冲区
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
+        // 渲染内容
+        welcomeFrame.render()
+        // 交换帧缓冲区
+        window.swapBuffers()
+        // 处理窗口事件
+        window.pollEvents()
     }
+
+    // 释放资源
+    welcomeFrame.cleanup()
+    window.cleanup()
 }
