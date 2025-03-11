@@ -1,4 +1,4 @@
-package org.intelligentfarming.resource
+package com.midnightcrowing.resource
 
 import java.io.File
 

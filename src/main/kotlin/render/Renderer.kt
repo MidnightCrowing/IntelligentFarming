@@ -1,4 +1,4 @@
-package org.intelligentfarming.render
+package com.midnightcrowing.render
 
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.glTexCoord2f

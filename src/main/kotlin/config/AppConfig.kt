@@ -1,4 +1,4 @@
-package org.intelligentfarming.config
+package com.midnightcrowing.config
 
 object AppConfig {
     const val APP_NAME = "IntelligentFarming"

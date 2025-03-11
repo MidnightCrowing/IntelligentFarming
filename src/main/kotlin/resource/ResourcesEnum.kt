@@ -1,9 +1,9 @@
-package org.intelligentfarming.resource
+package com.midnightcrowing.resource
 
-import org.intelligentfarming.resource.ResourcePath.getResources
+import com.midnightcrowing.resource.ResourcePath.getResources
 
 
-enum class Resources(val path: String) {
+enum class ResourcesEnum(val path: String) {
     // GUI
     COMPONENTS_HOT_BAR(getResources("gui\\hot_bar.png")),
     INVENTORY(getResources("gui\\inventory.png")),

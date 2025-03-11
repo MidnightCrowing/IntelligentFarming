@@ -1,34 +1,30 @@
-package org.intelligentfarming.gui.components.inventory
+package com.midnightcrowing.gui.components.inventory
 
-import org.intelligentfarming.gui.GuiBase
-import org.intelligentfarming.gui.Window
-import org.intelligentfarming.render.Renderer
-import org.intelligentfarming.render.Texture
-import org.intelligentfarming.resource.Resources
+import com.midnightcrowing.gui.Window
+import com.midnightcrowing.gui.components.base.Widget
+import com.midnightcrowing.render.Renderer
+import com.midnightcrowing.resource.ResourcesEnum
 
-class Inventory(window: Window) : GuiBase(window) {
-    override val renderer: Renderer
+class Inventory(window: Window) : Widget(window) {
+    override val renderer: Renderer = getRenderer(ResourcesEnum.INVENTORY.path)
 
-    // 计算宽高的一半
-    private val halfBaseWidth = 352
-    private val halfBaseHeight = 198
+    private companion object {
+        const val BASE_WIDTH = 352
+        const val BASE_HEIGHT = 198
+        const val OFFSET_Y = 0.1f // 向下偏移的距离
+        const val SCALE_BASE = 352f
+    }
 
-    // 向下偏移的距离
-    private val offsetY = 0.1f
+    private val Int.scaled: Float get() = this * (SCALE_BASE / BASE_WIDTH)
 
-    // 预计算缩放因子，避免重复计算
-    private val scaleFactorX get() = halfBaseWidth / scaleX
-    private val scaleFactorY get() = halfBaseHeight / scaleY
+    private val scaledWidth by lazy { BASE_WIDTH.scaled }
+    private val scaledHeight by lazy { BASE_HEIGHT.scaled }
 
-    // 实现left，right，top，bottom属性
+    private val scaleFactorX: Float get() = scaledWidth / scaleX
+    private val scaleFactorY: Float get() = scaledHeight / scaleY
+
     override val left get() = -scaleFactorX
     override val right get() = scaleFactorX
-    override val top get() = scaleFactorY - offsetY
-    override val bottom get() = -scaleFactorY - offsetY
-
-    // 初始化时加载纹理并创建渲染器
-    init {
-        val texture = Texture(Resources.INVENTORY.path).apply { load() }
-        renderer = Renderer(texture) // 子类实现了renderer的赋值
-    }
+    override val top get() = scaleFactorY - OFFSET_Y
+    override val bottom get() = -scaleFactorY - OFFSET_Y
 }

@@ -1,9 +1,9 @@
-package org.intelligentfarming
+package com.midnightcrowing
 
-import org.intelligentfarming.config.AppConfig
-import org.intelligentfarming.gui.Window
+import com.midnightcrowing.config.AppConfig
+import com.midnightcrowing.gui.Window
+import com.midnightcrowing.gui.views.welcome.Welcome
 import org.lwjgl.opengl.GL11
-import views.welcome.Welcome
 
 
 fun main() {

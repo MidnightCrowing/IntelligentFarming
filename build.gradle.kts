@@ -3,7 +3,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
-group = "org.intelligentfarming"
+group = "com.midnightcrowing"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -14,6 +14,8 @@ val lwjglVersion = "3.3.6"
 val lwjglNatives = "natives-windows"
 
 dependencies {
+    implementation(kotlin("reflect"))
+
     implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
 
     implementation("org.lwjgl", "lwjgl")
@@ -62,7 +64,7 @@ tasks.withType<Copy> {
 tasks.jar {
     manifest {
         attributes(
-            "Main-Class" to "org.intelligentfarming.MainKt"
+            "Main-Class" to "com.midnightcrowing.MainKt"
         )
     }
 }
@@ -71,7 +73,7 @@ tasks.shadowJar {
     archiveClassifier.set("")
     manifest {
         attributes(
-            "Main-Class" to "org.intelligentfarming.MainKt"
+            "Main-Class" to "com.midnightcrowing.MainKt"
         )
     }
     dependsOn("copyResources")

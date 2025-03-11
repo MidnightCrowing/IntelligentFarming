@@ -1,6 +1,6 @@
-package org.intelligentfarming.utils
+package com.midnightcrowing.utils
 
-import org.intelligentfarming.resource.ImageData
+import com.midnightcrowing.resource.ImageData
 
 /**
  * 图片相关的工具方法

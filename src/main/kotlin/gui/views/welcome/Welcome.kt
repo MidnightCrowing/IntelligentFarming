@@ -1,15 +1,15 @@
-package views.welcome;
+package com.midnightcrowing.gui.views.welcome;
 
-import org.intelligentfarming.gui.Window
-import org.intelligentfarming.gui.components.hotbar.HotBar
-import org.intelligentfarming.gui.components.inventory.Inventory
-import org.intelligentfarming.render.RenderableBase
-import org.intelligentfarming.render.Renderer
-import org.intelligentfarming.render.Texture
-import org.intelligentfarming.resource.Resources
+import com.midnightcrowing.gui.Window
+import com.midnightcrowing.gui.components.base.AbstractWidget
+import com.midnightcrowing.gui.components.hotbar.HotBar
+import com.midnightcrowing.gui.components.inventory.Inventory
+import com.midnightcrowing.render.Renderer
+import com.midnightcrowing.render.Texture
+import com.midnightcrowing.resource.ResourcesEnum
 
 
-class Welcome(window: Window) : RenderableBase(window) {
+class Welcome(window: Window) : AbstractWidget(window) {
     private val bgRenderer: Renderer
     private val hotBar: HotBar
     private val inventory: Inventory
@@ -20,27 +20,23 @@ class Welcome(window: Window) : RenderableBase(window) {
     private val potatoRenderer: Renderer
     private val tomatoRenderer: Renderer
 
-    private val checkBoxRenderer: Renderer
-
     init {
-        val bgTexture = Texture(Resources.WELCOME_BACKGROUND.path).apply { load() }
+        val bgTexture = Texture(ResourcesEnum.WELCOME_BACKGROUND.path).apply { load() }
         bgRenderer = Renderer(bgTexture)
         hotBar = HotBar(window)
         inventory = Inventory(window)
 
-        val cabbage = Texture(Resources.CABBAGE.path).apply { load() }
+        val cabbage = Texture(ResourcesEnum.CABBAGE.path).apply { load() }
         cabbageRenderer = Renderer(cabbage)
-        val carrot = Texture(Resources.CARROT.path).apply { load() }
+        val carrot = Texture(ResourcesEnum.CARROT.path).apply { load() }
         carrotRenderer = Renderer(carrot)
-        val potato = Texture(Resources.POTATO.path).apply { load() }
+        val potato = Texture(ResourcesEnum.POTATO.path).apply { load() }
         potatoRenderer = Renderer(potato)
-        val tomato = Texture(Resources.TOMATO.path).apply { load() }
+        val tomato = Texture(ResourcesEnum.TOMATO.path).apply { load() }
         tomatoRenderer = Renderer(tomato)
-        val wheat = Texture(Resources.WHEAT.path).apply { load() }
+        val wheat = Texture(ResourcesEnum.WHEAT.path).apply { load() }
         wheatRenderer = Renderer(wheat)
 
-        val checkBox = Texture(Resources.CHECK_BOX.path).apply { load() }
-        checkBoxRenderer = Renderer(checkBox)
     }
 
     override fun render() {
@@ -48,35 +44,35 @@ class Welcome(window: Window) : RenderableBase(window) {
         hotBar.render()
         inventory.render()
 
-        val wheatGridPosition = hotBar.getGridPosition(1)
+        val wheatGridPosition = hotBar.getGridBounds(1)
         wheatRenderer.render(
             wheatGridPosition.left,
             wheatGridPosition.top,
             wheatGridPosition.right,
             wheatGridPosition.bottom
         )
-        val cabbageGridPosition = hotBar.getGridPosition(2)
+        val cabbageGridPosition = hotBar.getGridBounds(2)
         cabbageRenderer.render(
             cabbageGridPosition.left,
             cabbageGridPosition.top,
             cabbageGridPosition.right,
             cabbageGridPosition.bottom
         )
-        val carrotGridPosition = hotBar.getGridPosition(3)
+        val carrotGridPosition = hotBar.getGridBounds(3)
         carrotRenderer.render(
             carrotGridPosition.left,
             carrotGridPosition.top,
             carrotGridPosition.right,
             carrotGridPosition.bottom
         )
-        val potatoGridPosition = hotBar.getGridPosition(4)
+        val potatoGridPosition = hotBar.getGridBounds(4)
         potatoRenderer.render(
             potatoGridPosition.left,
             potatoGridPosition.top,
             potatoGridPosition.right,
             potatoGridPosition.bottom
         )
-        val tomatoGridPosition = hotBar.getGridPosition(5)
+        val tomatoGridPosition = hotBar.getGridBounds(5)
         tomatoRenderer.render(
             tomatoGridPosition.left,
             tomatoGridPosition.top,
@@ -84,13 +80,7 @@ class Welcome(window: Window) : RenderableBase(window) {
             tomatoGridPosition.bottom
         )
 
-        val checkBoxGridPosition = hotBar.getGridBoxPosition(1)
-        checkBoxRenderer.render(
-            checkBoxGridPosition.left,
-            checkBoxGridPosition.top,
-            checkBoxGridPosition.right,
-            checkBoxGridPosition.bottom
-        )
+
     }
 
     override fun cleanup() {
@@ -103,7 +93,5 @@ class Welcome(window: Window) : RenderableBase(window) {
         carrotRenderer.cleanup()
         potatoRenderer.cleanup()
         tomatoRenderer.cleanup()
-
-        checkBoxRenderer.cleanup()
     }
 }

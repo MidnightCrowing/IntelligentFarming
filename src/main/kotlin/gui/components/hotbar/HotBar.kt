@@ -1,69 +1,123 @@
-package org.intelligentfarming.gui.components.hotbar
+package com.midnightcrowing.gui.components.hotbar
 
-import org.intelligentfarming.gui.GuiBase
-import org.intelligentfarming.gui.Window
-import org.intelligentfarming.render.Renderer
-import org.intelligentfarming.render.Texture
-import org.intelligentfarming.resource.Resources
+import com.midnightcrowing.events.listeners.ClickEvent
+import com.midnightcrowing.gui.Window
+import com.midnightcrowing.gui.components.base.Widget
+import com.midnightcrowing.render.Renderer
+import com.midnightcrowing.resource.ResourcesEnum
+import com.midnightcrowing.utils.WindowUtils.convertScreenToNdcBounds
+import com.midnightcrowing.utils.WindowUtils.convertScreenToNdcX
+import com.midnightcrowing.utils.WindowUtils.convertScreenToNdcY
+import com.midnightcrowing.utils.CoordinateSystem as CoordSys
 
-data class GridPosition(val left: Float, val top: Float, val right: Float, val bottom: Float)
+data class GridBounds(val left: Float, val top: Float, val right: Float, val bottom: Float)
 
-class HotBar(window: Window) : GuiBase(window) {
-    override val renderer: Renderer
+class HotBar(window: Window) : Widget(window) {
+    override val renderer: Renderer = getRenderer(ResourcesEnum.COMPONENTS_HOT_BAR.path)
+    private val checkBoxRenderer: Renderer = getRenderer(ResourcesEnum.CHECK_BOX.path)
 
-    private val halfBaseWidth = 350
-    private val halfBaseHeight = 1100 / 13
+    private companion object {
+        // 基础尺寸常量
+        const val BASE_WIDTH = 364
+        const val BASE_HEIGHT = 44
+        const val BASE_GRID_LEFT_BORDER = 8
+        const val BASE_GRID_TOP_BORDER = 8
+        const val BASE_GRID_BOTTOM_BORDER = 37
+        const val BASE_GRID_WIDTH = 29
+        const val BASE_GRID_GAP = 11
+        const val BASE_CHECKBOX_SIZE = 7
+        const val SCALE_BASE = 700f
 
-    // 预计算缩放因子，避免重复计算
-    private val scaleFactorX get() = halfBaseWidth / scaleX
-    private val scaleFactorY get() = halfBaseHeight / scaleY
-
-    // 主要坐标计算
-    override val left get() = -scaleFactorX
-    override val right get() = scaleFactorX
-    override val top get() = scaleFactorY - 1
-    override val bottom = -1f
-
-    // 预计算 Grid 相关缩放因子
-    private val gridFactorX get() = scaleFactorX * (8f / 182)
-    private val gridFactorY get() = scaleFactorY * (8f / 44)
-
-    // Grid 坐标计算
-    private val gridLeft get() = -(scaleFactorX - gridFactorX)
-    private val gridTop get() = (scaleFactorY - gridFactorY) - 1
-    private val gridBottom get() = (scaleFactorY - scaleFactorY * 37 / 44) - 1
-    private val gridWidth get() = scaleFactorX * (29f / 182)
-    private val gridGapWidth get() = scaleFactorX * (11f / 182)
-
-    private val gridBoxBorderHorizontalWidth get() = scaleFactorX * (8f / 182)
-    private val gridBoxBorderVerticalWidth get() = scaleFactorY * (33f / 182)
-
-    init {
-        val texture = Texture(Resources.COMPONENTS_HOT_BAR.path).apply { load() }
-        renderer = Renderer(texture)
+        // 逻辑常量
+        const val DEFAULT_SELECT_ID = 1
     }
 
-    fun getGridPosition(id: Int): GridPosition {
+    // 缩放因子扩展属性（复用缩放逻辑）
+    private val Int.scaled: Float get() = this * (SCALE_BASE / BASE_WIDTH)
+
+    // 使用 lazy 延迟计算缩放尺寸
+    private val scaledWidth by lazy { BASE_WIDTH.scaled }
+    private val scaledHeight by lazy { BASE_HEIGHT.scaled }
+    private val gridLeftBorder by lazy { BASE_GRID_LEFT_BORDER.scaled }
+    private val gridTopBorder by lazy { BASE_GRID_TOP_BORDER.scaled }
+    private val gridBottomBorder by lazy { BASE_GRID_BOTTOM_BORDER.scaled }
+    private val gridWidth by lazy { BASE_GRID_WIDTH.scaled }
+    private val gridGap by lazy { BASE_GRID_GAP.scaled }
+    private val checkboxSize by lazy { BASE_CHECKBOX_SIZE.scaled }
+
+    // 屏幕坐标计算属性
+    private val screenX1 get() = (window.width - scaledWidth) / 2f
+    private val screenY1 get() = window.height - scaledHeight
+    private val screenX2 get() = screenX1 + scaledWidth
+
+    // NDC 坐标转换（提取公共方法）
+    override val left: Float get() = convertScreenToNdcX(window, screenX1)
+    override val right: Float get() = convertScreenToNdcX(window, screenX2)
+    override val top: Float get() = convertScreenToNdcY(window, screenY1)
+    override val bottom: Float = -1f
+
+    // 网格起始坐标
+    private val gridStartX: Float get() = screenX1 + gridLeftBorder
+    private val gridStartY: Float get() = screenY1 + gridTopBorder
+    private val gridEndY: Float get() = screenY1 + gridBottomBorder
+
+    // 选中网格 ID
+    private var selectedGridId: Int = DEFAULT_SELECT_ID
+        set(value) {
+            require(value in 1..9) { "selectedGridId 必须在 1 到 9 之间" }
+            field = value
+        }
+
+    // 计算网格边界
+    private fun calculateGridBounds(id: Int, expandBy: Float = 0f, coordSys: CoordSys): GridBounds {
         require(id in 1..9) { "id must be between 1 and 9" }
 
-        val left = gridLeft + (gridWidth + gridGapWidth) * (id - 1)
-        return GridPosition(
-            left = left,              // 网格左侧 x 坐标
-            top = gridTop,            // 顶部 y 坐标
-            right = left + gridWidth, // 网格右侧 x 坐标（修正）
-            bottom = gridBottom       // 网格间隔宽度
+        val startX = gridStartX + (gridWidth + gridGap) * (id - 1) - expandBy
+        val endX = startX + gridWidth + expandBy * 2
+        val startY = gridStartY - expandBy
+        val endY = gridEndY + expandBy
+
+        return if (coordSys == CoordSys.SCREEN) {
+            GridBounds(startX, startY, endX, endY)
+        } else {
+            val (left, top, right, bottom) = convertScreenToNdcBounds(window, startX, startY, endX, endY)
+            GridBounds(left, top, right, bottom)
+        }
+    }
+
+    // 获取普通网格位置
+    fun getGridBounds(id: Int, coordSys: CoordSys = CoordSys.NDC): GridBounds =
+        calculateGridBounds(id, coordSys = coordSys)
+
+    // 获取带选中框的网格位置
+    fun getGridBoundsWithCheckbox(id: Int, coordSys: CoordSys = CoordSys.NDC): GridBounds =
+        calculateGridBounds(id, expandBy = checkboxSize, coordSys = coordSys)
+
+    // 通过坐标获取网格ID
+    private fun findGridIdAt(x: Float, y: Float): Int? =
+        (1..9).firstOrNull { id ->
+            val bounds = getGridBoundsWithCheckbox(id, CoordSys.SCREEN)
+            x in bounds.left..bounds.right && y in bounds.top..bounds.bottom
+        }
+
+    override fun onClick(e: ClickEvent) {
+        findGridIdAt(e.x, e.y)?.let { selectedGridId = it }
+    }
+
+    override fun render() {
+        super.render()
+
+        val checkBoxGridPosition = getGridBoundsWithCheckbox(selectedGridId)
+        checkBoxRenderer.render(
+            checkBoxGridPosition.left,
+            checkBoxGridPosition.top,
+            checkBoxGridPosition.right,
+            checkBoxGridPosition.bottom
         )
     }
 
-    fun getGridBoxPosition(id: Int): GridPosition {
-        require(id in 1..9) { "id must be between 1 and 9" }
-
-        val left = gridLeft + (gridWidth + gridGapWidth) * (id - 1)
-        return GridPosition(
-            left = left - gridBoxBorderHorizontalWidth,              // 网格左侧 x 坐标
-            top = gridTop + gridBoxBorderVerticalWidth,            // 顶部 y 坐标
-            right = left + gridWidth + gridBoxBorderHorizontalWidth, // 网格右侧 x 坐标（修正）
-            bottom = gridBottom - gridBoxBorderVerticalWidth       // 网格间隔宽度
-        )
+    override fun cleanup() {
+        super.cleanup()
+        checkBoxRenderer.cleanup()
     }
 }

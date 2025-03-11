@@ -1,7 +1,7 @@
-package org.intelligentfarming.render
+package com.midnightcrowing.render
 
-import org.intelligentfarming.resource.TextureLoader
-import org.intelligentfarming.utils.ImageUtils.hasAlphaChannel
+import com.midnightcrowing.resource.TextureLoader
+import com.midnightcrowing.utils.ImageUtils.hasAlphaChannel
 import org.lwjgl.opengl.ARBFramebufferObject.glGenerateMipmap
 import org.lwjgl.opengl.GL11.*
 
