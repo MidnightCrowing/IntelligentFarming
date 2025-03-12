@@ -52,11 +52,6 @@ sourceSets {
     }
 }
 
-tasks.register<Copy>("copyResources") {
-    from("src/main/resources")
-    into("build/libs/resources")
-}
-
 tasks.withType<Copy> {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
@@ -76,11 +71,6 @@ tasks.shadowJar {
             "Main-Class" to "com.midnightcrowing.MainKt"
         )
     }
-    dependsOn("copyResources")
-}
-
-tasks.build {
-    dependsOn("copyResources")
 }
 
 tasks.test {

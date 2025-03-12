@@ -5,7 +5,6 @@ import com.midnightcrowing.events.Event.MouseButtonEvent
 import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.gui.Window
 import com.midnightcrowing.gui.components.base.Widget
-import com.midnightcrowing.utils.WindowUtils.convertNdcToScreen
 import org.lwjgl.glfw.GLFW.*
 import kotlin.reflect.full.declaredFunctions
 
@@ -20,32 +19,30 @@ data class ClickEvent(val x: Float, val y: Float) : Event()
 class ClickListener(
     val window: Window,
     eventManager: EventManager,
-) : EventListener<ClickEvent, MouseButtonEvent>(eventManager) {
+) : EventListener<MouseButtonEvent>(eventManager) {
     private val clickableWidgets = mutableListOf<Widget>()
 
     override fun getReceiveEventType(): Class<MouseButtonEvent> = MouseButtonEvent::class.java
 
-    override fun getSendEventType(): Class<ClickEvent> = ClickEvent::class.java
+    override fun getSendEventType(): Array<Class<out Event>> = arrayOf(ClickEvent::class.java)
 
     override fun eventFilter(event: MouseButtonEvent) {
-        val button = event.button
-        val action = event.action
-
-        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-            val xPos = DoubleArray(1)
-            val yPos = DoubleArray(1)
-            glfwGetCursorPos(window.handle, xPos, yPos)
-            triggerEvent(ClickEvent(xPos[0].toFloat(), yPos[0].toFloat()))
+        if (event.button == GLFW_MOUSE_BUTTON_LEFT && event.action == GLFW_PRESS) {
+            triggerEvent(event)
         }
     }
 
-    override fun triggerEvent(event: ClickEvent) {
-        clickableWidgets.forEach { widget ->
-            val (xCheck, yCheck) = convertNdcToScreen(window, widget.left, widget.top)
-            val (xCheckRight, yCheckBottom) = convertNdcToScreen(window, widget.right, widget.bottom)
+    override fun triggerEvent(event: MouseButtonEvent) {
+        val (x, y) = DoubleArray(1).let { xPos ->
+            DoubleArray(1).let { yPos ->
+                glfwGetCursorPos(window.handle, xPos, yPos)
+                xPos[0].toFloat() to yPos[0].toFloat()
+            }
+        }
 
-            if (event.x in xCheck..xCheckRight && event.y in yCheck..yCheckBottom) {
-                widget.onClick(event)
+        clickableWidgets.forEach { widget ->
+            if (widget.containsPoint(x, y)) {
+                widget.onClick(ClickEvent(x, y))
             }
         }
     }

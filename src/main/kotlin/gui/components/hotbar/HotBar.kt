@@ -4,17 +4,15 @@ import com.midnightcrowing.events.listeners.ClickEvent
 import com.midnightcrowing.gui.Window
 import com.midnightcrowing.gui.components.base.Widget
 import com.midnightcrowing.render.Renderer
+import com.midnightcrowing.render.createRenderer
 import com.midnightcrowing.resource.ResourcesEnum
-import com.midnightcrowing.utils.WindowUtils.convertScreenToNdcBounds
-import com.midnightcrowing.utils.WindowUtils.convertScreenToNdcX
-import com.midnightcrowing.utils.WindowUtils.convertScreenToNdcY
-import com.midnightcrowing.utils.CoordinateSystem as CoordSys
+import com.midnightcrowing.utils.CoordinateConversionUtils.convertScreenToNdcBounds
+import com.midnightcrowing.utils.ScreenBounds
 
-data class GridBounds(val left: Float, val top: Float, val right: Float, val bottom: Float)
 
 class HotBar(window: Window) : Widget(window) {
-    override val renderer: Renderer = getRenderer(ResourcesEnum.COMPONENTS_HOT_BAR.path)
-    private val checkBoxRenderer: Renderer = getRenderer(ResourcesEnum.CHECK_BOX.path)
+    override val renderer: Renderer = createRenderer(ResourcesEnum.COMPONENTS_HOT_BAR.path)
+    private val checkBoxRenderer: Renderer = createRenderer(ResourcesEnum.CHECK_BOX.path)
 
     private companion object {
         // 基础尺寸常量
@@ -45,21 +43,16 @@ class HotBar(window: Window) : Widget(window) {
     private val gridGap by lazy { BASE_GRID_GAP.scaled }
     private val checkboxSize by lazy { BASE_CHECKBOX_SIZE.scaled }
 
-    // 屏幕坐标计算属性
-    private val screenX1 get() = (window.width - scaledWidth) / 2f
-    private val screenY1 get() = window.height - scaledHeight
-    private val screenX2 get() = screenX1 + scaledWidth
-
     // NDC 坐标转换（提取公共方法）
-    override val left: Float get() = convertScreenToNdcX(window, screenX1)
-    override val right: Float get() = convertScreenToNdcX(window, screenX2)
-    override val top: Float get() = convertScreenToNdcY(window, screenY1)
-    override val bottom: Float = -1f
+    override val screenLeft: Float get() = (window.width - scaledWidth) / 2
+    override val screenRight: Float get() = screenLeft + scaledWidth
+    override val screenTop: Float get() = window.height - scaledHeight
+    override val screenBottom: Float get() = window.height.toFloat()
 
     // 网格起始坐标
-    private val gridStartX: Float get() = screenX1 + gridLeftBorder
-    private val gridStartY: Float get() = screenY1 + gridTopBorder
-    private val gridEndY: Float get() = screenY1 + gridBottomBorder
+    private val gridStartX: Float get() = screenLeft + gridLeftBorder
+    private val gridStartY: Float get() = screenTop + gridTopBorder
+    private val gridEndY: Float get() = screenTop + gridBottomBorder
 
     // 选中网格 ID
     private var selectedGridId: Int = DEFAULT_SELECT_ID
@@ -69,51 +62,39 @@ class HotBar(window: Window) : Widget(window) {
         }
 
     // 计算网格边界
-    private fun calculateGridBounds(id: Int, expandBy: Float = 0f, coordSys: CoordSys): GridBounds {
+    private fun calculateGridBounds(id: Int, expandBy: Float = 0f): ScreenBounds {
         require(id in 1..9) { "id must be between 1 and 9" }
 
-        val startX = gridStartX + (gridWidth + gridGap) * (id - 1) - expandBy
-        val endX = startX + gridWidth + expandBy * 2
-        val startY = gridStartY - expandBy
-        val endY = gridEndY + expandBy
+        val startX: Float = gridStartX + (gridWidth + gridGap) * (id - 1) - expandBy
+        val endX: Float = startX + gridWidth + expandBy * 2
+        val startY: Float = gridStartY - expandBy
+        val endY: Float = gridEndY + expandBy
 
-        return if (coordSys == CoordSys.SCREEN) {
-            GridBounds(startX, startY, endX, endY)
-        } else {
-            val (left, top, right, bottom) = convertScreenToNdcBounds(window, startX, startY, endX, endY)
-            GridBounds(left, top, right, bottom)
-        }
+        return ScreenBounds(startX, startY, endX, endY)
     }
 
     // 获取普通网格位置
-    fun getGridBounds(id: Int, coordSys: CoordSys = CoordSys.NDC): GridBounds =
-        calculateGridBounds(id, coordSys = coordSys)
+    fun getGridBounds(id: Int): ScreenBounds = calculateGridBounds(id)
 
     // 获取带选中框的网格位置
-    fun getGridBoundsWithCheckbox(id: Int, coordSys: CoordSys = CoordSys.NDC): GridBounds =
-        calculateGridBounds(id, expandBy = checkboxSize, coordSys = coordSys)
+    fun getGridBoundsWithCheckbox(id: Int): ScreenBounds = calculateGridBounds(id, checkboxSize)
 
     // 通过坐标获取网格ID
-    private fun findGridIdAt(x: Float, y: Float): Int? =
+    private fun findGridCheckboxIdAt(x: Float): Int? =
         (1..9).firstOrNull { id ->
-            val bounds = getGridBoundsWithCheckbox(id, CoordSys.SCREEN)
-            x in bounds.left..bounds.right && y in bounds.top..bounds.bottom
+            val bounds = getGridBoundsWithCheckbox(id)
+            x in bounds.left..bounds.right
         }
 
     override fun onClick(e: ClickEvent) {
-        findGridIdAt(e.x, e.y)?.let { selectedGridId = it }
+        findGridCheckboxIdAt(e.x)?.let { selectedGridId = it }
     }
 
     override fun render() {
         super.render()
 
         val checkBoxGridPosition = getGridBoundsWithCheckbox(selectedGridId)
-        checkBoxRenderer.render(
-            checkBoxGridPosition.left,
-            checkBoxGridPosition.top,
-            checkBoxGridPosition.right,
-            checkBoxGridPosition.bottom
-        )
+        checkBoxRenderer.render(convertScreenToNdcBounds(window, checkBoxGridPosition))
     }
 
     override fun cleanup() {
