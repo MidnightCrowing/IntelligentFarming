@@ -78,6 +78,13 @@ class Window(title: String, width: Int, height: Int, minWidth: Int = 0, minHeigh
      */
     fun pollEvents() = glfwPollEvents()
 
+    /**
+     * 关闭窗口
+     */
+    fun exit() {
+        glfwSetWindowShouldClose(handle, true)
+    }
+
     fun cleanup() {
         Callbacks.glfwFreeCallbacks(handle)
         glfwDestroyWindow(handle)

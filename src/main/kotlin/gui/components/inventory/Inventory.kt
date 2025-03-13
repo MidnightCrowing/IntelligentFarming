@@ -7,7 +7,7 @@ import com.midnightcrowing.render.createRenderer
 import com.midnightcrowing.resource.ResourcesEnum
 
 class Inventory(window: Window) : Widget(window) {
-    override val renderer: Renderer = createRenderer(ResourcesEnum.INVENTORY.path)
+    override val renderer: Renderer = createRenderer(ResourcesEnum.INVENTORY.inputStream)
 
     private companion object {
         const val BASE_WIDTH = 352

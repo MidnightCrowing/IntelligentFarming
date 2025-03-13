@@ -2,9 +2,7 @@ package com.midnightcrowing.events
 
 import com.midnightcrowing.events.Event.CursorMoveEvent
 import com.midnightcrowing.events.Event.MouseButtonEvent
-import com.midnightcrowing.events.listeners.ClickListener
-import com.midnightcrowing.events.listeners.EventListener
-import com.midnightcrowing.events.listeners.MouseMoveListener
+import com.midnightcrowing.events.listeners.*
 import com.midnightcrowing.gui.Window
 import com.midnightcrowing.gui.components.base.Widget
 import org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback
@@ -18,8 +16,10 @@ class EventManager(window: Window) {
 
     init {
         // 注入子监听器
-        ClickListener(window, this)
+        MouseClickListener(window, this)
         MouseMoveListener(window, this)
+        MousePressedListener(window, this)
+        MouseReleasedListener(window, this)
 
         // 设置GLFW事件回调
         // 监听鼠标点击

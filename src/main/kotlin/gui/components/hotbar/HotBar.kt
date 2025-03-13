@@ -1,6 +1,6 @@
 package com.midnightcrowing.gui.components.hotbar
 
-import com.midnightcrowing.events.listeners.ClickEvent
+import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.gui.Window
 import com.midnightcrowing.gui.components.base.Widget
 import com.midnightcrowing.render.Renderer
@@ -11,8 +11,8 @@ import com.midnightcrowing.utils.ScreenBounds
 
 
 class HotBar(window: Window) : Widget(window) {
-    override val renderer: Renderer = createRenderer(ResourcesEnum.COMPONENTS_HOT_BAR.path)
-    private val checkBoxRenderer: Renderer = createRenderer(ResourcesEnum.CHECK_BOX.path)
+    override val renderer: Renderer = createRenderer(ResourcesEnum.COMPONENTS_HOT_BAR.inputStream)
+    private val checkBoxRenderer: Renderer = createRenderer(ResourcesEnum.CHECK_BOX.inputStream)
 
     private companion object {
         // 基础尺寸常量
@@ -86,7 +86,7 @@ class HotBar(window: Window) : Widget(window) {
             x in bounds.left..bounds.right
         }
 
-    override fun onClick(e: ClickEvent) {
+    override fun onClick(e: MouseClickEvent) {
         findGridCheckboxIdAt(e.x)?.let { selectedGridId = it }
     }
 

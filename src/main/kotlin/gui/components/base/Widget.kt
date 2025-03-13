@@ -1,9 +1,6 @@
 package com.midnightcrowing.gui.components.base
 
-import com.midnightcrowing.events.listeners.ClickEvent
-import com.midnightcrowing.events.listeners.MouseEnterEvent
-import com.midnightcrowing.events.listeners.MouseLeaveEvent
-import com.midnightcrowing.events.listeners.MouseMoveEvent
+import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.gui.Window
 import com.midnightcrowing.render.Renderer
 import com.midnightcrowing.utils.CoordinateConversionUtils.convertScreenToNdcBounds
@@ -26,10 +23,12 @@ abstract class Widget(window: Window) : AbstractWidget(window) {
      * 注册事件监听器
      */
     private fun registerListeners() {
-        window.eventManager.registerWidget(ClickEvent::class.java, this)
+        window.eventManager.registerWidget(MouseClickEvent::class.java, this)
         window.eventManager.registerWidget(MouseEnterEvent::class.java, this)
         window.eventManager.registerWidget(MouseLeaveEvent::class.java, this)
         window.eventManager.registerWidget(MouseMoveEvent::class.java, this)
+        window.eventManager.registerWidget(MousePressedEvent::class.java, this)
+        window.eventManager.registerWidget(MouseReleasedEvent::class.java, this)
     }
 
     /**
@@ -56,9 +55,19 @@ abstract class Widget(window: Window) : AbstractWidget(window) {
     override fun cleanup() = renderer.cleanup()
 
     /**
+     * 鼠标按下事件
+     */
+    open fun onMousePress(e: MousePressedEvent) {}
+
+    /**
+     * 鼠标释放事件
+     */
+    open fun onMouseRelease(e: MouseReleasedEvent) {}
+
+    /**
      * 鼠标点击事件
      */
-    open fun onClick(e: ClickEvent) {}
+    open fun onClick(e: MouseClickEvent) {}
 
     /**
      * 鼠标移入事件

@@ -1,26 +1,12 @@
 package com.midnightcrowing.events.listeners
 
+import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.CursorMoveEvent
 import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.gui.Window
 import com.midnightcrowing.gui.components.base.Widget
 import kotlin.reflect.full.declaredFunctions
-
-/**
- * 鼠标移入事件
- */
-object MouseEnterEvent : Event()
-
-/**
- * 鼠标移出事件
- */
-object MouseLeaveEvent : Event()
-
-/**
- * 鼠标移动事件
- */
-data class MouseMoveEvent(val x: Float, val y: Float) : Event()
 
 
 class MouseMoveListener(

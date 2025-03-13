@@ -1,6 +1,6 @@
 package com.midnightcrowing.render
 
-import com.midnightcrowing.resource.TextureLoader
+import com.midnightcrowing.resource.ResourcesLoader
 import com.midnightcrowing.utils.ImageUtils.hasAlphaChannel
 import org.lwjgl.opengl.ARBFramebufferObject.glGenerateMipmap
 import org.lwjgl.opengl.GL11.*
@@ -15,7 +15,7 @@ class Texture(private val inputStream: InputStream) {
         private set
 
     fun load() {
-        val image = TextureLoader.loadImage(inputStream)
+        val image = ResourcesLoader.loadTextureImage(inputStream)
 
         id = glGenTextures()
         glBindTexture(GL_TEXTURE_2D, id)
