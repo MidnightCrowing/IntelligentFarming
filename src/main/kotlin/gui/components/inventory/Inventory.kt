@@ -2,12 +2,12 @@ package com.midnightcrowing.gui.components.inventory
 
 import com.midnightcrowing.gui.Window
 import com.midnightcrowing.gui.components.base.Widget
-import com.midnightcrowing.render.Renderer
-import com.midnightcrowing.render.createRenderer
+import com.midnightcrowing.render.ImageRenderer
+import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
 
 class Inventory(window: Window) : Widget(window) {
-    override val renderer: Renderer = createRenderer(ResourcesEnum.INVENTORY.inputStream)
+    override val renderer: ImageRenderer = createImageRenderer(ResourcesEnum.INVENTORY.inputStream)
 
     private companion object {
         const val BASE_WIDTH = 352

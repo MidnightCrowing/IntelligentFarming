@@ -2,22 +2,25 @@ package com.midnightcrowing.gui.components.base
 
 import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.gui.Window
-import com.midnightcrowing.render.Renderer
-import com.midnightcrowing.utils.CoordinateConversionUtils.convertScreenToNdcBounds
+import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.render.ImageRenderer
 
 
-abstract class Widget(window: Window) : AbstractWidget(window) {
-    abstract val renderer: Renderer
+open class Widget(window: Window) : AbstractWidget(window) {
+    open val renderer: ImageRenderer = ImageRenderer()
 
-    open val screenLeft: Float = 0f
-    open val screenRight: Float = 0f
-    open val screenTop: Float = 0f
-    open val screenBottom: Float = 0f
+    open var screenBounds: ScreenBounds = ScreenBounds(0f, 0f, 0f, 0f)
+    open val screenLeft: Float get() = screenBounds.left
+    open val screenRight: Float get() = screenBounds.right
+    open val screenTop: Float get() = screenBounds.top
+    open val screenBottom: Float get() = screenBounds.bottom
 
     init {
         // 注册监听器
         registerListeners()
     }
+
+    var visible = true
 
     /**
      * 注册事件监听器
@@ -32,6 +35,18 @@ abstract class Widget(window: Window) : AbstractWidget(window) {
     }
 
     /**
+     * 取消注册事件监听器
+     */
+    private fun unregisterListener() {
+        window.eventManager.unregisterWidget(MouseClickEvent::class.java, this)
+        window.eventManager.unregisterWidget(MouseEnterEvent::class.java, this)
+        window.eventManager.unregisterWidget(MouseLeaveEvent::class.java, this)
+        window.eventManager.unregisterWidget(MouseMoveEvent::class.java, this)
+        window.eventManager.unregisterWidget(MousePressedEvent::class.java, this)
+        window.eventManager.unregisterWidget(MouseReleasedEvent::class.java, this)
+    }
+
+    /**
      * 判断给定坐标是否在组件范围内
      */
     fun containsPoint(x: Float, y: Float): Boolean {
@@ -42,17 +57,20 @@ abstract class Widget(window: Window) : AbstractWidget(window) {
      * 渲染组件
      */
     override fun render() {
-        renderer.render(
-            convertScreenToNdcBounds(
-                window, screenLeft, screenTop, screenRight, screenBottom
+        if (visible) {
+            renderer.render(
+                ScreenBounds(screenLeft, screenTop, screenRight, screenBottom).toNdcBounds(window)
             )
-        )
+        }
     }
 
     /**
      * 清理资源
      */
-    override fun cleanup() = renderer.cleanup()
+    override fun cleanup() {
+        renderer.cleanup()
+        unregisterListener()
+    }
 
     /**
      * 鼠标按下事件

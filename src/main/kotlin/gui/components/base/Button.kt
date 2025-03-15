@@ -2,13 +2,13 @@ package com.midnightcrowing.gui.components.base
 
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.gui.Window
+import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.render.ImageRenderer
 import com.midnightcrowing.render.NanoVGContext.vg
-import com.midnightcrowing.render.Renderer
 import com.midnightcrowing.render.TextRenderer
 import com.midnightcrowing.render.Texture
 import com.midnightcrowing.resource.ColorEnum
 import com.midnightcrowing.resource.ResourcesEnum
-import com.midnightcrowing.utils.ScreenBounds
 
 /**
  * 枚举类，定义按钮的不同状态对应的纹理。
@@ -33,25 +33,20 @@ class Button(
     }
 
     // 渲染器，默认使用 DEFAULT 纹理
-    override val renderer: Renderer = textures[ButtonTextures.DEFAULT]?.let { Renderer(it) }
+    override val renderer: ImageRenderer = textures[ButtonTextures.DEFAULT]?.let { ImageRenderer(it) }
         ?: throw IllegalArgumentException("Default texture cannot be null")
 
     // 文字渲染器
     private val textRenderer = TextRenderer(vg)
 
     // 记录当前按钮的屏幕边界
-    private var _screenBounds = ScreenBounds(0f, 0f, 0f, 0f)
-
-    override val screenLeft: Float get() = _screenBounds.left
-    override val screenRight: Float get() = _screenBounds.right
-    override val screenTop: Float get() = _screenBounds.top
-    override val screenBottom: Float get() = _screenBounds.bottom
+    override var screenBounds = ScreenBounds(0f, 0f, 0f, 0f)
 
     /**
      * 渲染按钮及其文字。
      */
     fun render(screenBounds: ScreenBounds) {
-        _screenBounds = screenBounds
+        this@Button.screenBounds = screenBounds
         super.render()
         drawText()
     }

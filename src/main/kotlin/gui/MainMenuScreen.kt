@@ -1,33 +1,22 @@
 package com.midnightcrowing.gui
 
-import com.midnightcrowing.gui.components.base.AbstractWidget
 import com.midnightcrowing.gui.components.base.Button
-import com.midnightcrowing.gui.components.hotbar.HotBar
-import com.midnightcrowing.gui.components.inventory.Inventory
-import com.midnightcrowing.render.Renderer
-import com.midnightcrowing.render.createRenderer
+import com.midnightcrowing.gui.components.base.Screen
+import com.midnightcrowing.model.NdcBounds
+import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.render.ImageRenderer
+import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
-import com.midnightcrowing.utils.CoordinateConversionUtils
-import com.midnightcrowing.utils.ScreenBounds
+import com.midnightcrowing.scenes.FarmScene
 
-class MainMenuScreen(window: Window) : AbstractWidget(window) {
-    private val bgRenderer: Renderer = createRenderer(ResourcesEnum.MAIN_MENU_BACKGROUND.inputStream)
-    private val hotBar: HotBar = HotBar(window)
-    private val inventory: Inventory = Inventory(window)
+class MainMenuScreen(window: Window) : Screen(window) {
+    private val bgRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.MAIN_MENU_BACKGROUND.inputStream)
     private val startButton: Button = Button(window, "开始游戏", fontSize = 20f)
     private val optionButton: Button = Button(window, "选项...", fontSize = 20f)
     private val exitButton: Button = Button(window, "退出游戏", fontSize = 20f)
 
-    private val wheatRenderer: Renderer = createRenderer(ResourcesEnum.WHEAT.inputStream)
-    private val cabbageRenderer: Renderer = createRenderer(ResourcesEnum.CABBAGE.inputStream)
-    private val carrotRenderer: Renderer = createRenderer(ResourcesEnum.CARROT.inputStream)
-    private val potatoRenderer: Renderer = createRenderer(ResourcesEnum.POTATO.inputStream)
-    private val tomatoRenderer: Renderer = createRenderer(ResourcesEnum.TOMATO.inputStream)
-
     init {
-        startButton.onClickCallback = { event ->
-            println("按钮被点击了！点击位置：(${event.x}, ${event.y})")
-        }
+        startButton.onClickCallback = { window.setScreen(FarmScene(window)) }
         exitButton.onClickCallback = { window.exit() }
     }
 
@@ -53,13 +42,11 @@ class MainMenuScreen(window: Window) : AbstractWidget(window) {
             verticalPos to verticalPos - BTN_HEIGHT
         }
 
-        return CoordinateConversionUtils.convertNdcToScreenBounds(window, left, top, right, bottom)
+        return NdcBounds(left, top, right, bottom).toScreenBounds(window)
     }
 
     override fun render() {
         bgRenderer.render(-1f, 1f, 1f, -1f)
-        hotBar.render()
-//        inventory.render()
 
         startButton.render(
             calculateButtonBounds(
@@ -71,25 +58,12 @@ class MainMenuScreen(window: Window) : AbstractWidget(window) {
         optionButton.render(calculateButtonBounds(bottomRowY, isLeftButton = true))
         exitButton.render(calculateButtonBounds(bottomRowY))
 
-        wheatRenderer.render(CoordinateConversionUtils.convertScreenToNdcBounds(window, hotBar.getGridBounds(5)))
-        cabbageRenderer.render(CoordinateConversionUtils.convertScreenToNdcBounds(window, hotBar.getGridBounds(6)))
-        carrotRenderer.render(CoordinateConversionUtils.convertScreenToNdcBounds(window, hotBar.getGridBounds(7)))
-        potatoRenderer.render(CoordinateConversionUtils.convertScreenToNdcBounds(window, hotBar.getGridBounds(8)))
-        tomatoRenderer.render(CoordinateConversionUtils.convertScreenToNdcBounds(window, hotBar.getGridBounds(9)))
     }
 
     override fun cleanup() {
         bgRenderer.cleanup()
-        hotBar.cleanup()
-        inventory.cleanup()
         startButton.cleanup()
         optionButton.cleanup()
         exitButton.cleanup()
-
-        wheatRenderer.cleanup()
-        cabbageRenderer.cleanup()
-        carrotRenderer.cleanup()
-        potatoRenderer.cleanup()
-        tomatoRenderer.cleanup()
     }
 }

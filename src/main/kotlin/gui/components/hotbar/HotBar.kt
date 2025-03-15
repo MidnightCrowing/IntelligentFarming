@@ -3,16 +3,15 @@ package com.midnightcrowing.gui.components.hotbar
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.gui.Window
 import com.midnightcrowing.gui.components.base.Widget
-import com.midnightcrowing.render.Renderer
-import com.midnightcrowing.render.createRenderer
+import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.render.ImageRenderer
+import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
-import com.midnightcrowing.utils.CoordinateConversionUtils.convertScreenToNdcBounds
-import com.midnightcrowing.utils.ScreenBounds
 
 
 class HotBar(window: Window) : Widget(window) {
-    override val renderer: Renderer = createRenderer(ResourcesEnum.COMPONENTS_HOT_BAR.inputStream)
-    private val checkBoxRenderer: Renderer = createRenderer(ResourcesEnum.CHECK_BOX.inputStream)
+    override val renderer: ImageRenderer = createImageRenderer(ResourcesEnum.COMPONENTS_HOT_BAR.inputStream)
+    private val checkBoxRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.CHECK_BOX.inputStream)
 
     private companion object {
         // 基础尺寸常量
@@ -94,7 +93,7 @@ class HotBar(window: Window) : Widget(window) {
         super.render()
 
         val checkBoxGridPosition = getGridBoundsWithCheckbox(selectedGridId)
-        checkBoxRenderer.render(convertScreenToNdcBounds(window, checkBoxGridPosition))
+        checkBoxRenderer.render(checkBoxGridPosition.toNdcBounds(window))
     }
 
     override fun cleanup() {

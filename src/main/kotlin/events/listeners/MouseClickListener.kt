@@ -34,7 +34,8 @@ class MouseClickListener(
             }
         }
 
-        clickableWidgets.forEach { widget ->
+        val widgetsCopy = clickableWidgets.toList()
+        widgetsCopy.forEach { widget ->
             if (widget.containsPoint(x, y)) {
                 widget.onClick(MouseClickEvent(x, y))
             }
@@ -49,5 +50,9 @@ class MouseClickListener(
         if (onClickMethod != null && !onClickMethod.isAbstract) {
             clickableWidgets.add(widget)
         }
+    }
+
+    override fun unregisterWidget(widget: Widget) {
+        clickableWidgets.remove(widget)
     }
 }

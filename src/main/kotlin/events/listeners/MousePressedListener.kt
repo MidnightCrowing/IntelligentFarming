@@ -50,4 +50,8 @@ class MousePressedListener(
             pressableWidgets.add(widget)
         }
     }
+
+    override fun unregisterWidget(widget: Widget) {
+        pressableWidgets.remove(widget)
+    }
 }

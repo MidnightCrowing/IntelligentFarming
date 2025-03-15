@@ -1,7 +1,6 @@
 package com.midnightcrowing.render
 
 import com.midnightcrowing.resource.ResourcesLoader
-import com.midnightcrowing.utils.ImageUtils.hasAlphaChannel
 import org.lwjgl.opengl.ARBFramebufferObject.glGenerateMipmap
 import org.lwjgl.opengl.GL11.*
 import java.io.InputStream
@@ -15,7 +14,7 @@ class Texture(private val inputStream: InputStream) {
         private set
 
     fun load() {
-        val image = ResourcesLoader.loadTextureImage(inputStream)
+        val image = ResourcesLoader.loadImage(inputStream)
 
         id = glGenTextures()
         glBindTexture(GL_TEXTURE_2D, id)
@@ -31,7 +30,7 @@ class Texture(private val inputStream: InputStream) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         // 传输纹理数据到 OpenGL，支持透明度
-        val format = if (hasAlphaChannel(image)) GL_RGBA else GL_RGB
+        val format = if (image.hasAlphaChannel()) GL_RGBA else GL_RGB
         glTexImage2D(GL_TEXTURE_2D, 0, format, image.width, image.height, 0, format, GL_UNSIGNED_BYTE, image.buffer)
 
         glGenerateMipmap(GL_TEXTURE_2D) // 生成 Mipmap 以提高缩放质量

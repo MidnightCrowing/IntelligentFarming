@@ -3,11 +3,9 @@ package com.midnightcrowing
 import com.midnightcrowing.config.AppConfig
 import com.midnightcrowing.gui.MainMenuScreen
 import com.midnightcrowing.gui.Window
-import com.midnightcrowing.render.NanoVGContext
 import com.midnightcrowing.resource.FontEnum
 import com.midnightcrowing.resource.ResourcesEnum
 import com.midnightcrowing.resource.ResourcesLoader.loadFont
-import org.lwjgl.opengl.GL11
 
 
 fun main() {
@@ -28,25 +26,10 @@ fun main() {
 //        fontPath
     )
 
-    val mainMenuScreenFrame = MainMenuScreen(window)
+    window.setScreen(MainMenuScreen(window))
 
-    while (!window.shouldClose()) {
-        // 清除缓冲区
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
-        // 开始 NanoVG 绘制
-        NanoVGContext.beginFrame(window)
-        // 渲染内容
-        mainMenuScreenFrame.render()
-        // 结束 NanoVG 绘制
-        NanoVGContext.endFrame()
-        // 交换帧缓冲区
-        window.swapBuffers()
-        // 处理窗口事件
-        window.pollEvents()
-    }
+    window.loop()
 
     // 释放资源
-    mainMenuScreenFrame.cleanup()
-    NanoVGContext.cleanup()
     window.cleanup()
 }

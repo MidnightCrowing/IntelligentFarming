@@ -78,4 +78,10 @@ class MouseMoveListener(
             null
         }
     }
+
+    override fun unregisterWidget(widget: Widget) {
+        enterListeners.remove(widget)
+        leaveListeners.remove(widget)
+        moveListeners.remove(widget)
+    }
 }

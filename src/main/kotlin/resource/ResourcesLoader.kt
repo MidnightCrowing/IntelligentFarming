@@ -1,5 +1,6 @@
 package com.midnightcrowing.resource
 
+import com.midnightcrowing.model.Image
 import com.midnightcrowing.render.NanoVGContext.vg
 import org.lwjgl.nanovg.NanoVG.nvgCreateFont
 import org.lwjgl.nanovg.NanoVG.nvgCreateFontMem
@@ -14,7 +15,7 @@ import java.nio.ByteOrder
  * 资源加载辅助类
  */
 object ResourcesLoader {
-    fun loadTextureImage(inputStream: InputStream): ImageData {
+    fun loadImage(inputStream: InputStream): Image {
         // 读取 InputStream 到 ByteBuffer
         val byteArray = inputStream.readBytes()
         val buffer = MemoryUtil.memAlloc(byteArray.size).put(byteArray)
@@ -29,7 +30,7 @@ object ResourcesLoader {
         val imageBuffer = STBImage.stbi_load_from_memory(buffer, width, height, channels, 4)
             ?: throw RuntimeException("无法加载图片: ${STBImage.stbi_failure_reason()} $inputStream")
 
-        return ImageData(imageBuffer, width.get(), height.get())
+        return Image(imageBuffer, width.get(), height.get())
     }
 
     // 添加字体缓存防止重复加载

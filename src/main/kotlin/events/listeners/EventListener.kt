@@ -24,4 +24,7 @@ abstract class EventListener<T : Event>(eventManager: EventManager) {
 
     // 注册组件
     abstract fun registerWidget(widget: Widget)
+
+    // 取消注册组件
+    abstract fun unregisterWidget(widget: Widget)
 }

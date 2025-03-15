@@ -64,4 +64,15 @@ class EventManager(window: Window) {
         // 如果找到了相应的监听器，则注册组件的事件回调
         listener?.registerWidget(widget)
     }
+
+    // 取消注册组件的事件回调
+    fun <T : Event> unregisterWidget(eventType: Class<T>, widget: Widget) {
+        // 查找与事件类型匹配的第一个监听器
+        val listener = listeners.values
+            .flatten() // 将所有的监听器集合平铺
+            .firstOrNull { it.getSendEventType().contains(eventType) }
+
+        // 如果找到了相应的监听器，则取消注册组件的事件回调
+        listener?.unregisterWidget(widget)
+    }
 }

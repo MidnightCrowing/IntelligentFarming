@@ -63,4 +63,8 @@ class MouseReleasedListener(
             releaseableWidgets.add(widget)
         }
     }
+
+    override fun unregisterWidget(widget: Widget) {
+        releaseableWidgets.remove(widget)
+    }
 }

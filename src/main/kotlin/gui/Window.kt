@@ -1,6 +1,8 @@
 package com.midnightcrowing.gui
 
 import com.midnightcrowing.events.EventManager
+import com.midnightcrowing.gui.components.base.Screen
+import com.midnightcrowing.render.NanoVGContext
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
@@ -26,6 +28,8 @@ class Window(title: String, width: Int, height: Int, minWidth: Int = 0, minHeigh
 
     // 全局事件管理器
     val eventManager: EventManager
+
+    private var screen: Screen = Screen(this)
 
     init {
         // 设置错误回调
@@ -64,6 +68,9 @@ class Window(title: String, width: Int, height: Int, minWidth: Int = 0, minHeigh
 
         // 设置事件管理器
         eventManager = EventManager(this)
+
+        // Enable texture mapping
+        GL11.glEnable(GL11.GL_TEXTURE_2D)
     }
 
     fun shouldClose(): Boolean = glfwWindowShouldClose(handle)
@@ -78,6 +85,29 @@ class Window(title: String, width: Int, height: Int, minWidth: Int = 0, minHeigh
      */
     fun pollEvents() = glfwPollEvents()
 
+    fun setScreen(newScreen: Screen) {
+        val oldScreen = screen
+        screen = newScreen
+        oldScreen.cleanup()
+    }
+
+    fun loop() {
+        while (!shouldClose()) {
+            // 清除缓冲区
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
+            // 开始 NanoVG 绘制
+            NanoVGContext.beginFrame(this)
+            // 渲染内容
+            screen.render()
+            // 结束 NanoVG 绘制
+            NanoVGContext.endFrame()
+            // 交换帧缓冲区
+            swapBuffers()
+            // 处理窗口事件
+            pollEvents()
+        }
+    }
+
     /**
      * 关闭窗口
      */
@@ -86,6 +116,14 @@ class Window(title: String, width: Int, height: Int, minWidth: Int = 0, minHeigh
     }
 
     fun cleanup() {
+        // Disable texture mapping
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        NanoVGContext.cleanup()
+        screen.cleanup()
+
+        // Disable texture mapping
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+
         Callbacks.glfwFreeCallbacks(handle)
         glfwDestroyWindow(handle)
         glfwTerminate()
