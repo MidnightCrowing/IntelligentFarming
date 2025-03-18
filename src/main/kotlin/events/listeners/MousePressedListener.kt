@@ -4,8 +4,8 @@ import com.midnightcrowing.events.CustomEvent.MousePressedEvent
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.MouseButtonEvent
 import com.midnightcrowing.events.EventManager
-import com.midnightcrowing.gui.Window
-import com.midnightcrowing.gui.components.base.Widget
+import com.midnightcrowing.gui.base.Widget
+import com.midnightcrowing.gui.base.Window
 import org.lwjgl.glfw.GLFW.*
 import kotlin.reflect.full.declaredFunctions
 

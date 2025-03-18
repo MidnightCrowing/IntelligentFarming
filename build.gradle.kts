@@ -10,13 +10,10 @@ repositories {
     mavenCentral()
 }
 
-val lwjglVersion = "3.3.6"
-val lwjglNatives = "natives-windows"
-
 dependencies {
     implementation(kotlin("reflect"))
 
-    implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
+    implementation(platform("org.lwjgl:lwjgl-bom:3.3.6"))
 
     implementation("org.lwjgl", "lwjgl")
     implementation("org.lwjgl", "lwjgl-assimp")
@@ -29,31 +26,18 @@ dependencies {
     implementation("org.lwjgl", "lwjgl-par")
     implementation("org.lwjgl", "lwjgl-stb")
     implementation("org.lwjgl", "lwjgl-vulkan")
-    runtimeOnly("org.lwjgl", "lwjgl", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-assimp", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-bgfx", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-glfw", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-nanovg", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-nuklear", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-openal", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-par", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-stb", classifier = lwjglNatives)
-}
+    runtimeOnly("org.lwjgl", "lwjgl", classifier = "natives-windows")
+    runtimeOnly("org.lwjgl", "lwjgl-assimp", classifier = "natives-windows")
+    runtimeOnly("org.lwjgl", "lwjgl-bgfx", classifier = "natives-windows")
+    runtimeOnly("org.lwjgl", "lwjgl-glfw", classifier = "natives-windows")
+    runtimeOnly("org.lwjgl", "lwjgl-nanovg", classifier = "natives-windows")
+    runtimeOnly("org.lwjgl", "lwjgl-nuklear", classifier = "natives-windows")
+    runtimeOnly("org.lwjgl", "lwjgl-openal", classifier = "natives-windows")
+    runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = "natives-windows")
+    runtimeOnly("org.lwjgl", "lwjgl-par", classifier = "natives-windows")
+    runtimeOnly("org.lwjgl", "lwjgl-stb", classifier = "natives-windows")
 
-sourceSets {
-    main {
-        java {
-            srcDir("src/main/kotlin")
-        }
-        resources {
-            srcDir("src/main/resources")
-        }
-    }
-}
-
-tasks.withType<Copy> {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    testImplementation(kotlin("test"))
 }
 
 tasks.jar {

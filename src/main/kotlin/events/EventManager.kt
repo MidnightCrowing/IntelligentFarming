@@ -1,45 +1,72 @@
 package com.midnightcrowing.events
 
-import com.midnightcrowing.events.Event.CursorMoveEvent
-import com.midnightcrowing.events.Event.MouseButtonEvent
+import com.midnightcrowing.events.Event.*
 import com.midnightcrowing.events.listeners.*
-import com.midnightcrowing.gui.Window
-import com.midnightcrowing.gui.components.base.Widget
-import org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback
-import org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback
+import com.midnightcrowing.gui.base.Widget
+import com.midnightcrowing.gui.base.Window
+import org.lwjgl.glfw.GLFW.*
 
 
 // 事件管理器
-class EventManager(window: Window) {
+class EventManager(val window: Window) {
     // 使用 Set 来确保每个事件类型的监听器是唯一的
     private val listeners = mutableMapOf<Class<out Event>, MutableSet<EventListener<out Event>>>()
 
     init {
-        // 注入子监听器
+        initGLFWCallback()
+        initListener()
+    }
+
+    /* 设置GLFW事件回调 */
+    private fun initGLFWCallback() {
+        // 监听鼠标点击
+        glfwSetMouseButtonCallback(window.handle) { _, button, action, mods ->
+            triggerMouseButtonEvent(button, action, mods)
+        }
+        // 监听鼠标移动
+        glfwSetCursorPosCallback(window.handle) { _, xPos, yPos ->
+            triggerCursorPosEvent(xPos, yPos)
+        }
+        // 监听窗口大小变化
+        glfwSetFramebufferSizeCallback(window.handle) { _, width, height ->
+            triggerWindowResizeEvent(width, height)
+        }
+    }
+
+    fun triggerMouseButtonEvent(button: Int, action: Int, mods: Int) {
+        listeners[MouseButtonEvent::class.java]?.forEach { listener ->
+            @Suppress("UNCHECKED_CAST") // 告诉编译器忽略类型转换的警告，因类型转换在此时是安全的
+            (listener as EventListener<MouseButtonEvent>).eventFilter(
+                MouseButtonEvent(button, action, mods)
+            )
+        }
+    }
+
+    fun triggerCursorPosEvent(xPos: Double, yPos: Double) {
+        listeners[CursorMoveEvent::class.java]?.forEach { listener ->
+            @Suppress("UNCHECKED_CAST")
+            (listener as EventListener<CursorMoveEvent>).eventFilter(
+                CursorMoveEvent(xPos, yPos)
+            )
+        }
+    }
+
+    fun triggerWindowResizeEvent(width: Int, height: Int) {
+        listeners[WindowResizeEvent::class.java]?.forEach { listener ->
+            @Suppress("UNCHECKED_CAST")
+            (listener as EventListener<WindowResizeEvent>).eventFilter(
+                WindowResizeEvent(width, height)
+            )
+        }
+    }
+
+    private fun initListener() {
+        // 初始化监听器
         MouseClickListener(window, this)
         MouseMoveListener(window, this)
         MousePressedListener(window, this)
         MouseReleasedListener(window, this)
-
-        // 设置GLFW事件回调
-        // 监听鼠标点击
-        glfwSetMouseButtonCallback(window.handle) { _, button, action, mods ->
-            listeners[MouseButtonEvent::class.java]?.forEach { listener ->
-                @Suppress("UNCHECKED_CAST") // 告诉编译器忽略类型转换的警告，因类型转换在此时是安全的
-                (listener as EventListener<MouseButtonEvent>).eventFilter(
-                    MouseButtonEvent(button, action, mods)
-                )
-            }
-        }
-        // 监听鼠标移动
-        glfwSetCursorPosCallback(window.handle) { _, xPos, yPos ->
-            listeners[CursorMoveEvent::class.java]?.forEach { listener ->
-                @Suppress("UNCHECKED_CAST")
-                (listener as EventListener<CursorMoveEvent>).eventFilter(
-                    CursorMoveEvent(xPos, yPos)
-                )
-            }
-        }
+        WindowResizeEventListener(window, this)
     }
 
     // 注册监听器

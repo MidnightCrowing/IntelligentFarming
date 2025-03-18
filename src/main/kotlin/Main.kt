@@ -1,11 +1,11 @@
 package com.midnightcrowing
 
 import com.midnightcrowing.config.AppConfig
-import com.midnightcrowing.gui.MainMenuScreen
-import com.midnightcrowing.gui.Window
+import com.midnightcrowing.gui.base.Window
 import com.midnightcrowing.resource.FontEnum
 import com.midnightcrowing.resource.ResourcesEnum
 import com.midnightcrowing.resource.ResourcesLoader.loadFont
+import com.midnightcrowing.scenes.MainMenuScreen
 
 
 fun main() {
@@ -26,7 +26,7 @@ fun main() {
 //        fontPath
     )
 
-    window.setScreen(MainMenuScreen(window))
+    window.screen = MainMenuScreen(window)
 
     window.loop()
 

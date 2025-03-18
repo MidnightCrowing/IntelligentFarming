@@ -1,27 +1,27 @@
 package com.midnightcrowing.scenes
 
 import com.midnightcrowing.farmings.FarmArea
-import com.midnightcrowing.gui.Window
-import com.midnightcrowing.gui.components.base.Screen
-import com.midnightcrowing.gui.components.hotbar.HotBar
+import com.midnightcrowing.gui.FarmItems.WheatItem
+import com.midnightcrowing.gui.HotBar
+import com.midnightcrowing.gui.HotBar.Companion.SCALED_HEIGHT
+import com.midnightcrowing.gui.HotBar.Companion.SCALED_WIDTH
+import com.midnightcrowing.gui.base.Screen
+import com.midnightcrowing.gui.base.Window
+import com.midnightcrowing.model.Point
 import com.midnightcrowing.render.ImageRenderer
 import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
 
 class FarmScene(window: Window) : Screen(window) {
-    private val bgRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.FARM_BACKGROUND.inputStream)
-
     private companion object {
-        const val BASE_BG_WIDTH: Int = 5397
-        const val BASE_BG_HEIGHT: Int = 3036
-        const val BASE_LEFT_POINT_X: Int = 1364
-        const val BASE_LEFT_POINT_Y: Int = 1564 - 37
-        const val BASE_MIDDLE_POINT_X: Int = 3140
-        const val BASE_MIDDLE_POINT_Y: Int = 2242 + 17
-        const val BASE_RIGHT_POINT_X: Int = 4160
-        const val BASE_RIGHT_POINT_Y: Int = 1612
+        // Farm area
+        const val BASE_BG_WIDTH: Float = 5397f
+        const val BASE_BG_HEIGHT: Float = 3036f
         const val BASE_BLOCK_HEIGHT: Int = 285
         const val BASE_FARMLAND_BLACK_DEEP: Int = 17
+        val BASE_LEFT_POINT: Point = Point(1364f, (1564 - 37).toFloat())
+        val BASE_MIDDLE_POINT: Point = Point(3140f, (2242 + 17).toFloat())
+        val BASE_RIGHT_POINT: Point = Point(4160f, 1612f)
         val FARMLAND_BOARD = listOf(
             0b1111111,
             0b1111111,
@@ -31,40 +31,45 @@ class FarmScene(window: Window) : Screen(window) {
         )
     }
 
-    private val blockHeight: Float get() = BASE_BLOCK_HEIGHT.toFloat() / BASE_BG_HEIGHT * window.height
-    private val blockDeep: Float get() = BASE_FARMLAND_BLACK_DEEP.toFloat() / BASE_BG_HEIGHT * window.height
-    private val leftPointX: Float get() = BASE_LEFT_POINT_X.toFloat() / BASE_BG_WIDTH * window.width
-    private val leftPointY: Float get() = BASE_LEFT_POINT_Y.toFloat() / BASE_BG_HEIGHT * window.height
-    private val middlePointX: Float get() = BASE_MIDDLE_POINT_X.toFloat() / BASE_BG_WIDTH * window.width
-    private val middlePointY: Float get() = BASE_MIDDLE_POINT_Y.toFloat() / BASE_BG_HEIGHT * window.height
-    private val rightPointX: Float get() = BASE_RIGHT_POINT_X.toFloat() / BASE_BG_WIDTH * window.width
-    private val rightPointY: Float get() = BASE_RIGHT_POINT_Y.toFloat() / BASE_BG_HEIGHT * window.height
-
-    private val farmArea: FarmArea = FarmArea(window, farmlandBoard = FARMLAND_BOARD)
+    override val bgRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.FARM_BACKGROUND.inputStream)
 
     // UI
     private val hotBar: HotBar = HotBar(window)
+    private val farmArea: FarmArea = FarmArea(window, farmlandBoard = FARMLAND_BOARD)
 
-    private val wheatRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.WHEAT.inputStream)
-    private val wheatSeedRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.WHEAT_SEED.inputStream)
-    private val cabbageRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.CABBAGE.inputStream)
-    private val carrotRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.CARROT.inputStream)
-    private val potatoRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.POTATO.inputStream)
-    private val tomatoRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.TOMATO.inputStream)
+    private val wheat = WheatItem(hotBar)
+
+    override fun place() {
+        val hotBarPoint1 = Point((window.width - SCALED_WIDTH) / 2, window.height - SCALED_HEIGHT)
+        val hotBarPoint2 = Point(hotBarPoint1.x + SCALED_WIDTH, window.height.toFloat())
+        hotBar.place(hotBarPoint1.x, hotBarPoint1.y, hotBarPoint2.x, hotBarPoint2.y)
+
+        val blockDeep: Float = BASE_FARMLAND_BLACK_DEEP / BASE_BG_HEIGHT * window.height
+        val blockHeight: Float = BASE_BLOCK_HEIGHT / BASE_BG_HEIGHT * window.height
+        val leftPoint = Point(
+            BASE_LEFT_POINT.x / BASE_BG_WIDTH * window.width,
+            BASE_LEFT_POINT.y / BASE_BG_HEIGHT * window.height
+        )
+        val middlePoint = Point(
+            BASE_MIDDLE_POINT.x / BASE_BG_WIDTH * window.width,
+            BASE_MIDDLE_POINT.y / BASE_BG_HEIGHT * window.height
+        )
+        val rightPoint = Point(
+            BASE_RIGHT_POINT.x / BASE_BG_WIDTH * window.width,
+            BASE_RIGHT_POINT.y / BASE_BG_HEIGHT * window.height
+        )
+        farmArea.place(blockDeep, blockHeight, leftPoint, middlePoint, rightPoint)
+
+        wheat.place(hotBar.getGridBounds(0))
+    }
 
     override fun render() {
-        bgRenderer.render(-1f, 1f, 1f, -1f)
-        hotBar.render()
-        farmArea.render(
-            blockHeight, blockDeep, leftPointX, leftPointY, middlePointX, middlePointY, rightPointX, rightPointY,
-        )
+        super.render()
 
-        wheatSeedRenderer.render(hotBar.getGridBounds(1).toNdcBounds(window))
-        wheatRenderer.render(hotBar.getGridBounds(5).toNdcBounds(window))
-        cabbageRenderer.render(hotBar.getGridBounds(6).toNdcBounds(window))
-        carrotRenderer.render(hotBar.getGridBounds(7).toNdcBounds(window))
-        potatoRenderer.render(hotBar.getGridBounds(8).toNdcBounds(window))
-        tomatoRenderer.render(hotBar.getGridBounds(9).toNdcBounds(window))
+        hotBar.render()
+        farmArea.render()
+
+        wheat.render()
     }
 
     override fun cleanup() {
@@ -72,11 +77,6 @@ class FarmScene(window: Window) : Screen(window) {
         hotBar.cleanup()
         farmArea.cleanup()
 
-        wheatSeedRenderer.cleanup()
-        wheatRenderer.cleanup()
-        cabbageRenderer.cleanup()
-        carrotRenderer.cleanup()
-        potatoRenderer.cleanup()
-        tomatoRenderer.cleanup()
+        wheat.cleanup()
     }
 }

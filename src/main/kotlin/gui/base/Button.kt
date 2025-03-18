@@ -1,8 +1,6 @@
-package com.midnightcrowing.gui.components.base
+package com.midnightcrowing.gui.base
 
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
-import com.midnightcrowing.gui.Window
-import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
 import com.midnightcrowing.render.NanoVGContext.vg
 import com.midnightcrowing.render.TextRenderer
@@ -20,12 +18,26 @@ enum class ButtonTextures {
 /**
  * 按钮组件，实现基本的 UI 交互。
  */
-class Button(
-    window: Window,
-    var text: String = "",
-    var fontSize: Float = 16f,
-    var textColor: FloatArray = ColorEnum.WHITE.value,
-) : Widget(window) {
+class Button : Widget {
+    var text: String
+    var fontSize: Float
+    var textColor: FloatArray
+
+    constructor(
+        window: Window, text: String = "", fontSize: Float = 16f, textColor: FloatArray = ColorEnum.WHITE.value,
+    ) : super(window) {
+        this.text = text
+        this.fontSize = fontSize
+        this.textColor = textColor
+    }
+
+    constructor(
+        parent: Widget, text: String = "", fontSize: Float = 16f, textColor: FloatArray = ColorEnum.WHITE.value,
+    ) : super(parent) {
+        this.text = text
+        this.fontSize = fontSize
+        this.textColor = textColor
+    }
 
     // 纹理映射，加载对应状态的按钮纹理
     private val textures: Map<ButtonTextures, Texture?> = ButtonTextures.entries.associateWith { type ->
@@ -39,14 +51,10 @@ class Button(
     // 文字渲染器
     private val textRenderer = TextRenderer(vg)
 
-    // 记录当前按钮的屏幕边界
-    override var screenBounds = ScreenBounds(0f, 0f, 0f, 0f)
-
     /**
      * 渲染按钮及其文字。
      */
-    fun render(screenBounds: ScreenBounds) {
-        this@Button.screenBounds = screenBounds
+    override fun render() {
         super.render()
         drawText()
     }
@@ -55,8 +63,8 @@ class Button(
      * 绘制按钮文本，使文本居中显示。
      */
     private fun drawText() {
-        val centerX = (screenLeft + screenRight) / 2
-        val centerY = (screenTop + screenBottom) / 2
+        val centerX = (widgetBounds.x1 + widgetBounds.x2) / 2
+        val centerY = (widgetBounds.y1 + widgetBounds.y2) / 2
         textRenderer.drawText(text, centerX, centerY, fontSize = fontSize, color = textColor)
     }
 

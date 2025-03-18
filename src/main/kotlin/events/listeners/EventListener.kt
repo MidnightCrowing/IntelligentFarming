@@ -2,7 +2,8 @@ package com.midnightcrowing.events.listeners
 
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.EventManager
-import com.midnightcrowing.gui.components.base.Widget
+import com.midnightcrowing.gui.base.Widget
+import com.midnightcrowing.gui.base.Window
 
 // T 是接收事件类型
 abstract class EventListener<T : Event>(eventManager: EventManager) {
@@ -24,6 +25,8 @@ abstract class EventListener<T : Event>(eventManager: EventManager) {
 
     // 注册组件
     abstract fun registerWidget(widget: Widget)
+
+    open fun registerWindow(window: Window) {}
 
     // 取消注册组件
     abstract fun unregisterWidget(widget: Widget)

@@ -1,36 +1,46 @@
 package com.midnightcrowing.farmings
 
 import com.midnightcrowing.events.CustomEvent.MouseMoveEvent
-import com.midnightcrowing.gui.Window
-import com.midnightcrowing.gui.components.base.Widget
+import com.midnightcrowing.gui.base.Widget
+import com.midnightcrowing.gui.base.Window
 import com.midnightcrowing.model.Point
-import com.midnightcrowing.model.ScreenBounds
 
 
-class FarmArea(
-    window: Window,
-    private val farmlandBoard: List<Int>,
-) : Widget(window) {
-    private val rowCount: Int = farmlandBoard.maxOf { Integer.toBinaryString(it).length }
-    private val columnCount: Int = farmlandBoard.size
+class FarmArea : Widget {
+    private val farmlandBoard: List<Int>
+    private val rowCount: Int
+    private val columnCount: Int
 
-    private var middlePointX: Float = 0f
-    private var middlePointY: Float = 0f
-    private var leftPointX: Float = 0f
-    private var leftPointY: Float = 0f
-    private var rightPointX: Float = 0f
-    private var rightPointY: Float = 0f
-    private var blockHeight: Float = 0f
-    private var blockDeep: Float = 0f
-    private var blockLeftWidth: Float = 0f
-    private var blockLeftHeight: Float = 0f
-    private var blockRightWidth: Float = 0f
-    private var blockRightHeight: Float = 0f
+    constructor(window: Window, farmlandBoard: List<Int>) : super(window) {
+        this.farmlandBoard = farmlandBoard
+        this.rowCount = farmlandBoard.maxOf { Integer.toBinaryString(it).length }
+        this.columnCount = farmlandBoard.size
+    }
+
+    constructor(parent: Widget, farmlandBoard: List<Int>) : super(parent) {
+        this.farmlandBoard = farmlandBoard
+        this.rowCount = farmlandBoard.maxOf { Integer.toBinaryString(it).length }
+        this.columnCount = farmlandBoard.size
+    }
+
+    private companion object {
+        const val SPARE_AREA_WIDTH: Int = 20 // 留白区域宽度
+    }
+
+    var middlePoint: Point = Point(0f, 0f)
+    var leftPoint: Point = Point(0f, 0f)
+    var rightPoint: Point = Point(0f, 0f)
+    var blockHeight: Float = 0f
+    var blockDeep: Float = 0f
+    private val blockLeftWidth: Float get() = (middlePoint.x - leftPoint.x) / rowCount
+    private val blockLeftHeight: Float get() = (middlePoint.y - leftPoint.y) / rowCount
+    private val blockRightWidth: Float get() = (rightPoint.x - middlePoint.x) / columnCount
+    private val blockRightHeight: Float get() = (middlePoint.y - rightPoint.y) / columnCount
 
 
-    private val wheat = Wheat(window)
-    private val carrot = Carrot(window)
-    private val potato = Potato(window)
+    private val wheat = Wheat(this)
+    private val carrot = Carrot(this)
+    private val potato = Potato(this)
 
     // 判断 (x, y) 是否可用
     fun isAvailable(x: Int, y: Int): Boolean {
@@ -44,32 +54,27 @@ class FarmArea(
 
         return FarmBounds(
             true,
-            screenBottom = middlePointY - blockLeftHeight * y - blockRightHeight * x,
-            screenTop = middlePointY - blockHeight - blockLeftHeight * (y + 1) - blockRightHeight * (x + 1),
-            screenLeft = middlePointX - blockLeftWidth - blockLeftWidth * y + blockRightWidth * x,
-            screenRight = middlePointX + blockRightWidth - blockLeftWidth * y + blockRightWidth * x,
+            screenBottom = middlePoint.y - blockLeftHeight * y - blockRightHeight * x,
+            screenTop = middlePoint.y - blockHeight - blockLeftHeight * (y + 1) - blockRightHeight * (x + 1),
+            screenLeft = middlePoint.x - blockLeftWidth - blockLeftWidth * y + blockRightWidth * x,
+            screenRight = middlePoint.x + blockRightWidth - blockLeftWidth * y + blockRightWidth * x,
             screenBlockHeight = blockHeight,
         )
     }
 
-    var mouseX: Float = 0f
-    var mouseY: Float = 0f
-    var renderX: Int = -1
-    var renderY: Int = -1
-
     fun findMouseInField(mouseX: Float, mouseY: Float): Pair<Int, Int>? {
         // 计算列方向（右斜）基向量Vx和行方向（左斜）基向量Vy
         val vx = Point(
-            (middlePointX - rightPointX) / columnCount,
-            (middlePointY - rightPointY) / columnCount
+            (middlePoint.x - rightPoint.x) / columnCount,
+            (middlePoint.y - rightPoint.y) / columnCount
         )
         val vy = Point(
-            (middlePointX - leftPointX) / rowCount,
-            (middlePointY - leftPointY) / rowCount
+            (middlePoint.x - leftPoint.x) / rowCount,
+            (middlePoint.y - leftPoint.y) / rowCount
         )
 
-        val dx = middlePointX - mouseX
-        val dy = middlePointY - mouseY
+        val dx = middlePoint.x - mouseX
+        val dy = middlePoint.y - mouseY
 
         // 计算行列式以确定是否有解
         val determinant = vx.x * vy.y - vx.y * vy.x
@@ -78,6 +83,7 @@ class FarmArea(
         // 解线性方程组以获取列和行的浮点值
         val col = (vy.y * dx - vy.x * dy) / determinant
         val row = (-vx.y * dx + vx.x * dy) / determinant
+        if (col <= 0f || row <= 0f) return null
 
         // 转换为整数索引
         val x = col.toInt()
@@ -86,52 +92,32 @@ class FarmArea(
         return Pair(x, y)
     }
 
-    fun render(
-        blockHeight: Float,
-        blockDeep: Float,
-        leftPointX: Float,
-        leftPointY: Float,
-        middlePointX: Float,
-        middlePointY: Float,
-        rightPointX: Float,
-        rightPointY: Float,
-    ) {
-        screenBounds = ScreenBounds(
-            left = leftPointX,
-            right = rightPointX,
-            top = leftPointY - middlePointY + rightPointY,
-            bottom = middlePointY
-        )
-
-        this.middlePointX = middlePointX
-        this.middlePointY = middlePointY
-        this.leftPointX = leftPointX
-        this.leftPointY = leftPointY
-        this.rightPointX = rightPointX
-        this.rightPointY = rightPointY
-        this.blockHeight = blockHeight
+    fun place(blockDeep: Float, blockHeight: Float, leftPoint: Point, middlePoint: Point, rightPoint: Point) {
         this.blockDeep = blockDeep
-        blockLeftWidth = (middlePointX - leftPointX) / rowCount
-        blockLeftHeight = (middlePointY - leftPointY) / rowCount
-        blockRightWidth = (rightPointX - middlePointX) / columnCount
-        blockRightHeight = (middlePointY - rightPointY) / columnCount
+        this.blockHeight = blockHeight
+        this.leftPoint = leftPoint
+        this.middlePoint = middlePoint
+        this.rightPoint = rightPoint
 
+        super.place(
+            x1 = leftPoint.x - SPARE_AREA_WIDTH,
+            x2 = rightPoint.x + SPARE_AREA_WIDTH,
+            y1 = leftPoint.y - middlePoint.y + rightPoint.y - SPARE_AREA_WIDTH,
+            y2 = middlePoint.y + SPARE_AREA_WIDTH
+        )
+    }
+
+    override fun render() {
         super.render()
 
-//        renderPoint(convertScreenToNdc(window, leftPointX, leftPointY))
-//        renderPoint(convertScreenToNdc(window, middlePointX, middlePointY))
-//        renderPoint(convertScreenToNdc(window, rightPointX, rightPointY))
-//        renderPoint(convertScreenToNdc(window, mouseX, mouseY))
-
-        wheat.render(getBlockBounds(renderX, renderY))
+        wheat.render()
     }
 
     override fun onMouseMove(e: MouseMoveEvent) {
-        mouseX = e.x
-        mouseY = e.y
-        val gridPos = findMouseInField(mouseX, mouseY)
-        renderX = gridPos?.first ?: -1
-        renderY = gridPos?.second ?: -1
+        val gridPos = findMouseInField(e.x, e.y)
+
+        val a = getBlockBounds(gridPos?.first ?: -1, gridPos?.second ?: -1)
+        wheat.place(a.screenLeft, a.screenTop, a.screenRight, a.screenBottom)
     }
 
     override fun cleanup() {

@@ -1,23 +1,27 @@
-package com.midnightcrowing.gui
+package com.midnightcrowing.scenes
 
-import com.midnightcrowing.gui.components.base.Button
-import com.midnightcrowing.gui.components.base.Screen
+import com.midnightcrowing.controllers.MainMenuController
+import com.midnightcrowing.gui.base.Button
+import com.midnightcrowing.gui.base.Screen
+import com.midnightcrowing.gui.base.Window
 import com.midnightcrowing.model.NdcBounds
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
 import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
-import com.midnightcrowing.scenes.FarmScene
+import com.midnightcrowing.utils.FontSizeUtil.calculateFontSize
 
 class MainMenuScreen(window: Window) : Screen(window) {
-    private val bgRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.MAIN_MENU_BACKGROUND.inputStream)
-    private val startButton: Button = Button(window, "开始游戏", fontSize = 20f)
+    override val bgRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.MAIN_MENU_BACKGROUND.inputStream)
+    private val startButton: Button = Button(window, "开始游戏", fontSize = 16f)
     private val optionButton: Button = Button(window, "选项...", fontSize = 20f)
     private val exitButton: Button = Button(window, "退出游戏", fontSize = 20f)
 
+    private val controller = MainMenuController(window)
+
     init {
-        startButton.onClickCallback = { window.setScreen(FarmScene(window)) }
-        exitButton.onClickCallback = { window.exit() }
+        startButton.onClickCallback = { controller.startGame() }
+        exitButton.onClickCallback = { controller.exitGame() }
     }
 
     private companion object {
@@ -45,19 +49,29 @@ class MainMenuScreen(window: Window) : Screen(window) {
         return NdcBounds(left, top, right, bottom).toScreenBounds(window)
     }
 
-    override fun render() {
-        bgRenderer.render(-1f, 1f, 1f, -1f)
-
-        startButton.render(
+    override fun place() {
+        startButton.place(
             calculateButtonBounds(
                 verticalPos = BTN_OFFSET_Y,
                 isStartButton = true
             )
         )
         val bottomRowY = -BTN_OFFSET_Y - BTN_GAP_Y
-        optionButton.render(calculateButtonBounds(bottomRowY, isLeftButton = true))
-        exitButton.render(calculateButtonBounds(bottomRowY))
+        optionButton.place(calculateButtonBounds(bottomRowY, isLeftButton = true))
+        exitButton.place(calculateButtonBounds(bottomRowY))
 
+        val fontSize: Float = calculateFontSize(window.width)
+        startButton.fontSize = fontSize
+        optionButton.fontSize = fontSize
+        exitButton.fontSize = fontSize
+    }
+
+    override fun render() {
+        super.render()
+
+        startButton.render()
+        optionButton.render()
+        exitButton.render()
     }
 
     override fun cleanup() {

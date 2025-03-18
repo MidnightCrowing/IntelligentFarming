@@ -1,16 +1,10 @@
 package com.midnightcrowing.farmings
 
-import com.midnightcrowing.gui.Window
-import com.midnightcrowing.gui.components.base.Widget
-import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.gui.base.Widget
+import com.midnightcrowing.gui.base.Window
 
-open class FarmBase(window: Window) : Widget(window) {
-    fun render(bounds: FarmBounds) {
-        if (!bounds.isAvailable) {
-            return
-        }
+open class FarmBase : Widget {
+    constructor(window: Window) : super(window)
 
-        screenBounds = ScreenBounds(bounds.screenLeft, bounds.screenTop, bounds.screenRight, bounds.screenBottom)
-        super.render()
-    }
+    constructor(parent: Widget) : super(parent)
 }

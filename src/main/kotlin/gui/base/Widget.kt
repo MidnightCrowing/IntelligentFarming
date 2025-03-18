@@ -1,31 +1,45 @@
-package com.midnightcrowing.gui.components.base
+package com.midnightcrowing.gui.base
 
 import com.midnightcrowing.events.CustomEvent.*
-import com.midnightcrowing.gui.Window
+import com.midnightcrowing.events.Event.WindowResizeEvent
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
 
+open class Widget {
+    val window: Window?
+    val parent: Widget?
 
-open class Widget(window: Window) : AbstractWidget(window) {
     open val renderer: ImageRenderer = ImageRenderer()
+    val z: Int
+    var widgetBounds: ScreenBounds = ScreenBounds(0f, 0f, 0f, 0f)
+        private set
+    var visible: Boolean = true
+        private set
 
-    open var screenBounds: ScreenBounds = ScreenBounds(0f, 0f, 0f, 0f)
-    open val screenLeft: Float get() = screenBounds.left
-    open val screenRight: Float get() = screenBounds.right
-    open val screenTop: Float get() = screenBounds.top
-    open val screenBottom: Float get() = screenBounds.bottom
+    constructor(parent: Widget) {
+        this.parent = parent
+        this.window = parent.window
+        this.z = parent.z + 1
 
-    init {
-        // 注册监听器
-        registerListeners()
+        registerListeners()  // 注册监听器
     }
 
-    var visible = true
+    constructor(window: Window) {
+        this.window = window
+        this.parent = null
+        this.z = 0
+
+        registerListeners()  // 注册监听器
+    }
 
     /**
      * 注册事件监听器
      */
     private fun registerListeners() {
+        if (window == null) {
+            return
+        }
+        window.eventManager.registerWidget(WindowResizeEvent::class.java, this)
         window.eventManager.registerWidget(MouseClickEvent::class.java, this)
         window.eventManager.registerWidget(MouseEnterEvent::class.java, this)
         window.eventManager.registerWidget(MouseLeaveEvent::class.java, this)
@@ -38,6 +52,10 @@ open class Widget(window: Window) : AbstractWidget(window) {
      * 取消注册事件监听器
      */
     private fun unregisterListener() {
+        if (window == null) {
+            return
+        }
+        window.eventManager.unregisterWidget(WindowResizeEvent::class.java, this)
         window.eventManager.unregisterWidget(MouseClickEvent::class.java, this)
         window.eventManager.unregisterWidget(MouseEnterEvent::class.java, this)
         window.eventManager.unregisterWidget(MouseLeaveEvent::class.java, this)
@@ -50,27 +68,35 @@ open class Widget(window: Window) : AbstractWidget(window) {
      * 判断给定坐标是否在组件范围内
      */
     fun containsPoint(x: Float, y: Float): Boolean {
-        return x in screenLeft..screenRight && y in screenTop..screenBottom
+        return x in widgetBounds.x1..widgetBounds.x2 && y in widgetBounds.y1..widgetBounds.y2
+    }
+
+    open fun place(x1: Float, y1: Float, x2: Float, y2: Float) {
+        widgetBounds = ScreenBounds(x1, y1, x2, y2)
+    }
+
+    open fun place(bounds: ScreenBounds) {
+        widgetBounds = bounds
     }
 
     /**
      * 渲染组件
      */
-    override fun render() {
+    open fun render() {
         if (visible) {
-            renderer.render(
-                ScreenBounds(screenLeft, screenTop, screenRight, screenBottom).toNdcBounds(window)
-            )
+            renderer.render(widgetBounds)
         }
     }
 
     /**
      * 清理资源
      */
-    override fun cleanup() {
+    open fun cleanup() {
         renderer.cleanup()
         unregisterListener()
     }
+
+    open fun onWindowResize(e: WindowResizeEvent) {}
 
     /**
      * 鼠标按下事件

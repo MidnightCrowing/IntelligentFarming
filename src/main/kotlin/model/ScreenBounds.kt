@@ -1,10 +1,10 @@
 package com.midnightcrowing.model
 
-import com.midnightcrowing.gui.Window
+import com.midnightcrowing.gui.base.Window
 
 
 // 屏幕坐标系的边界
-data class ScreenBounds(val left: Float, val top: Float, val right: Float, val bottom: Float) {
+data class ScreenBounds(val x1: Float, val y1: Float, val x2: Float, val y2: Float) {
     /**
      * 将屏幕坐标转换为 NDC (Normalized Device Coordinates) 归一化坐标。
      *
@@ -20,8 +20,8 @@ data class ScreenBounds(val left: Float, val top: Float, val right: Float, val b
     }
 
     fun toNdcBounds(window: Window): NdcBounds {
-        val (left, top) = convertScreenToNdc(window, left, top)
-        val (right, bottom) = convertScreenToNdc(window, right, bottom)
+        val (left, top) = convertScreenToNdc(window, x1, y1)
+        val (right, bottom) = convertScreenToNdc(window, x2, y2)
         return NdcBounds(left, top, right, bottom)
     }
 }

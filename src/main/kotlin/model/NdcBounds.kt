@@ -1,6 +1,6 @@
 package com.midnightcrowing.model
 
-import com.midnightcrowing.gui.Window
+import com.midnightcrowing.gui.base.Window
 
 
 // NDC坐标系的边界

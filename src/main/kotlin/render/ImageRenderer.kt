@@ -1,9 +1,9 @@
 package com.midnightcrowing.render
 
-import com.midnightcrowing.model.NdcBounds
-import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL11.glTexCoord2f
-import org.lwjgl.opengl.GL11.glVertex2f
+import com.midnightcrowing.model.ScreenBounds
+import org.lwjgl.opengl.GL46
+import org.lwjgl.opengl.GL46.glTexCoord2f
+import org.lwjgl.opengl.GL46.glVertex2f
 import java.io.InputStream
 
 /**
@@ -44,7 +44,7 @@ class ImageRenderer {
 
     private fun bindTexture() {
         texture?.let {
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, it.id)
+            GL46.glBindTexture(GL46.GL_TEXTURE_2D, it.id)
         }
     }
 
@@ -55,18 +55,18 @@ class ImageRenderer {
 
         texture!!.bind()
 
-        GL11.glColor4f(1.0f, 1.0f, 1.0f, alpha)
+        GL46.glColor4f(1.0f, 1.0f, 1.0f, alpha)
 
-        GL11.glBegin(GL11.GL_QUADS)
+        GL46.glBegin(GL46.GL_QUADS)
         glTexCoord2f(0f, 0f); glVertex2f(x1, y2)
         glTexCoord2f(1f, 0f); glVertex2f(x2, y2)
         glTexCoord2f(1f, 1f); glVertex2f(x2, y1)
         glTexCoord2f(0f, 1f); glVertex2f(x1, y1)
-        GL11.glEnd()
+        GL46.glEnd()
     }
 
-    fun render(ndcBounds: NdcBounds) {
-        render(ndcBounds.left, ndcBounds.top, ndcBounds.right, ndcBounds.bottom)
+    fun render(screenBounds: ScreenBounds) {
+        render(screenBounds.x1, screenBounds.y1, screenBounds.x2, screenBounds.y2)
     }
 
     fun cleanup() {

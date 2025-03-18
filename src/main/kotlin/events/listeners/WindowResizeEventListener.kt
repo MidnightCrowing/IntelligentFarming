@@ -1,0 +1,47 @@
+package com.midnightcrowing.events.listeners
+
+import com.midnightcrowing.events.Event
+import com.midnightcrowing.events.Event.WindowResizeEvent
+import com.midnightcrowing.events.EventManager
+import com.midnightcrowing.gui.base.Widget
+import com.midnightcrowing.gui.base.Window
+import kotlin.reflect.full.declaredFunctions
+
+class WindowResizeEventListener(
+    val window: Window,
+    eventManager: EventManager,
+) : EventListener<WindowResizeEvent>(eventManager) {
+    private val registerWidgets = mutableListOf<Widget>()
+
+    override fun getReceiveEventType(): Class<WindowResizeEvent> = WindowResizeEvent::class.java
+
+    override fun getSendEventType(): Array<Class<out Event>> = arrayOf(WindowResizeEvent::class.java)
+
+    override fun eventFilter(event: WindowResizeEvent) = triggerEvent(event)
+
+    override fun triggerEvent(event: WindowResizeEvent) {
+        // 调用 Window 的回调方法
+        window.onWindowResize(event)
+        window.screen.place()
+
+        // 触发事件
+        val widgetsCopy = registerWidgets.toList()
+        widgetsCopy.forEach { widget ->
+            widget.onWindowResize(WindowResizeEvent(event.width, event.height))
+        }
+    }
+
+    override fun registerWidget(widget: Widget) {
+        // 使用反射检查 widget 是否覆盖了 onWindowResize 方法
+        val onResizeMethod = widget::class.declaredFunctions.find { it.name == "onWindowResize" }
+
+        // 判断该方法是否被实现（覆盖了父类的实现）
+        if (onResizeMethod != null && !onResizeMethod.isAbstract) {
+            registerWidgets.add(widget)
+        }
+    }
+
+    override fun unregisterWidget(widget: Widget) {
+        registerWidgets.remove(widget)
+    }
+}
