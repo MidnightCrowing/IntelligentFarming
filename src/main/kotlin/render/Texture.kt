@@ -9,6 +9,15 @@ import org.lwjgl.opengl.ARBFramebufferObject.glGenerateMipmap
 import org.lwjgl.opengl.GL46.*
 import java.io.InputStream
 
+
+fun createImageTexture(inputStream: InputStream?): Texture {
+    if (inputStream == null) {
+        throw IllegalArgumentException("inputStream: 不能为空")
+    }
+    return Texture(inputStream).apply { load() }
+}
+
+
 class Texture(private val inputStream: InputStream) {
     var id: Int = 0
         private set
@@ -40,5 +49,14 @@ class Texture(private val inputStream: InputStream) {
 
     fun cleanup() {
         glDeleteTextures(id)
+    }
+
+    fun copy(): Texture {
+        // TODO : 实现纹理的深拷贝
+        val newInputStream = inputStream.javaClass.getResourceAsStream(inputStream.toString())
+            ?: throw IllegalArgumentException("InputStream cannot be null")
+        val newTexture = Texture(newInputStream)
+        newTexture.load()
+        return newTexture
     }
 }

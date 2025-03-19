@@ -1,20 +1,17 @@
 package com.midnightcrowing.gui
 
+import com.midnightcrowing.controllers.HotBarController
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.events.Event.WindowResizeEvent
 import com.midnightcrowing.gui.base.Widget
-import com.midnightcrowing.gui.base.Window
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
 import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
+import com.midnightcrowing.scenes.FarmScene
 
 
-class HotBar : Widget {
-    constructor(window: Window) : super(window)
-
-    constructor(parent: Widget) : super(parent)
-
+class HotBar(val screen: FarmScene) : Widget(screen.window) {
     companion object {
         // 基础尺寸常量
         private const val BASE_WIDTH = 364
@@ -43,21 +40,23 @@ class HotBar : Widget {
     }
 
     override val renderer: ImageRenderer = createImageRenderer(ResourcesEnum.COMPONENTS_HOT_BAR.inputStream)
-    private val checkBoxRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.CHECK_BOX.inputStream)
+
+    val controller = HotBarController(this)
 
     // 网格起始坐标
     private var gridStartX: Float = 0f
     private var gridStartY: Float = 0f
     private var gridEndY: Float = 0f
 
-    override fun onWindowResize(e: WindowResizeEvent) = update()
+    override fun onWindowResize(e: WindowResizeEvent) = updatePlace()
 
     override fun place(x1: Float, y1: Float, x2: Float, y2: Float) {
         super.place(x1, y1, x2, y2)
-        update()
+        updatePlace()
+        screen.itemCheckBox.place(getGridBoundsWithCheckbox(selectedGridId))
     }
 
-    fun update() {
+    fun updatePlace() {
         gridStartX = widgetBounds.x1 + GRID_LEFT_BORDER
         gridStartY = widgetBounds.y1 + GRID_TOP_BORDER
         gridEndY = widgetBounds.y1 + GRID_BOTTOM_BORDER
@@ -96,18 +95,19 @@ class HotBar : Widget {
         }
 
     override fun onClick(e: MouseClickEvent) {
-        findGridCheckboxIdAt(e.x)?.let { selectedGridId = it }
+        findGridCheckboxIdAt(e.x)?.let {
+            selectedGridId = it
+            screen.itemCheckBox.place(getGridBoundsWithCheckbox(it))
+            controller.changeActiveItem(it)
+        }
     }
 
     override fun render() {
         super.render()
 
-        val checkBoxGridPosition = getGridBoundsWithCheckbox(selectedGridId)
-        checkBoxRenderer.render(checkBoxGridPosition)
-    }
-
-    override fun cleanup() {
-        super.cleanup()
-        checkBoxRenderer.cleanup()
+        for ((index, item) in controller.itemsList) {
+            item?.place(getGridBounds(index))
+            item?.render()
+        }
     }
 }

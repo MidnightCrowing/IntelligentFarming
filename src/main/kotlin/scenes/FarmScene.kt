@@ -1,10 +1,10 @@
 package com.midnightcrowing.scenes
 
 import com.midnightcrowing.farmings.FarmArea
-import com.midnightcrowing.gui.FarmItems.WheatItem
 import com.midnightcrowing.gui.HotBar
 import com.midnightcrowing.gui.HotBar.Companion.SCALED_HEIGHT
 import com.midnightcrowing.gui.HotBar.Companion.SCALED_WIDTH
+import com.midnightcrowing.gui.ItemCheckBox
 import com.midnightcrowing.gui.base.Screen
 import com.midnightcrowing.gui.base.Window
 import com.midnightcrowing.model.Point
@@ -34,10 +34,9 @@ class FarmScene(window: Window) : Screen(window) {
     override val bgRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.FARM_BACKGROUND.inputStream)
 
     // UI
-    private val hotBar: HotBar = HotBar(window)
-    private val farmArea: FarmArea = FarmArea(window, farmlandBoard = FARMLAND_BOARD)
-
-    private val wheat = WheatItem(hotBar)
+    val hotBar: HotBar = HotBar(this)
+    val itemCheckBox: ItemCheckBox = ItemCheckBox(this)
+    val farmArea: FarmArea = FarmArea(window, farmlandBoard = FARMLAND_BOARD)
 
     override fun place() {
         val hotBarPoint1 = Point((window.width - SCALED_WIDTH) / 2, window.height - SCALED_HEIGHT)
@@ -59,24 +58,20 @@ class FarmScene(window: Window) : Screen(window) {
             BASE_RIGHT_POINT.y / BASE_BG_HEIGHT * window.height
         )
         farmArea.place(blockDeep, blockHeight, leftPoint, middlePoint, rightPoint)
-
-        wheat.place(hotBar.getGridBounds(0))
     }
 
     override fun render() {
         super.render()
 
         hotBar.render()
+        itemCheckBox.render()
         farmArea.render()
-
-        wheat.render()
     }
 
     override fun cleanup() {
         bgRenderer.cleanup()
         hotBar.cleanup()
+        itemCheckBox.cleanup()
         farmArea.cleanup()
-
-        wheat.cleanup()
     }
 }

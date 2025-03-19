@@ -11,23 +11,23 @@ open class Widget {
 
     open val renderer: ImageRenderer = ImageRenderer()
     val z: Int
-    var widgetBounds: ScreenBounds = ScreenBounds(0f, 0f, 0f, 0f)
+    var widgetBounds: ScreenBounds = ScreenBounds.EMPTY
         private set
     var visible: Boolean = true
         private set
-
-    constructor(parent: Widget) {
-        this.parent = parent
-        this.window = parent.window
-        this.z = parent.z + 1
-
-        registerListeners()  // 注册监听器
-    }
 
     constructor(window: Window) {
         this.window = window
         this.parent = null
         this.z = 0
+
+        registerListeners()  // 注册监听器
+    }
+
+    constructor(parent: Widget) {
+        this.window = parent.window
+        this.parent = parent
+        this.z = parent.z + 1
 
         registerListeners()  // 注册监听器
     }

@@ -5,6 +5,10 @@ import com.midnightcrowing.gui.base.Window
 
 // 屏幕坐标系的边界
 data class ScreenBounds(val x1: Float, val y1: Float, val x2: Float, val y2: Float) {
+    companion object {
+        val EMPTY = ScreenBounds(0f, 0f, 0f, 0f)
+    }
+
     /**
      * 将屏幕坐标转换为 NDC (Normalized Device Coordinates) 归一化坐标。
      *

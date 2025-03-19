@@ -68,7 +68,7 @@ class Window(
 
     private fun initGLFW() {
         // 设置交换缓冲区的垂直同步为开启（1表示开启垂直同步，0表示关闭）
-        glfwSwapInterval(0)
+        glfwSwapInterval(1)
 
         // 显示窗口（如果窗口之前被隐藏）
         glfwShowWindow(handle)

@@ -92,6 +92,6 @@ class Button : Widget {
      * 设置当前按钮的纹理。
      */
     private fun setTexture(state: ButtonTextures) {
-        textures[state]?.let { renderer.setTexture(it) }
+        textures[state]?.let { renderer.texture = it }
     }
 }

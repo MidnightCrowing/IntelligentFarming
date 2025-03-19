@@ -11,35 +11,28 @@ import java.io.InputStream
  * @param inputStream 图片资源的输入流
  */
 fun createImageRenderer(inputStream: InputStream?): ImageRenderer {
-    if (inputStream == null) {
-        throw IllegalArgumentException("inputStream: 不能为空")
-    }
-    return ImageRenderer(Texture(inputStream).apply { load() })
+    return ImageRenderer(createImageTexture(inputStream))
 }
 
 /**
  * 渲染器，负责渲染场景
  */
 class ImageRenderer {
-    private var texture: Texture? = null
-    private var alpha: Float = 1.0f  // 默认不透明
+    var texture: Texture? = null
+        set(value) {
+            if (field?.id != value?.id) {
+                field = value
+                bindTexture()
+            }
+        }
+
+    var alpha: Float = 1.0f  // 默认不透明
 
     constructor()
 
     constructor(texture: Texture) {
         this.texture = texture
         bindTexture()
-    }
-
-    fun setTexture(newTexture: Texture) {
-        if (texture?.id != newTexture.id) {
-            texture = newTexture
-            bindTexture()
-        }
-    }
-
-    fun setAlpha(alpha: Float) {
-        this.alpha = alpha
     }
 
     private fun bindTexture() {
