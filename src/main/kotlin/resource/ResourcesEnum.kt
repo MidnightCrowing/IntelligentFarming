@@ -58,23 +58,14 @@ enum class ResourcesEnum(private val resourcePath: String) {
     COTTON("/assets/farming/cotton/cotton.png"),
     COTTON_SEED("/assets/farming/cotton/cotton_seed.png"),
     COTTON_GROW_0("/assets/farming/cotton/cottons0.png"),
-    COTTON_GROW_1("/assets/farming/cotton/cottons1.png"),
-    COTTON_GROW_2("/assets/farming/cotton/cottons2.png"),
-    COTTON_GROW_3("/assets/farming/cotton/cottons3.png"),
     COTTON_GROW_4("/assets/farming/cotton/cottons4.png"),
-    COTTON_GROW_5("/assets/farming/cotton/cottons5.png"),
-    COTTON_GROW_6("/assets/farming/cotton/cottons6.png"),
     COTTON_GROW_7("/assets/farming/cotton/cottons7.png"),
 
     // Onion
     ONION("/assets/farming/onion/onion.png"),
     ONION_GROW_0("/assets/farming/onion/onions0.png"),
-    ONION_GROW_1("/assets/farming/onion/onions1.png"),
     ONION_GROW_2("/assets/farming/onion/onions2.png"),
-    ONION_GROW_3("/assets/farming/onion/onions3.png"),
     ONION_GROW_4("/assets/farming/onion/onions4.png"),
-    ONION_GROW_5("/assets/farming/onion/onions5.png"),
-    ONION_GROW_6("/assets/farming/onion/onions6.png"),
     ONION_GROW_7("/assets/farming/onion/onions7.png"),
 
     // Potato

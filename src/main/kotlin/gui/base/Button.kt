@@ -9,17 +9,16 @@ import com.midnightcrowing.render.Texture
 import com.midnightcrowing.resource.ColorEnum
 import com.midnightcrowing.resource.ResourcesEnum
 
-/**
- * 枚举类，定义按钮的不同状态对应的纹理。
- */
-enum class ButtonTextures {
-    DEFAULT, HOVER, DISABLED
-}
 
 /**
  * 按钮组件，实现基本的 UI 交互。
  */
 class Button : Widget {
+    enum class ButtonTextures {
+        // 按钮的不同状态
+        DEFAULT, HOVER, DISABLED
+    }
+
     constructor(window: Window) : super(window)
     constructor(parent: Widget) : super(parent)
 
@@ -48,7 +47,7 @@ class Button : Widget {
     var textColor: FloatArray = ColorEnum.WHITE.value
         set(value) {
             field = value
-            textRenderer.color = value
+            textRenderer.textColor = value
         }
 
     override fun place(bounds: ScreenBounds) {

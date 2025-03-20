@@ -34,9 +34,9 @@ class FarmScene(window: Window) : Screen(window) {
     override val bgRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.FARM_BACKGROUND.inputStream)
 
     // UI
+    val farmArea: FarmArea = FarmArea(window, farmlandBoard = FARMLAND_BOARD)
     val hotBar: HotBar = HotBar(this)
     val itemCheckBox: ItemCheckBox = ItemCheckBox(this)
-    val farmArea: FarmArea = FarmArea(window, farmlandBoard = FARMLAND_BOARD)
 
     override fun place() {
         val hotBarPoint1 = Point((window.width - SCALED_WIDTH) / 2, window.height - SCALED_HEIGHT)

@@ -1,9 +1,6 @@
 package com.midnightcrowing.farmings
 
-import com.midnightcrowing.farmings.crops.Carrot
-import com.midnightcrowing.farmings.crops.FarmCropBase
-import com.midnightcrowing.farmings.crops.Potato
-import com.midnightcrowing.farmings.crops.Wheat
+import com.midnightcrowing.farmings.crops.*
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.render.ImageRenderer
 import com.midnightcrowing.render.createImageRenderer
@@ -34,6 +31,7 @@ sealed class FarmItems(parent: Widget, itemEnum: ResourcesEnum) : Widget(parent)
     class CabbageSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.CABBAGE_SEED) {
         override fun toString(): String = "卷心菜种子"
         override val isSeed: Boolean = true
+        override fun getCrop(): KClass<out FarmCropBase> = Cabbage::class
     }
 
     class CarrotItem(parent: Widget) : FarmItems(parent, ResourcesEnum.CARROT) {
@@ -50,6 +48,7 @@ sealed class FarmItems(parent: Widget, itemEnum: ResourcesEnum) : Widget(parent)
     class CornSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.CORN_SEED) {
         override fun toString(): String = "玉米种子"
         override val isSeed: Boolean = true
+        override fun getCrop(): KClass<out FarmCropBase> = Corn::class
     }
 
     class CottonItem(parent: Widget) : FarmItems(parent, ResourcesEnum.COTTON) {
@@ -60,11 +59,13 @@ sealed class FarmItems(parent: Widget, itemEnum: ResourcesEnum) : Widget(parent)
     class CottonSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.COTTON_SEED) {
         override fun toString(): String = "棉花种子"
         override val isSeed: Boolean = true
+        override fun getCrop(): KClass<out FarmCropBase> = Cotton::class
     }
 
     class OnionItem(parent: Widget) : FarmItems(parent, ResourcesEnum.ONION) {
         override fun toString(): String = "洋葱"
         override val isSeed: Boolean = true
+        override fun getCrop(): KClass<out FarmCropBase> = Onion::class
     }
 
     class PotatoItem(parent: Widget) : FarmItems(parent, ResourcesEnum.POTATO) {
@@ -81,6 +82,7 @@ sealed class FarmItems(parent: Widget, itemEnum: ResourcesEnum) : Widget(parent)
     class TomatoSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.TOMATO_SEED) {
         override fun toString(): String = "西红柿种子"
         override val isSeed: Boolean = true
+        override fun getCrop(): KClass<out FarmCropBase> = Tomato::class
     }
 
     class WheatItem(parent: Widget) : FarmItems(parent, ResourcesEnum.WHEAT) {

@@ -9,6 +9,8 @@ import com.midnightcrowing.utils.GameTick
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
+import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_LEFT
+import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_MIDDLE
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL46.*
 import org.lwjgl.system.MemoryUtil
@@ -107,7 +109,10 @@ class Window(
     fun pollEvents() = glfwPollEvents()
 
     val fpsTextRenderer: TextRenderer = TextRenderer(NanoVGContext.vg).apply {
-        x = 35f; y = 10f; fontSize = 16f
+        x = 5f; y = 15f; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
+    }
+    val tickTextRenderer: TextRenderer = TextRenderer(NanoVGContext.vg).apply {
+        x = 5f; y = 40f; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
     }
 
     fun loop() {
@@ -127,6 +132,7 @@ class Window(
 
             fpsCounter.update()
             fpsTextRenderer.drawText("FPS: ${fpsCounter.fps}")
+            tickTextRenderer.drawText("Tick: ${GameTick.tick}")
 
             // 结束 NanoVG 绘制
             NanoVGContext.endFrame()

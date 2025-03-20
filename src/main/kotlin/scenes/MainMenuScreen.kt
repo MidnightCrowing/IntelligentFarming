@@ -34,13 +34,13 @@ class MainMenuScreen(window: Window) : Screen(window) {
 
     private fun calculateButtonBounds(
         verticalPos: Float,
-        isStartButton: Boolean = false,
+        isBigButton: Boolean = false,
         isLeftButton: Boolean = false,
     ): ScreenBounds {
-        val left = if (isStartButton || isLeftButton) -BTN_WIDTH / 2 else BTN_GAP_X / 2
-        val right = if (isStartButton || !isLeftButton) BTN_WIDTH / 2 else -BTN_GAP_X / 2
+        val left = if (isBigButton || isLeftButton) -BTN_WIDTH / 2 else BTN_GAP_X / 2
+        val right = if (isBigButton || !isLeftButton) BTN_WIDTH / 2 else -BTN_GAP_X / 2
 
-        val (top, bottom) = if (isStartButton) {
+        val (top, bottom) = if (isBigButton) {
             BTN_HEIGHT - verticalPos to -verticalPos
         } else {
             verticalPos to verticalPos - BTN_HEIGHT
@@ -53,7 +53,7 @@ class MainMenuScreen(window: Window) : Screen(window) {
         startButton.place(
             calculateButtonBounds(
                 verticalPos = BTN_OFFSET_Y,
-                isStartButton = true
+                isBigButton = true
             )
         )
         val bottomRowY = -BTN_OFFSET_Y - BTN_GAP_Y

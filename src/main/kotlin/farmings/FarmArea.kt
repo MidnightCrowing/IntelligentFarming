@@ -1,7 +1,6 @@
 package com.midnightcrowing.farmings
 
-import com.midnightcrowing.events.CustomEvent.MouseMoveEvent
-import com.midnightcrowing.events.CustomEvent.MouseRightClickEvent
+import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.farmings.crops.FarmCropBase
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.gui.base.Window
@@ -169,7 +168,12 @@ class FarmArea : Widget {
      */
     override fun onRightClick(e: MouseRightClickEvent) {
         val (x, y) = findMouseInField(e.x, e.y) ?: return
-        if (!isAvailable(x, y) || isExist(x, y)) return
+        if (!isAvailable(x, y)) return
+
+        if (isExist(x, y)) {
+            cropsGrid[y][x]?.onRightClick()
+            return
+        }
 
         activeSeedCrop?.let { original ->
             original.place(getBlockBounds(x, y))
@@ -177,6 +181,14 @@ class FarmArea : Widget {
             cropsGrid[y][x] = newCrop
 //            activeSeedCrop = null
         }
+    }
+
+    override fun onClick(e: MouseClickEvent) {
+        val (x, y) = findMouseInField(e.x, e.y) ?: return
+        if (!isAvailable(x, y) || !isExist(x, y)) return
+        val crop = cropsGrid[y][x]
+        crop?.cleanup()
+        cropsGrid[y][x] = null
     }
 
     /**
