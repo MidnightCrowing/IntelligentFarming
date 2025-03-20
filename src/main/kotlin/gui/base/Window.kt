@@ -5,6 +5,7 @@ import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.render.NanoVGContext
 import com.midnightcrowing.render.TextRenderer
 import com.midnightcrowing.utils.FPSCounter
+import com.midnightcrowing.utils.GameTick
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
@@ -105,22 +106,27 @@ class Window(
      */
     fun pollEvents() = glfwPollEvents()
 
+    val fpsTextRenderer: TextRenderer = TextRenderer(NanoVGContext.vg).apply {
+        x = 35f; y = 10f; fontSize = 16f
+    }
+
     fun loop() {
         while (!shouldClose()) {
             // 清除缓冲区
             glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
             // 开始 NanoVG 绘制
             NanoVGContext.beginFrame(this)
+
+            GameTick.update()
+
+            // 更新游戏内容
+            screen.update()
+
             // 渲染内容
             screen.render()
 
             fpsCounter.update()
-            TextRenderer(NanoVGContext.vg).drawText(
-                "FPS: ${fpsCounter.fps}",
-                35f,
-                10f,
-                16f
-            )
+            fpsTextRenderer.drawText("FPS: ${fpsCounter.fps}")
 
             // 结束 NanoVG 绘制
             NanoVGContext.endFrame()

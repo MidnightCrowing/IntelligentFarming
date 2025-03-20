@@ -63,6 +63,7 @@ class EventManager(val window: Window) {
     private fun initListener() {
         // 初始化监听器
         MouseClickListener(window, this)
+        MouseRightClickListener(window, this)
         MouseMoveListener(window, this)
         MousePressedListener(window, this)
         MouseReleasedListener(window, this)

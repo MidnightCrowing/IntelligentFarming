@@ -6,24 +6,20 @@ import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.system.MemoryStack
 
-class TextRenderer(private val vg: Long) {
+class TextRenderer(
+    private val vg: Long,
+    var x: Float = 0f,
+    var y: Float = 0f,
+    var text: String = "",
+    var fontSize: Float = 0f,
+    var color: FloatArray = ColorEnum.WHITE.value,
+    var fontName: String = FontEnum.DEFAULT.value,
+) {
     /**
      * 绘制文本
      * @param text 要绘制的文本
-     * @param x X 坐标
-     * @param y Y 坐标
-     * @param fontSize 字体大小
-     * @param fontName 字体名称
-     * @param color 颜色（RGBA 格式）
      */
-    fun drawText(
-        text: String,
-        x: Float,
-        y: Float,
-        fontSize: Float,
-        color: FloatArray = ColorEnum.WHITE.value,
-        fontName: String = FontEnum.DEFAULT.value,
-    ) {
+    fun drawText(text: String = this.text) {
         MemoryStack.stackPush().use { stack ->
             val colorBuffer = NVGColor.calloc(stack)
             colorBuffer.r(color[0]).g(color[1]).b(color[2]).a(color[3])

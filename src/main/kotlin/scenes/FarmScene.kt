@@ -60,6 +60,10 @@ class FarmScene(window: Window) : Screen(window) {
         farmArea.place(blockDeep, blockHeight, leftPoint, middlePoint, rightPoint)
     }
 
+    override fun update() {
+        farmArea.update()
+    }
+
     override fun render() {
         super.render()
 

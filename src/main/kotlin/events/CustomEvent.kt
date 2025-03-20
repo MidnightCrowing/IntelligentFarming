@@ -7,11 +7,18 @@ package com.midnightcrowing.events
 sealed class CustomEvent : Event() {
 
     /**
-     * 鼠标点击事件，鼠标松开时触发。如果鼠标拖拽到按钮区域之外释放则不会触发。
+     * 鼠标点击事件，鼠标按下时触发。如果鼠标拖拽到按钮区域之外释放则不会触发。
      * @param x 点击的 X 屏幕坐标
      * @param y 点击的 Y 屏幕坐标
      */
     data class MouseClickEvent(val x: Float, val y: Float) : Event()
+
+    /**
+     * 鼠标右键点击事件，鼠标按下时触发。如果鼠标拖拽到按钮区域之外释放则不会触发。
+     * @param x 双击的 X 屏幕坐标
+     * @param y 双击的 Y 屏幕坐标
+     */
+    data class MouseRightClickEvent(val x: Float, val y: Float) : Event()
 
     /**
      * 鼠标按下事件，鼠标按下时触发。

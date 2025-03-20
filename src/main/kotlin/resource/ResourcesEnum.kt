@@ -37,12 +37,8 @@ enum class ResourcesEnum(private val resourcePath: String) {
     // Carrot
     CARROT("/assets/farming/carrot/carrot.png"),
     CARROT_GROW_0("/assets/farming/carrot/carrots0.png"),
-    CARROT_GROW_1("/assets/farming/carrot/carrots1.png"),
     CARROT_GROW_2("/assets/farming/carrot/carrots2.png"),
-    CARROT_GROW_3("/assets/farming/carrot/carrots3.png"),
     CARROT_GROW_4("/assets/farming/carrot/carrots4.png"),
-    CARROT_GROW_5("/assets/farming/carrot/carrots5.png"),
-    CARROT_GROW_6("/assets/farming/carrot/carrots6.png"),
     CARROT_GROW_7("/assets/farming/carrot/carrots7.png"),
     GOLDEN_CARROT("/assets/farming/carrot/golden_carrot.png"),
 
@@ -84,12 +80,8 @@ enum class ResourcesEnum(private val resourcePath: String) {
     // Potato
     POTATO("/assets/farming/potato/potato.png"),
     POTATO_GROW_0("/assets/farming/potato/potatoes0.png"),
-    POTATO_GROW_1("/assets/farming/potato/potatoes1.png"),
     POTATO_GROW_2("/assets/farming/potato/potatoes2.png"),
-    POTATO_GROW_3("/assets/farming/potato/potatoes3.png"),
     POTATO_GROW_4("/assets/farming/potato/potatoes4.png"),
-    POTATO_GROW_5("/assets/farming/potato/potatoes5.png"),
-    POTATO_GROW_6("/assets/farming/potato/potatoes6.png"),
     POTATO_GROW_7("/assets/farming/potato/potatoes7.png"),
 
     // Tomato

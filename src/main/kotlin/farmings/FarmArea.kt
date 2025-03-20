@@ -1,7 +1,7 @@
 package com.midnightcrowing.farmings
 
-import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.events.CustomEvent.MouseMoveEvent
+import com.midnightcrowing.events.CustomEvent.MouseRightClickEvent
 import com.midnightcrowing.farmings.crops.FarmCropBase
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.gui.base.Window
@@ -164,10 +164,10 @@ class FarmArea : Widget {
     }
 
     /**
-     * 处理鼠标点击事件。
+     * 处理鼠标右键点击事件。
      * 如果当前有激活的种子作物，则将其种植到鼠标点击的有效位置。
      */
-    override fun onClick(e: MouseClickEvent) {
+    override fun onRightClick(e: MouseRightClickEvent) {
         val (x, y) = findMouseInField(e.x, e.y) ?: return
         if (!isAvailable(x, y) || isExist(x, y)) return
 
@@ -205,12 +205,19 @@ class FarmArea : Widget {
     }
 
     /**
+     * 更新农田和作物的位置。
+     */
+    fun update() {
+        cropsGrid.forEach { row -> row.forEach { it?.update() } }
+    }
+
+    /**
      * 渲染农田和作物。
      */
     override fun render() {
         super.render()
         activeSeedCrop?.render()
-        cropsGrid.forEach { row -> row.forEach { it?.render() } }
+        cropsGrid.reversed().forEach { row -> row.reversed().forEach { it?.render() } }
     }
 
     /**

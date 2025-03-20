@@ -13,9 +13,9 @@ import com.midnightcrowing.utils.FontSizeUtil.calculateFontSize
 
 class MainMenuScreen(window: Window) : Screen(window) {
     override val bgRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.MAIN_MENU_BACKGROUND.inputStream)
-    private val startButton: Button = Button(window, "开始游戏", fontSize = 16f)
-    private val optionButton: Button = Button(window, "选项...", fontSize = 20f)
-    private val exitButton: Button = Button(window, "退出游戏", fontSize = 20f)
+    private val startButton = Button(window).apply { text = "开始游戏"; fontSize = 20f }
+    private val optionButton = Button(window).apply { text = "选项..."; fontSize = 20f }
+    private val exitButton = Button(window).apply { text = "退出游戏"; fontSize = 20f }
 
     private val controller = MainMenuController(window)
 

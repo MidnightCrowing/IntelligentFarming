@@ -1,6 +1,7 @@
 package com.midnightcrowing.gui.base
 
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
+import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
 import com.midnightcrowing.render.NanoVGContext.vg
 import com.midnightcrowing.render.TextRenderer
@@ -19,25 +20,8 @@ enum class ButtonTextures {
  * 按钮组件，实现基本的 UI 交互。
  */
 class Button : Widget {
-    var text: String
-    var fontSize: Float
-    var textColor: FloatArray
-
-    constructor(
-        window: Window, text: String = "", fontSize: Float = 16f, textColor: FloatArray = ColorEnum.WHITE.value,
-    ) : super(window) {
-        this.text = text
-        this.fontSize = fontSize
-        this.textColor = textColor
-    }
-
-    constructor(
-        parent: Widget, text: String = "", fontSize: Float = 16f, textColor: FloatArray = ColorEnum.WHITE.value,
-    ) : super(parent) {
-        this.text = text
-        this.fontSize = fontSize
-        this.textColor = textColor
-    }
+    constructor(window: Window) : super(window)
+    constructor(parent: Widget) : super(parent)
 
     // 纹理映射，加载对应状态的按钮纹理
     private val textures: Map<ButtonTextures, Texture?> = ButtonTextures.entries.associateWith { type ->
@@ -51,21 +35,34 @@ class Button : Widget {
     // 文字渲染器
     private val textRenderer = TextRenderer(vg)
 
+    var text: String = ""
+        set(value) {
+            field = value
+            textRenderer.text = value
+        }
+    var fontSize: Float = 16f
+        set(value) {
+            field = value
+            textRenderer.fontSize = value
+        }
+    var textColor: FloatArray = ColorEnum.WHITE.value
+        set(value) {
+            field = value
+            textRenderer.color = value
+        }
+
+    override fun place(bounds: ScreenBounds) {
+        super.place(bounds)
+        textRenderer.x = (widgetBounds.x1 + widgetBounds.x2) / 2
+        textRenderer.y = (widgetBounds.y1 + widgetBounds.y2) / 2
+    }
+
     /**
      * 渲染按钮及其文字。
      */
     override fun render() {
         super.render()
-        drawText()
-    }
-
-    /**
-     * 绘制按钮文本，使文本居中显示。
-     */
-    private fun drawText() {
-        val centerX = (widgetBounds.x1 + widgetBounds.x2) / 2
-        val centerY = (widgetBounds.y1 + widgetBounds.y2) / 2
-        textRenderer.drawText(text, centerX, centerY, fontSize = fontSize, color = textColor)
+        textRenderer.drawText()
     }
 
     /**

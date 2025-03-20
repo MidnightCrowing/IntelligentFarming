@@ -27,16 +27,17 @@ class HotBarController(private val hotBar: HotBar) {
     }
 
     fun changeActiveItem(id: Int) {
-        val activeSeedCropClass = itemsList[id]?.getCrop()
-
-        if (activeSeedCropClass != null) {
-            val constructor = activeSeedCropClass.primaryConstructor
-                ?: throw IllegalArgumentException("Class ${activeSeedCropClass.simpleName} has no primary constructor")
-            val activeSeedCrop = constructor.call(screen.farmArea)
-
-            screen.farmArea.activeSeedCrop = activeSeedCrop
-        } else {
-            screen.farmArea.activeSeedCrop = null
+        val item = itemsList[id]
+        if (item?.isSeed == true) {
+            val activeSeedCropClass = item.getCrop()
+            if (activeSeedCropClass != null) {
+                val constructor = activeSeedCropClass.primaryConstructor
+                    ?: throw IllegalArgumentException("Class ${activeSeedCropClass.simpleName} has no primary constructor")
+                val activeSeedCrop = constructor.call(screen.farmArea)
+                screen.farmArea.activeSeedCrop = activeSeedCrop
+                return
+            }
         }
+        screen.farmArea.activeSeedCrop = null
     }
 }

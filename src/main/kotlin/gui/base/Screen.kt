@@ -7,6 +7,8 @@ open class Screen(val window: Window) {
 
     open fun place() {}
 
+    open fun update() {}
+
     open fun render() {
         bgRenderer.render(0f, 0f, window.width.toFloat(), window.height.toFloat())
     }

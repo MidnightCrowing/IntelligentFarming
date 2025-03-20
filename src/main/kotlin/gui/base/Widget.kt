@@ -41,6 +41,7 @@ open class Widget {
         }
         window.eventManager.registerWidget(WindowResizeEvent::class.java, this)
         window.eventManager.registerWidget(MouseClickEvent::class.java, this)
+        window.eventManager.registerWidget(MouseRightClickEvent::class.java, this)
         window.eventManager.registerWidget(MouseEnterEvent::class.java, this)
         window.eventManager.registerWidget(MouseLeaveEvent::class.java, this)
         window.eventManager.registerWidget(MouseMoveEvent::class.java, this)
@@ -57,6 +58,7 @@ open class Widget {
         }
         window.eventManager.unregisterWidget(WindowResizeEvent::class.java, this)
         window.eventManager.unregisterWidget(MouseClickEvent::class.java, this)
+        window.eventManager.unregisterWidget(MouseRightClickEvent::class.java, this)
         window.eventManager.unregisterWidget(MouseEnterEvent::class.java, this)
         window.eventManager.unregisterWidget(MouseLeaveEvent::class.java, this)
         window.eventManager.unregisterWidget(MouseMoveEvent::class.java, this)
@@ -112,6 +114,11 @@ open class Widget {
      * 鼠标点击事件
      */
     open fun onClick(e: MouseClickEvent) {}
+
+    /**
+     * 鼠标右键点击事件
+     */
+    open fun onRightClick(e: MouseRightClickEvent) {}
 
     /**
      * 鼠标移入事件
