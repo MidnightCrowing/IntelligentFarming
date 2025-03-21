@@ -113,7 +113,7 @@ class HotBar(val screen: FarmScene) : Widget(screen.window) {
     override fun onClick(e: MouseClickEvent) {
         findGridCheckboxIdAt(e.x)?.let {
             selectedGridId = it
-            screen.itemCheckBox.place(getGridBoundsWithCheckbox(it))
+            screen.itemCheckBox.moveTo(getGridBoundsWithCheckbox(it))
             controller.changeActiveItem(it)
         }
     }
