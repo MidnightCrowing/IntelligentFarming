@@ -5,6 +5,7 @@ import com.midnightcrowing.events.Event.WindowResizeEvent
 import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.gui.base.Window
+import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredFunctions
 
 class WindowResizeEventListener(
@@ -13,9 +14,9 @@ class WindowResizeEventListener(
 ) : EventListener<WindowResizeEvent>(eventManager) {
     private val registerWidgets = mutableListOf<Widget>()
 
-    override fun getReceiveEventType(): Class<WindowResizeEvent> = WindowResizeEvent::class.java
+    override fun getReceiveEventType(): KClass<WindowResizeEvent> = WindowResizeEvent::class
 
-    override fun getSendEventType(): Array<Class<out Event>> = arrayOf(WindowResizeEvent::class.java)
+    override fun getSendEventType(): Array<KClass<out Event>> = arrayOf(WindowResizeEvent::class)
 
     override fun eventFilter(event: WindowResizeEvent) = triggerEvent(event)
 

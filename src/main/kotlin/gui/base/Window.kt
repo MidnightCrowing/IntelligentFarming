@@ -109,10 +109,10 @@ class Window(
     fun pollEvents() = glfwPollEvents()
 
     val fpsTextRenderer: TextRenderer = TextRenderer(NanoVGContext.vg).apply {
-        x = 5f; y = 15f; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
+        x = 5.0; y = 15.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
     }
     val tickTextRenderer: TextRenderer = TextRenderer(NanoVGContext.vg).apply {
-        x = 5f; y = 40f; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
+        x = 5.0; y = 40.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
     }
 
     fun loop() {

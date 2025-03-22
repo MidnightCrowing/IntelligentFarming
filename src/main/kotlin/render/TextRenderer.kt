@@ -8,14 +8,14 @@ import org.lwjgl.system.MemoryStack
 
 class TextRenderer(
     private val vg: Long,
-    var x: Float = 0f,
-    var y: Float = 0f,
+    var x: Double = 0.0,
+    var y: Double = 0.0,
     var text: String = "",
     var fontName: String = FontEnum.DEFAULT.value,
-    var fontSize: Float = 16f,
+    var fontSize: Double = 16.0,
     var textAlign: Int = NVG_ALIGN_CENTER or NVG_ALIGN_MIDDLE,
-    var textColor: FloatArray = ColorEnum.WHITE.value,
-    var textOpacity: Float = 1.0f,
+    var textColor: DoubleArray = ColorEnum.WHITE.value,
+    var textOpacity: Double = 1.0,
 ) {
 
     /**
@@ -25,13 +25,17 @@ class TextRenderer(
     fun drawText(text: String = this.text) {
         MemoryStack.stackPush().use { stack ->
             val colorBuffer = NVGColor.calloc(stack)
-            colorBuffer.r(textColor[0]).g(textColor[1]).b(textColor[2]).a(textColor[3] * textOpacity)
+            colorBuffer
+                .r(textColor[0].toFloat())
+                .g(textColor[1].toFloat())
+                .b(textColor[2].toFloat())
+                .a((textColor[3] * textOpacity).toFloat())
 
-            nvgFontSize(vg, fontSize)
+            nvgFontSize(vg, fontSize.toFloat())
             nvgFontFace(vg, fontName)
             nvgFillColor(vg, colorBuffer)
             nvgTextAlign(vg, textAlign)
-            nvgText(vg, x, y, text)
+            nvgText(vg, x.toFloat(), y.toFloat(), text)
         }
     }
 }

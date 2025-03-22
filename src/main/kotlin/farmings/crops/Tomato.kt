@@ -19,10 +19,10 @@ class Tomato(farmArea: FarmArea) : FarmCropBase(farmArea) {
         8 to createImageTexture(ResourcesEnum.TOMATO_GROW_3.inputStream)
     )
 
-    override fun onRightClick() {
+    override fun onFarmRightClick() {
         if (isFullyGrown) {
             growthDuration = triangularRandom(0.0, 80000.0, 12000.0).toInt()
-            plantedTick = (GameTick.tick.toDouble() - growthDuration.toDouble() * 0.56).toLong()
+            plantedTick = (GameTick.tick - growthDuration * 0.56).toLong()
         }
     }
 

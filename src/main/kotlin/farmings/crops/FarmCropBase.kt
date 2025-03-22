@@ -16,18 +16,18 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
     open var growthDuration: Int = triangularRandom(0.0, 20000.0, 1000.0).toInt()
     val isFullyGrown: Boolean get() = GameTick.tick - plantedTick >= growthDuration
 
-    fun setGrowthProgressTexture(progress: Float) {
+    fun setGrowthProgressTexture(progress: Double) {
         val progressIndex = (progress * growDuringTextures.size).toInt()
         renderer.texture = growDuringTextures[progressIndex] ?: growInitTexture
     }
 
     fun setShadow() {
         renderer.texture = growInitTexture
-        renderer.alpha = 0.6f
+        renderer.alpha = 0.6
     }
 
     fun setPlanting() {
-        renderer.alpha = 1f
+        renderer.alpha = 1.0
         plantedTick = GameTick.tick
     }
 
@@ -36,7 +36,7 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
             renderer.texture = growFullTexture
         } else {
             val elapsedTicks = GameTick.tick - plantedTick
-            val growthProgress = elapsedTicks.toFloat() / growthDuration
+            val growthProgress = elapsedTicks.toDouble() / growthDuration
             setGrowthProgressTexture(growthProgress)
         }
     }
@@ -57,7 +57,7 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
         }
     }
 
-    open fun onRightClick() {}
+    open fun onFarmRightClick() {}
 
     abstract fun copy(): FarmCropBase
 }

@@ -15,19 +15,21 @@ open class Widget {
         private set
     var visible: Boolean = true
         private set
+    val parentVisible: Boolean get() = parent?.visible != false && parent?.parentVisible != false
+    val isVisible: Boolean get() = visible && parentVisible
 
-    constructor(window: Window) {
+    constructor(window: Window, z: Int? = null) {
         this.window = window
         this.parent = null
-        this.z = 0
+        this.z = z ?: 0
 
         registerListeners()  // 注册监听器
     }
 
-    constructor(parent: Widget) {
+    constructor(parent: Widget, z: Int? = null) {
         this.window = parent.window
         this.parent = parent
-        this.z = parent.z + 1
+        this.z = z ?: (parent.z + 1)
 
         registerListeners()  // 注册监听器
     }
@@ -39,14 +41,15 @@ open class Widget {
         if (window == null) {
             return
         }
-        window.eventManager.registerWidget(WindowResizeEvent::class.java, this)
-        window.eventManager.registerWidget(MouseClickEvent::class.java, this)
-        window.eventManager.registerWidget(MouseRightClickEvent::class.java, this)
-        window.eventManager.registerWidget(MouseEnterEvent::class.java, this)
-        window.eventManager.registerWidget(MouseLeaveEvent::class.java, this)
-        window.eventManager.registerWidget(MouseMoveEvent::class.java, this)
-        window.eventManager.registerWidget(MousePressedEvent::class.java, this)
-        window.eventManager.registerWidget(MouseReleasedEvent::class.java, this)
+        window.eventManager.registerWidget(WindowResizeEvent::class, this)
+        window.eventManager.registerWidget(MouseClickEvent::class, this)
+        window.eventManager.registerWidget(MouseRightClickEvent::class, this)
+        window.eventManager.registerWidget(MouseEnterEvent::class, this)
+        window.eventManager.registerWidget(MouseLeaveEvent::class, this)
+        window.eventManager.registerWidget(MouseMoveEvent::class, this)
+        window.eventManager.registerWidget(MousePressedEvent::class, this)
+        window.eventManager.registerWidget(MouseReleasedEvent::class, this)
+        window.eventManager.registerWidget(KeyPressedEvent::class, this)
     }
 
     /**
@@ -56,24 +59,37 @@ open class Widget {
         if (window == null) {
             return
         }
-        window.eventManager.unregisterWidget(WindowResizeEvent::class.java, this)
-        window.eventManager.unregisterWidget(MouseClickEvent::class.java, this)
-        window.eventManager.unregisterWidget(MouseRightClickEvent::class.java, this)
-        window.eventManager.unregisterWidget(MouseEnterEvent::class.java, this)
-        window.eventManager.unregisterWidget(MouseLeaveEvent::class.java, this)
-        window.eventManager.unregisterWidget(MouseMoveEvent::class.java, this)
-        window.eventManager.unregisterWidget(MousePressedEvent::class.java, this)
-        window.eventManager.unregisterWidget(MouseReleasedEvent::class.java, this)
+        window.eventManager.unregisterWidget(WindowResizeEvent::class, this)
+        window.eventManager.unregisterWidget(MouseClickEvent::class, this)
+        window.eventManager.unregisterWidget(MouseRightClickEvent::class, this)
+        window.eventManager.unregisterWidget(MouseEnterEvent::class, this)
+        window.eventManager.unregisterWidget(MouseLeaveEvent::class, this)
+        window.eventManager.unregisterWidget(MouseMoveEvent::class, this)
+        window.eventManager.unregisterWidget(MousePressedEvent::class, this)
+        window.eventManager.unregisterWidget(MouseReleasedEvent::class, this)
+        window.eventManager.unregisterWidget(KeyPressedEvent::class, this)
     }
 
     /**
      * 判断给定坐标是否在组件范围内
      */
-    fun containsPoint(x: Float, y: Float): Boolean {
+    fun containsPoint(x: Double, y: Double): Boolean {
         return x in widgetBounds.x1..widgetBounds.x2 && y in widgetBounds.y1..widgetBounds.y2
     }
 
-    open fun place(x1: Float, y1: Float, x2: Float, y2: Float) {
+    fun setHidden(value: Boolean) {
+        visible = !value
+    }
+
+    fun setVisible(value: Boolean) {
+        visible = value
+    }
+
+    fun toggleVisible() {
+        visible = !visible
+    }
+
+    open fun place(x1: Double, y1: Double, x2: Double, y2: Double) {
         widgetBounds = ScreenBounds(x1, y1, x2, y2)
     }
 
@@ -85,7 +101,7 @@ open class Widget {
      * 渲染组件
      */
     open fun render() {
-        if (visible) {
+        if (isVisible) {
             renderer.render(widgetBounds)
         }
     }
@@ -134,4 +150,6 @@ open class Widget {
      * 鼠标移动事件
      */
     open fun onMouseMove(e: MouseMoveEvent) {}
+
+    open fun onKeyPress(e: KeyPressedEvent) {}
 }

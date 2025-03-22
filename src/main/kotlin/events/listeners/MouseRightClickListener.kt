@@ -7,6 +7,7 @@ import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.gui.base.Window
 import org.lwjgl.glfw.GLFW.*
+import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredFunctions
 
 class MouseRightClickListener(
@@ -15,9 +16,9 @@ class MouseRightClickListener(
 ) : EventListener<MouseButtonEvent>(eventManager) {
     private val clickableWidgets = mutableListOf<Widget>()
 
-    override fun getReceiveEventType(): Class<MouseButtonEvent> = MouseButtonEvent::class.java
+    override fun getReceiveEventType(): KClass<MouseButtonEvent> = MouseButtonEvent::class
 
-    override fun getSendEventType(): Array<Class<out Event>> = arrayOf(MouseRightClickEvent::class.java)
+    override fun getSendEventType(): Array<KClass<out Event>> = arrayOf(MouseRightClickEvent::class)
 
     override fun eventFilter(event: MouseButtonEvent) {
         if (event.button == GLFW_MOUSE_BUTTON_RIGHT && event.action == GLFW_PRESS) {
@@ -29,16 +30,17 @@ class MouseRightClickListener(
         val (x, y) = DoubleArray(1).let { xPos ->
             DoubleArray(1).let { yPos ->
                 glfwGetCursorPos(window.handle, xPos, yPos)
-                xPos[0].toFloat() to yPos[0].toFloat()
+                xPos[0] to yPos[0]
             }
         }
 
         val widgetsCopy = clickableWidgets.toList()
-        widgetsCopy.forEach { widget ->
-            if (widget.containsPoint(x, y)) {
-                widget.onRightClick(MouseRightClickEvent(x, y))
-            }
-        }
+        val highestZWidget = widgetsCopy
+            .filter { it.isVisible }
+            .filter { it.containsPoint(x, y) }
+            .maxByOrNull { it.z }
+
+        highestZWidget?.onRightClick(MouseRightClickEvent(x, y))
     }
 
     override fun registerWidget(widget: Widget) {

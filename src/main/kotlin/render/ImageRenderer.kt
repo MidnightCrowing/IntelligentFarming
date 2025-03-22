@@ -26,7 +26,7 @@ class ImageRenderer {
             }
         }
 
-    var alpha: Float = 1.0f  // 默认不透明
+    var alpha: Double = 1.0  // 默认不透明
 
     constructor()
 
@@ -41,20 +41,20 @@ class ImageRenderer {
         }
     }
 
-    fun render(x1: Float, y1: Float, x2: Float, y2: Float) {
+    fun render(x1: Double, y1: Double, x2: Double, y2: Double) {
         if (texture == null) {
             return
         }
 
         texture!!.bind()
 
-        GL46.glColor4f(1.0f, 1.0f, 1.0f, alpha)
+        GL46.glColor4f(1f, 1f, 1f, alpha.toFloat())
 
         GL46.glBegin(GL46.GL_QUADS)
-        glTexCoord2f(0f, 0f); glVertex2f(x1, y2)
-        glTexCoord2f(1f, 0f); glVertex2f(x2, y2)
-        glTexCoord2f(1f, 1f); glVertex2f(x2, y1)
-        glTexCoord2f(0f, 1f); glVertex2f(x1, y1)
+        glTexCoord2f(0f, 0f); glVertex2f(x1.toFloat(), y2.toFloat())
+        glTexCoord2f(1f, 0f); glVertex2f(x2.toFloat(), y2.toFloat())
+        glTexCoord2f(1f, 1f); glVertex2f(x2.toFloat(), y1.toFloat())
+        glTexCoord2f(0f, 1f); glVertex2f(x1.toFloat(), y1.toFloat())
         GL46.glEnd()
     }
 

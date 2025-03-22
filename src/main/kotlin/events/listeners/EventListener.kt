@@ -4,6 +4,7 @@ import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.gui.base.Window
+import kotlin.reflect.KClass
 
 // T 是接收事件类型
 abstract class EventListener<T : Event>(eventManager: EventManager) {
@@ -12,10 +13,10 @@ abstract class EventListener<T : Event>(eventManager: EventManager) {
     }
 
     // 返回接收类型的 Class
-    abstract fun getReceiveEventType(): Class<T>
+    abstract fun getReceiveEventType(): KClass<T>
 
     // 返回发送类型的 Class
-    abstract fun getSendEventType(): Array<Class<out Event>>
+    abstract fun getSendEventType(): Array<KClass<out Event>>
 
     // 事件过滤
     abstract fun eventFilter(event: T)

@@ -11,28 +11,28 @@ sealed class CustomEvent : Event() {
      * @param x 点击的 X 屏幕坐标
      * @param y 点击的 Y 屏幕坐标
      */
-    data class MouseClickEvent(val x: Float, val y: Float) : Event()
+    data class MouseClickEvent(val x: Double, val y: Double) : Event()
 
     /**
      * 鼠标右键点击事件，鼠标按下时触发。如果鼠标拖拽到按钮区域之外释放则不会触发。
      * @param x 双击的 X 屏幕坐标
      * @param y 双击的 Y 屏幕坐标
      */
-    data class MouseRightClickEvent(val x: Float, val y: Float) : Event()
+    data class MouseRightClickEvent(val x: Double, val y: Double) : Event()
 
     /**
      * 鼠标按下事件，鼠标按下时触发。
      * @param x 按下的 X 屏幕坐标
      * @param y 按下的 Y 屏幕坐标
      */
-    data class MousePressedEvent(val x: Float, val y: Float) : Event()
+    data class MousePressedEvent(val x: Double, val y: Double) : Event()
 
     /**
      * 鼠标释放事件，鼠标松开时触发。即使鼠标拖拽到按钮区域之外释放也会触发。
      * @param x 释放的 X 屏幕坐标
      * @param y 释放的 Y 屏幕坐标
      */
-    data class MouseReleasedEvent(val x: Float, val y: Float) : Event()
+    data class MouseReleasedEvent(val x: Double, val y: Double) : Event()
 
     /**
      * 鼠标移入事件
@@ -49,5 +49,7 @@ sealed class CustomEvent : Event() {
      * @param x 鼠标的 X 屏幕坐标
      * @param y 鼠标的 Y 屏幕坐标
      */
-    data class MouseMoveEvent(val x: Float, val y: Float) : Event()
+    data class MouseMoveEvent(val x: Double, val y: Double) : Event()
+
+    data class KeyPressedEvent(val key: Int) : Event()
 }

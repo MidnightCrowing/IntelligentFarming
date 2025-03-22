@@ -13,9 +13,9 @@ import com.midnightcrowing.utils.FontSizeUtil.calculateFontSize
 
 class MainMenuScreen(window: Window) : Screen(window) {
     override val bgRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.MAIN_MENU_BACKGROUND.inputStream)
-    private val startButton = Button(window).apply { text = "开始游戏"; fontSize = 20f }
-    private val optionButton = Button(window).apply { text = "选项..."; fontSize = 20f }
-    private val exitButton = Button(window).apply { text = "退出游戏"; fontSize = 20f }
+    private val startButton = Button(window).apply { text = "开始游戏"; fontSize = 20.0 }
+    private val optionButton = Button(window).apply { text = "选项..."; fontSize = 20.0 }
+    private val exitButton = Button(window).apply { text = "退出游戏"; fontSize = 20.0 }
 
     private val controller = MainMenuController(window)
 
@@ -25,15 +25,15 @@ class MainMenuScreen(window: Window) : Screen(window) {
     }
 
     private companion object {
-        const val BTN_WIDTH = 0.86f
-        const val BTN_HEIGHT = 0.12f
-        const val BTN_GAP_X = 0.04f
-        const val BTN_GAP_Y = 0.07f
-        const val BTN_OFFSET_Y = 0.24f // 按钮的 Y 轴偏移量
+        const val BTN_WIDTH = 0.86
+        const val BTN_HEIGHT = 0.12
+        const val BTN_GAP_X = 0.04
+        const val BTN_GAP_Y = 0.07
+        const val BTN_OFFSET_Y = 0.24 // 按钮的 Y 轴偏移量
     }
 
     private fun calculateButtonBounds(
-        verticalPos: Float,
+        verticalPos: Double,
         isBigButton: Boolean = false,
         isLeftButton: Boolean = false,
     ): ScreenBounds {
@@ -60,7 +60,7 @@ class MainMenuScreen(window: Window) : Screen(window) {
         optionButton.place(calculateButtonBounds(bottomRowY, isLeftButton = true))
         exitButton.place(calculateButtonBounds(bottomRowY))
 
-        val fontSize: Float = calculateFontSize(window.width)
+        val fontSize: Double = calculateFontSize(window.width)
         startButton.fontSize = fontSize
         optionButton.fontSize = fontSize
         exitButton.fontSize = fontSize

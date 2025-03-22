@@ -1,10 +1,10 @@
 package com.midnightcrowing.resource
 
-enum class ColorEnum(val value: FloatArray) {
-    WHITE(floatArrayOf(1f, 1f, 1f, 1f)),
-    BLACK(floatArrayOf(0f, 0f, 0f, 1f)),
-    RED(floatArrayOf(1f, 0f, 0f, 1f)),
-    GREEN(floatArrayOf(0f, 1f, 0f, 1f)),
-    BLUE(floatArrayOf(0f, 0f, 1f, 1f)),
-    YELLOW(floatArrayOf(1f, 1f, 0f, 1f)),
+enum class ColorEnum(val value: DoubleArray) {
+    WHITE(doubleArrayOf(1.0, 1.0, 1.0, 1.0)),
+    BLACK(doubleArrayOf(0.0, 0.0, 0.0, 1.0)),
+    RED(doubleArrayOf(1.0, 0.0, 0.0, 1.0)),
+    GREEN(doubleArrayOf(0.0, 1.0, 0.0, 1.0)),
+    BLUE(doubleArrayOf(0.0, 0.0, 1.0, 1.0)),
+    YELLOW(doubleArrayOf(1.0, 1.0, 0.0, 1.0)),
 }

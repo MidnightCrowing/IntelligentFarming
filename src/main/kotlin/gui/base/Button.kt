@@ -39,12 +39,12 @@ class Button : Widget {
             field = value
             textRenderer.text = value
         }
-    var fontSize: Float = 16f
+    var fontSize: Double = 16.0
         set(value) {
             field = value
             textRenderer.fontSize = value
         }
-    var textColor: FloatArray = ColorEnum.WHITE.value
+    var textColor: DoubleArray = ColorEnum.WHITE.value
         set(value) {
             field = value
             textRenderer.textColor = value

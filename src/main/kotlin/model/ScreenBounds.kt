@@ -4,9 +4,9 @@ import com.midnightcrowing.gui.base.Window
 
 
 // 屏幕坐标系的边界
-data class ScreenBounds(var x1: Float, var y1: Float, var x2: Float, var y2: Float) {
+data class ScreenBounds(var x1: Double, var y1: Double, var x2: Double, var y2: Double) {
     companion object {
-        val EMPTY = ScreenBounds(0f, 0f, 0f, 0f)
+        val EMPTY = ScreenBounds(0.0, 0.0, 0.0, 0.0)
     }
 
     /**
@@ -17,7 +17,7 @@ data class ScreenBounds(var x1: Float, var y1: Float, var x2: Float, var y2: Flo
      * @param y 屏幕坐标系中的 Y 坐标，范围为 [0, window.height]
      * @return 转换后的 NDC 坐标 (ndcX, ndcY)，范围为 [-1, 1]
      */
-    private fun convertScreenToNdc(window: Window, x: Float, y: Float): Point {
+    private fun convertScreenToNdc(window: Window, x: Double, y: Double): Point {
         val ndcX = (x / (window.width / 2f)) - 1
         val ndcY = -((y / (window.height / 2f)) - 1) // 反向 Y 轴坐标
         return Point(ndcX, ndcY)

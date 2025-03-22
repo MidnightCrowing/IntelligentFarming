@@ -22,17 +22,17 @@ class FarmArea : Widget {
     }
 
     // 布局参数
-    private var middlePoint = Point(0f, 0f) // 农田中心点坐标
-    private var leftPoint = Point(0f, 0f) // 农田左侧点坐标
-    private var rightPoint = Point(0f, 0f) // 农田右侧点坐标
-    private var blockHeight = 0f // 农田块的高度
-    private var blockDeep = 0f // 农田块的深度
+    private var middlePoint = Point(0.0, 0.0) // 农田中心点坐标
+    private var leftPoint = Point(0.0, 0.0) // 农田左侧点坐标
+    private var rightPoint = Point(0.0, 0.0) // 农田右侧点坐标
+    private var blockHeight = 0.0 // 农田块的高度
+    private var blockDeep = 0.0 // 农田块的深度
 
     // 计算属性：农田块的宽度和高度
-    private val blockLeftWidth: Float get() = (middlePoint.x - leftPoint.x) / rowCount
-    private val blockLeftHeight: Float get() = (middlePoint.y - leftPoint.y) / rowCount
-    private val blockRightWidth: Float get() = (rightPoint.x - middlePoint.x) / columnCount
-    private val blockRightHeight: Float get() = (middlePoint.y - rightPoint.y) / columnCount
+    private val blockLeftWidth: Double get() = (middlePoint.x - leftPoint.x) / rowCount
+    private val blockLeftHeight: Double get() = (middlePoint.y - leftPoint.y) / rowCount
+    private val blockRightWidth: Double get() = (rightPoint.x - middlePoint.x) / columnCount
+    private val blockRightHeight: Double get() = (middlePoint.y - rightPoint.y) / columnCount
 
     /**
      * 当前激活的种子作物。
@@ -118,7 +118,7 @@ class FarmArea : Widget {
      * @param mouseY 鼠标Y坐标
      * @return 如果找到有效位置，返回对应的(列, 行)索引；否则返回null
      */
-    fun findMouseInField(mouseX: Float, mouseY: Float): Pair<Int, Int>? {
+    fun findMouseInField(mouseX: Double, mouseY: Double): Pair<Int, Int>? {
         val vx = Point(
             (middlePoint.x - rightPoint.x) / columnCount,
             (middlePoint.y - rightPoint.y) / columnCount
@@ -132,7 +132,7 @@ class FarmArea : Widget {
         val dy = middlePoint.y - mouseY
 
         val determinant = vx.x * vy.y - vx.y * vy.x
-        if (determinant == 0f) return null
+        if (determinant == 0.0) return null
 
         val col = (vy.y * dx - vy.x * dy) / determinant
         val row = (-vx.y * dx + vx.x * dy) / determinant
@@ -171,7 +171,7 @@ class FarmArea : Widget {
         if (!isAvailable(x, y)) return
 
         if (isExist(x, y)) {
-            cropsGrid[y][x]?.onRightClick()
+            cropsGrid[y][x]?.onFarmRightClick()
             return
         }
 
@@ -179,7 +179,6 @@ class FarmArea : Widget {
             original.place(getBlockBounds(x, y))
             val newCrop = original.copy().apply { setPlanting() }
             cropsGrid[y][x] = newCrop
-//            activeSeedCrop = null
         }
     }
 
@@ -199,7 +198,7 @@ class FarmArea : Widget {
      * @param middlePoint 中心点坐标
      * @param rightPoint 右侧点坐标
      */
-    fun place(blockDeep: Float, blockHeight: Float, leftPoint: Point, middlePoint: Point, rightPoint: Point) {
+    fun place(blockDeep: Double, blockHeight: Double, leftPoint: Point, middlePoint: Point, rightPoint: Point) {
         this.blockDeep = blockDeep
         this.blockHeight = blockHeight
         this.leftPoint = leftPoint

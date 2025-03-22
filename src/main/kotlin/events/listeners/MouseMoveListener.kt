@@ -6,6 +6,7 @@ import com.midnightcrowing.events.Event.CursorMoveEvent
 import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.gui.base.Window
+import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredFunctions
 
 
@@ -17,29 +18,31 @@ class MouseMoveListener(
     private val leaveListeners = mutableMapOf<Widget, Boolean>()
     private val moveListeners = mutableListOf<Widget>()
 
-    override fun getReceiveEventType(): Class<CursorMoveEvent> = CursorMoveEvent::class.java
+    override fun getReceiveEventType(): KClass<CursorMoveEvent> = CursorMoveEvent::class
 
-    override fun getSendEventType(): Array<Class<out Event>> =
-        arrayOf(MouseEnterEvent::class.java, MouseLeaveEvent::class.java, MouseMoveEvent::class.java)
+    override fun getSendEventType(): Array<KClass<out Event>> =
+        arrayOf(MouseEnterEvent::class, MouseLeaveEvent::class, MouseMoveEvent::class)
 
     override fun eventFilter(event: CursorMoveEvent) = triggerEvent(event)
 
     override fun triggerEvent(event: CursorMoveEvent) {
-        val mouseX = event.x.toFloat()
-        val mouseY = event.y.toFloat()
+        val mouseX = event.x
+        val mouseY = event.y
 
         // 处理 MouseEnterEvent 和 MouseLeaveEvent
         handleMouseEnterAndLeave(mouseX, mouseY)
 
         // 处理 MouseMoveEvent
-        for (widget in moveListeners) {
-            if (widget.containsPoint(mouseX, mouseY)) {
-                widget.onMouseMove(MouseMoveEvent(mouseX, mouseY))
-            }
-        }
+        val widgetsCopy = moveListeners.toList()
+        val highestZWidget = widgetsCopy
+            .filter { it.isVisible }
+            .filter { it.containsPoint(mouseX, mouseY) }
+            .maxByOrNull { it.z }
+
+        highestZWidget?.onMouseMove(MouseMoveEvent(mouseX, mouseY))
     }
 
-    private fun handleMouseEnterAndLeave(mouseX: Float, mouseY: Float) {
+    private fun handleMouseEnterAndLeave(mouseX: Double, mouseY: Double) {
         // 处理 MouseEnterEvent
         enterListeners.forEach { (widget, hasEntered) ->
             val isInside = widget.containsPoint(mouseX, mouseY)

@@ -5,17 +5,16 @@ import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
 import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
-import com.midnightcrowing.scenes.FarmScene
 
-class ItemCheckBox(scene: FarmScene) : Widget(scene.window) {
+class ItemCheckBox(parent: Widget) : Widget(parent) {
     override val renderer: ImageRenderer = createImageRenderer(ResourcesEnum.CHECK_BOX.inputStream)
 
-    private var boundsNow = ScreenBounds(0f, 0f, 0f, 0f)
-    private var boundsTarget = ScreenBounds(0f, 0f, 0f, 0f)
+    private var boundsNow = ScreenBounds(0.0, 0.0, 0.0, 0.0)
+    private var boundsTarget = ScreenBounds(0.0, 0.0, 0.0, 0.0)
 
     private var lastUpdateTime: Long = System.currentTimeMillis()
 
-    fun interpolate(from: Float, to: Float, deltaTime: Float): Float {
+    fun interpolate(from: Double, to: Double, deltaTime: Double): Double {
         return (from - to) * deltaTime / 50
     }
 
@@ -28,15 +27,15 @@ class ItemCheckBox(scene: FarmScene) : Widget(scene.window) {
     // 通过动画移动到指定位置
     fun moveTo(bounds: ScreenBounds) {
         boundsTarget = bounds
-        boundsNow.x1 -= -50
-        boundsNow.y1 -= -50
-        boundsNow.x2 += -50
-        boundsNow.y2 += -50
+        boundsNow.x1 += 50
+        boundsNow.y1 += 50
+        boundsNow.x2 -= 50
+        boundsNow.y2 -= 50
     }
 
     override fun render() {
         val currentTime = System.currentTimeMillis()
-        val deltaTime = (currentTime - lastUpdateTime).toFloat()
+        val deltaTime = (currentTime - lastUpdateTime).toDouble()
         lastUpdateTime = currentTime
 
         boundsNow.x1 -= interpolate(boundsNow.x1, boundsTarget.x1, deltaTime)

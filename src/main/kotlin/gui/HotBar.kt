@@ -3,7 +3,6 @@ package com.midnightcrowing.gui
 import com.midnightcrowing.controllers.HotBarController
 import com.midnightcrowing.controllers.HotBarController.Companion.DEFAULT_SELECT_ID
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
-import com.midnightcrowing.events.Event.WindowResizeEvent
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
@@ -15,7 +14,7 @@ import com.midnightcrowing.scenes.FarmScene
 import com.midnightcrowing.utils.GameTick
 
 
-class HotBar(val screen: FarmScene) : Widget(screen.window) {
+class HotBar(val screen: FarmScene) : Widget(screen.window, z = 1) {
     companion object {
         // 基础尺寸常量
         private const val BASE_WIDTH = 364
@@ -26,10 +25,10 @@ class HotBar(val screen: FarmScene) : Widget(screen.window) {
         private const val BASE_GRID_WIDTH = 29
         private const val BASE_GRID_GAP = 11
         private const val BASE_CHECKBOX_SIZE = 7
-        private const val SCALE_BASE = 700f
+        private const val SCALE_BASE = 700.0
 
         // 计算缩放比例
-        private val SCALED: Float by lazy { SCALE_BASE / BASE_WIDTH }
+        private val SCALED: Double by lazy { SCALE_BASE / BASE_WIDTH }
         val SCALED_WIDTH by lazy { BASE_WIDTH * SCALED }
         val SCALED_HEIGHT by lazy { BASE_HEIGHT * SCALED }
         val GRID_LEFT_BORDER by lazy { BASE_GRID_LEFT_BORDER * SCALED }
@@ -41,16 +40,17 @@ class HotBar(val screen: FarmScene) : Widget(screen.window) {
     }
 
     override val renderer: ImageRenderer = createImageRenderer(ResourcesEnum.COMPONENTS_HOT_BAR.inputStream)
-    val itemLabelRenderer: TextRenderer = TextRenderer(vg, fontSize = 20f)
+    val itemLabelRenderer: TextRenderer = TextRenderer(vg, fontSize = 20.0)
 
     val controller = HotBarController(this)
+    val itemCheckBox: ItemCheckBox = ItemCheckBox(this)
 
     var textRenderTime: Long = GameTick.tick
 
     // 网格起始坐标
-    private var gridStartX: Float = 0f
-    private var gridStartY: Float = 0f
-    private var gridEndY: Float = 0f
+    private var gridStartX: Double = 0.0
+    private var gridStartY: Double = 0.0
+    private var gridEndY: Double = 0.0
 
     fun setItemLabelText(text: String?) {
         if (text == null) {
@@ -59,23 +59,19 @@ class HotBar(val screen: FarmScene) : Widget(screen.window) {
         }
         itemLabelRenderer.text = text
         textRenderTime = GameTick.tick
-        itemLabelRenderer.textOpacity = 1f
+        itemLabelRenderer.textOpacity = 1.0
     }
 
-    override fun onWindowResize(e: WindowResizeEvent) = updatePlace()
-
-    override fun place(x1: Float, y1: Float, x2: Float, y2: Float) {
+    override fun place(x1: Double, y1: Double, x2: Double, y2: Double) {
         super.place(x1, y1, x2, y2)
-        updatePlace()
-        itemLabelRenderer.x = (x1 + x2) / 2
-        itemLabelRenderer.y = y1 - 30
-        screen.itemCheckBox.place(getGridBoundsWithCheckbox(selectedGridId))
-    }
 
-    fun updatePlace() {
         gridStartX = widgetBounds.x1 + GRID_LEFT_BORDER
         gridStartY = widgetBounds.y1 + GRID_TOP_BORDER
         gridEndY = widgetBounds.y1 + GRID_BOTTOM_BORDER
+
+        itemLabelRenderer.x = (x1 + x2) / 2
+        itemLabelRenderer.y = y1 - 30
+        itemCheckBox.place(getGridBoundsWithCheckbox(selectedGridId))
     }
 
     // 选中网格 ID
@@ -86,13 +82,13 @@ class HotBar(val screen: FarmScene) : Widget(screen.window) {
         }
 
     // 计算网格边界
-    private fun calculateGridBounds(id: Int, expandBy: Float = 0f): ScreenBounds {
+    private fun calculateGridBounds(id: Int, expandBy: Double = 0.0): ScreenBounds {
         require(id in 0..8) { "id must be between 0 and 8" }
 
-        val startX: Float = gridStartX + (GRID_WIDTH + GRID_GAP) * id - expandBy
-        val endX: Float = startX + GRID_WIDTH + expandBy * 2
-        val startY: Float = gridStartY - expandBy
-        val endY: Float = gridEndY + expandBy
+        val startX: Double = gridStartX + (GRID_WIDTH + GRID_GAP) * id - expandBy
+        val endX: Double = startX + GRID_WIDTH + expandBy * 2
+        val startY: Double = gridStartY - expandBy
+        val endY: Double = gridEndY + expandBy
 
         return ScreenBounds(startX, startY, endX, endY)
     }
@@ -104,7 +100,7 @@ class HotBar(val screen: FarmScene) : Widget(screen.window) {
     fun getGridBoundsWithCheckbox(id: Int): ScreenBounds = calculateGridBounds(id, CHECKBOX_SIZE)
 
     // 通过坐标获取网格ID
-    private fun findGridCheckboxIdAt(x: Float): Int? =
+    private fun findGridCheckboxIdAt(x: Double): Int? =
         (0..8).firstOrNull { id ->
             val bounds = getGridBoundsWithCheckbox(id)
             x in bounds.x1..bounds.x2
@@ -113,7 +109,7 @@ class HotBar(val screen: FarmScene) : Widget(screen.window) {
     override fun onClick(e: MouseClickEvent) {
         findGridCheckboxIdAt(e.x)?.let {
             selectedGridId = it
-            screen.itemCheckBox.moveTo(getGridBoundsWithCheckbox(it))
+            itemCheckBox.moveTo(getGridBoundsWithCheckbox(it))
             controller.changeActiveItem(it)
         }
     }
@@ -124,7 +120,7 @@ class HotBar(val screen: FarmScene) : Widget(screen.window) {
         val timeDiff = GameTick.tick - textRenderTime
         if (timeDiff < 3200) {
             if (timeDiff >= 3000) {
-                itemLabelRenderer.textOpacity = (1 - (timeDiff - 3000).toFloat() / 200).coerceIn(0f, 1f)
+                itemLabelRenderer.textOpacity = (1 - (timeDiff - 3000).toDouble() / 200).coerceIn(0.0, 1.0)
             }
             itemLabelRenderer.drawText()
         }
@@ -133,5 +129,12 @@ class HotBar(val screen: FarmScene) : Widget(screen.window) {
             item?.place(getGridBounds(index))
             item?.render()
         }
+
+        itemCheckBox.render()
+    }
+
+    override fun cleanup() {
+        super.cleanup()
+        itemCheckBox.cleanup()
     }
 }

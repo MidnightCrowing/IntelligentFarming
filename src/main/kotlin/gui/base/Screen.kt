@@ -10,7 +10,7 @@ open class Screen(val window: Window) {
     open fun update() {}
 
     open fun render() {
-        bgRenderer.render(0f, 0f, window.width.toFloat(), window.height.toFloat())
+        bgRenderer.render(0.0, 0.0, window.width.toDouble(), window.height.toDouble())
     }
 
     open fun cleanup() {}

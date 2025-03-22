@@ -5,12 +5,13 @@ import com.midnightcrowing.events.listeners.*
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.gui.base.Window
 import org.lwjgl.glfw.GLFW.*
+import kotlin.reflect.KClass
 
 
 // 事件管理器
 class EventManager(val window: Window) {
     // 使用 Set 来确保每个事件类型的监听器是唯一的
-    private val listeners = mutableMapOf<Class<out Event>, MutableSet<EventListener<out Event>>>()
+    private val listeners = mutableMapOf<KClass<out Event>, MutableSet<EventListener<out Event>>>()
 
     init {
         initGLFWCallback()
@@ -31,10 +32,14 @@ class EventManager(val window: Window) {
         glfwSetFramebufferSizeCallback(window.handle) { _, width, height ->
             triggerWindowResizeEvent(width, height)
         }
+        // 监听键盘按下
+        glfwSetKeyCallback(window.handle) { _, key, scancode, action, mods ->
+            triggerKeyEvent(key, action, mods)
+        }
     }
 
     fun triggerMouseButtonEvent(button: Int, action: Int, mods: Int) {
-        listeners[MouseButtonEvent::class.java]?.forEach { listener ->
+        listeners[MouseButtonEvent::class]?.forEach { listener ->
             @Suppress("UNCHECKED_CAST") // 告诉编译器忽略类型转换的警告，因类型转换在此时是安全的
             (listener as EventListener<MouseButtonEvent>).eventFilter(
                 MouseButtonEvent(button, action, mods)
@@ -43,7 +48,7 @@ class EventManager(val window: Window) {
     }
 
     fun triggerCursorPosEvent(xPos: Double, yPos: Double) {
-        listeners[CursorMoveEvent::class.java]?.forEach { listener ->
+        listeners[CursorMoveEvent::class]?.forEach { listener ->
             @Suppress("UNCHECKED_CAST")
             (listener as EventListener<CursorMoveEvent>).eventFilter(
                 CursorMoveEvent(xPos, yPos)
@@ -52,10 +57,19 @@ class EventManager(val window: Window) {
     }
 
     fun triggerWindowResizeEvent(width: Int, height: Int) {
-        listeners[WindowResizeEvent::class.java]?.forEach { listener ->
+        listeners[WindowResizeEvent::class]?.forEach { listener ->
             @Suppress("UNCHECKED_CAST")
             (listener as EventListener<WindowResizeEvent>).eventFilter(
                 WindowResizeEvent(width, height)
+            )
+        }
+    }
+
+    fun triggerKeyEvent(key: Int, action: Int, mods: Int) {
+        listeners[KeyEvent::class]?.forEach { listener ->
+            @Suppress("UNCHECKED_CAST")
+            (listener as EventListener<KeyEvent>).eventFilter(
+                KeyEvent(key, action, mods)
             )
         }
     }
@@ -67,6 +81,7 @@ class EventManager(val window: Window) {
         MouseMoveListener(window, this)
         MousePressedListener(window, this)
         MouseReleasedListener(window, this)
+        KeyPressedListener(window, this)
         WindowResizeEventListener(window, this)
     }
 
@@ -83,7 +98,7 @@ class EventManager(val window: Window) {
     }
 
     // 注册组件的事件回调
-    fun <T : Event> registerWidget(eventType: Class<T>, widget: Widget) {
+    fun <T : Event> registerWidget(eventType: KClass<T>, widget: Widget) {
         // 查找与事件类型匹配的第一个监听器
         val listener = listeners.values
             .flatten() // 将所有的监听器集合平铺
@@ -94,7 +109,7 @@ class EventManager(val window: Window) {
     }
 
     // 取消注册组件的事件回调
-    fun <T : Event> unregisterWidget(eventType: Class<T>, widget: Widget) {
+    fun <T : Event> unregisterWidget(eventType: KClass<T>, widget: Widget) {
         // 查找与事件类型匹配的第一个监听器
         val listener = listeners.values
             .flatten() // 将所有的监听器集合平铺
