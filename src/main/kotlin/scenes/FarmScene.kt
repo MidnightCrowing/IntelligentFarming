@@ -1,6 +1,7 @@
 package com.midnightcrowing.scenes
 
 import com.midnightcrowing.farmings.FarmArea
+import com.midnightcrowing.gui.CropInfoDisplay
 import com.midnightcrowing.gui.HotBar
 import com.midnightcrowing.gui.Inventory
 import com.midnightcrowing.gui.base.Screen
@@ -9,11 +10,6 @@ import com.midnightcrowing.model.Point
 import com.midnightcrowing.render.ImageRenderer
 import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
-import com.midnightcrowing.gui.HotBar.Companion.SCALED_HEIGHT as HotBar_SCALED_HEIGHT
-import com.midnightcrowing.gui.HotBar.Companion.SCALED_WIDTH as HotBar_SCALED_WIDTH
-import com.midnightcrowing.gui.Inventory.Companion.OFFSET_Y as Inventory_OFFSET_Y
-import com.midnightcrowing.gui.Inventory.Companion.SCALED_HEIGHT as Inventory_SCALED_HEIGHT
-import com.midnightcrowing.gui.Inventory.Companion.SCALED_WIDTH as Inventory_SCALED_WIDTH
 
 class FarmScene(window: Window) : Screen(window) {
     private companion object {
@@ -38,48 +34,43 @@ class FarmScene(window: Window) : Screen(window) {
 
     // UI
     val farmArea: FarmArea = FarmArea(window, farmlandBoard = FARMLAND_BOARD)
+    val cropInfoDisplay: CropInfoDisplay = CropInfoDisplay(this)
     val hotBar: HotBar = HotBar(this)
     val inventory: Inventory = Inventory(this)
 
+    init {
+        inventory.setHidden(true)
+    }
+
     override fun place() {
+        val w = window.width
+        val h = window.height
+
         // hotBar
-        val hotBarPoint1 = Point(
-            (window.width - HotBar_SCALED_WIDTH) / 2,
-            window.height - HotBar_SCALED_HEIGHT
+        hotBar.place(
+            (w - HotBar.SCALED_WIDTH) / 2, h - HotBar.SCALED_HEIGHT,
+            (w + HotBar.SCALED_WIDTH) / 2, h.toDouble()
         )
-        val hotBarPoint2 = Point(
-            hotBarPoint1.x + HotBar_SCALED_WIDTH,
-            window.height.toDouble()
-        )
-        hotBar.place(hotBarPoint1.x, hotBarPoint1.y, hotBarPoint2.x, hotBarPoint2.y)
 
         // inventory
-        val inventoryPoint1 = Point(
-            (window.width - Inventory_SCALED_WIDTH) / 2,
-            (window.height - Inventory_SCALED_HEIGHT) / 2 + Inventory_OFFSET_Y
+        inventory.place(
+            (w - Inventory.SCALED_WIDTH) / 2, (h - Inventory.SCALED_HEIGHT) / 2 + Inventory.OFFSET_Y,
+            (w + Inventory.SCALED_WIDTH) / 2, (h + Inventory.SCALED_HEIGHT) / 2 + Inventory.OFFSET_Y
         )
-        val inventoryPoint2 = Point(
-            inventoryPoint1.x + Inventory_SCALED_WIDTH,
-            inventoryPoint1.y + Inventory_SCALED_HEIGHT
+
+        // cropInfoDisplay
+        cropInfoDisplay.place(
+            (w - CropInfoDisplay.SCALED_WIDTH) / 2, 0.0,
+            (w + CropInfoDisplay.SCALED_WIDTH) / 2, CropInfoDisplay.SCALED_HEIGHT
         )
-        inventory.place(inventoryPoint1.x, inventoryPoint1.y, inventoryPoint2.x, inventoryPoint2.y)
 
         // farmArea
-        val blockDeep: Double = BASE_FARMLAND_BLACK_DEEP / BASE_BG_HEIGHT * window.height
-        val blockHeight: Double = BASE_BLOCK_HEIGHT / BASE_BG_HEIGHT * window.height
-        val leftPoint = Point(
-            BASE_LEFT_POINT.x / BASE_BG_WIDTH * window.width,
-            BASE_LEFT_POINT.y / BASE_BG_HEIGHT * window.height
-        )
-        val middlePoint = Point(
-            BASE_MIDDLE_POINT.x / BASE_BG_WIDTH * window.width,
-            BASE_MIDDLE_POINT.y / BASE_BG_HEIGHT * window.height
-        )
-        val rightPoint = Point(
-            BASE_RIGHT_POINT.x / BASE_BG_WIDTH * window.width,
-            BASE_RIGHT_POINT.y / BASE_BG_HEIGHT * window.height
-        )
-        farmArea.place(blockDeep, blockHeight, leftPoint, middlePoint, rightPoint)
+        val blkDeep = BASE_FARMLAND_BLACK_DEEP / BASE_BG_HEIGHT * h
+        val blkH = BASE_BLOCK_HEIGHT / BASE_BG_HEIGHT * h
+        val lPt = Point(BASE_LEFT_POINT.x / BASE_BG_WIDTH * w, BASE_LEFT_POINT.y / BASE_BG_HEIGHT * h)
+        val mPt = Point(BASE_MIDDLE_POINT.x / BASE_BG_WIDTH * w, BASE_MIDDLE_POINT.y / BASE_BG_HEIGHT * h)
+        val rPt = Point(BASE_RIGHT_POINT.x / BASE_BG_WIDTH * w, BASE_RIGHT_POINT.y / BASE_BG_HEIGHT * h)
+        farmArea.place(blkDeep, blkH, lPt, mPt, rPt)
     }
 
     override fun update() = farmArea.update()
@@ -87,13 +78,16 @@ class FarmScene(window: Window) : Screen(window) {
     override fun render() {
         super.render()
         farmArea.render()
+        cropInfoDisplay.render()
         hotBar.render()
         inventory.render()
     }
 
     override fun cleanup() {
+        super.cleanup()
         bgRenderer.cleanup()
         farmArea.cleanup()
+        cropInfoDisplay.cleanup()
         hotBar.cleanup()
         inventory.cleanup()
     }

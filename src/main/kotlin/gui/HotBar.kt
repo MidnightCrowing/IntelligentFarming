@@ -82,13 +82,13 @@ class HotBar(val screen: FarmScene) : Widget(screen.window, z = 1) {
         }
 
     // 计算网格边界
-    private fun calculateGridBounds(id: Int, expandBy: Double = 0.0): ScreenBounds {
+    private fun calculateGridBounds(id: Int): ScreenBounds {
         require(id in 0..8) { "id must be between 0 and 8" }
 
-        val startX: Double = gridStartX + (GRID_WIDTH + GRID_GAP) * id - expandBy
-        val endX: Double = startX + GRID_WIDTH + expandBy * 2
-        val startY: Double = gridStartY - expandBy
-        val endY: Double = gridEndY + expandBy
+        val startX: Double = gridStartX + (GRID_WIDTH + GRID_GAP) * id
+        val endX: Double = startX + GRID_WIDTH
+        val startY: Double = gridStartY
+        val endY: Double = gridEndY
 
         return ScreenBounds(startX, startY, endX, endY)
     }
@@ -97,7 +97,15 @@ class HotBar(val screen: FarmScene) : Widget(screen.window, z = 1) {
     fun getGridBounds(id: Int): ScreenBounds = calculateGridBounds(id)
 
     // 获取带选中框的网格位置
-    fun getGridBoundsWithCheckbox(id: Int): ScreenBounds = calculateGridBounds(id, CHECKBOX_SIZE)
+    fun getGridBoundsWithCheckbox(id: Int): ScreenBounds {
+        val itemBounds = calculateGridBounds(id)
+        return ScreenBounds(
+            x1 = itemBounds.x1 - CHECKBOX_SIZE,
+            y1 = itemBounds.y1 - CHECKBOX_SIZE - 3,
+            x2 = itemBounds.x2 + CHECKBOX_SIZE,
+            y2 = itemBounds.y2 + CHECKBOX_SIZE
+        )
+    }
 
     // 通过坐标获取网格ID
     private fun findGridCheckboxIdAt(x: Double): Int? =
@@ -116,6 +124,7 @@ class HotBar(val screen: FarmScene) : Widget(screen.window, z = 1) {
 
     override fun render() {
         super.render()
+        if (!isVisible) return
 
         val timeDiff = GameTick.tick - textRenderTime
         if (timeDiff < 3200) {

@@ -21,7 +21,7 @@ class Tomato(farmArea: FarmArea) : FarmCropBase(farmArea) {
 
     override fun onFarmRightClick() {
         if (isFullyGrown) {
-            growthDuration = triangularRandom(0.0, 80000.0, 12000.0).toInt()
+            growthDuration = triangularRandom(0.0, 80000.0, 12000.0)
             plantedTick = (GameTick.tick - growthDuration * 0.56).toLong()
         }
     }

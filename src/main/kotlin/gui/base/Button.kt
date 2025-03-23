@@ -61,6 +61,7 @@ class Button : Widget {
      */
     override fun render() {
         super.render()
+        if (!isVisible) return
         textRenderer.drawText()
     }
 

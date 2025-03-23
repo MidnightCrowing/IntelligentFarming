@@ -7,6 +7,7 @@ enum class ResourcesEnum(private val resourcePath: String) {
     COMPONENTS_HOT_BAR("/assets/gui/hot_bar.png"),
     INVENTORY("/assets/gui/inventory.png"),
     CHECK_BOX("/assets/gui/check_box.png"),
+    TOAST("/assets/gui/toast.png"),
     BUTTON_DEFAULT("/assets/gui/button_default.png"),
     BUTTON_HOVER("/assets/gui/button_hover.png"),
     BUTTON_DISABLED("/assets/gui/button_disabled.png"),

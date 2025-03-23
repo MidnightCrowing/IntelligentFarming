@@ -1,4 +1,3 @@
 package com.midnightcrowing.controllers
 
-class FarmController {
-}
+class FarmController

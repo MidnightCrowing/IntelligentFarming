@@ -25,7 +25,7 @@ class MainMenuScreen(window: Window) : Screen(window) {
     }
 
     private companion object {
-        const val BTN_WIDTH = 0.86
+        const val BTN_WIDTH = 0.75
         const val BTN_HEIGHT = 0.12
         const val BTN_GAP_X = 0.04
         const val BTN_GAP_Y = 0.07
@@ -68,7 +68,6 @@ class MainMenuScreen(window: Window) : Screen(window) {
 
     override fun render() {
         super.render()
-
         startButton.render()
         optionButton.render()
         exitButton.render()

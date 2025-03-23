@@ -6,12 +6,17 @@ import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.gui.base.Window
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.particles.ParticleSystem
+import com.midnightcrowing.render.LineRenderer
+import com.midnightcrowing.resource.ColorEnum
 
 /**
  * 农场区域类，用于管理农田的布局和作物种植。
  * 继承自[Widget]，支持鼠标事件处理和渲染。
  */
 class FarmArea : Widget {
+    private val lineRenderer: LineRenderer = LineRenderer(width = 2.0, color = floatArrayOf(0f, 0f, 0f, 0.7f))
+
     private val farmlandBoard: List<Int> // 农田布局数据，每个整数表示一列的可用地块
     private val rowCount: Int // 农田的行数
     private val columnCount: Int // 农田的列数
@@ -33,6 +38,9 @@ class FarmArea : Widget {
     private val blockLeftHeight: Double get() = (middlePoint.y - leftPoint.y) / rowCount
     private val blockRightWidth: Double get() = (rightPoint.x - middlePoint.x) / columnCount
     private val blockRightHeight: Double get() = (middlePoint.y - rightPoint.y) / columnCount
+
+    private var mouseX: Int? = null
+    private var mouseY: Int? = null
 
     /**
      * 当前激活的种子作物。
@@ -152,14 +160,18 @@ class FarmArea : Widget {
 
         val (x, y) = findMouseInField(e.x, e.y) ?: run {
             activeSeedCrop?.place(ScreenBounds.EMPTY)
+            mouseX = null
+            mouseY = null
             return
         }
 
-        if (isAvailable(x, y) && !isExist(x, y)) {
-            activeSeedCrop?.place(getBlockBounds(x, y))
-        } else {
-            activeSeedCrop?.place(ScreenBounds.EMPTY)
-        }
+        mouseX = x
+        mouseY = y
+
+        activeSeedCrop?.place(
+            if (isAvailable(x, y) && !isExist(x, y)) getBlockBounds(x, y)
+            else ScreenBounds.EMPTY
+        )
     }
 
     /**
@@ -181,6 +193,7 @@ class FarmArea : Widget {
             cropsGrid[y][x] = newCrop
         }
     }
+    private val particleSystem = ParticleSystem()
 
     override fun onClick(e: MouseClickEvent) {
         val (x, y) = findMouseInField(e.x, e.y) ?: return
@@ -188,6 +201,11 @@ class FarmArea : Widget {
         val crop = cropsGrid[y][x]
         crop?.cleanup()
         cropsGrid[y][x] = null
+
+        // Generate particles at the crop's position
+        val bounds = getBlockBounds(x, y)
+        val position = Point((bounds.x1 + bounds.x2) / 2, (bounds.y1 + bounds.y2) / 2)
+        particleSystem.generateParticles(position, ColorEnum.GREEN.value.map { it.toFloat() }.toFloatArray(), 50)
     }
 
     /**
@@ -220,6 +238,7 @@ class FarmArea : Widget {
      */
     fun update() {
         cropsGrid.forEach { row -> row.forEach { it?.update() } }
+        particleSystem.update(0.016f) // Assuming 60 FPS, so deltaTime is approximately 1/60
     }
 
     /**
@@ -227,8 +246,36 @@ class FarmArea : Widget {
      */
     override fun render() {
         super.render()
+        renderBorderline()
         activeSeedCrop?.render()
         cropsGrid.reversed().forEach { row -> row.reversed().forEach { it?.render() } }
+        particleSystem.render()
+    }
+
+    /**
+     * 渲染农田的边界线。
+     * 如果鼠标坐标有效，则绘制边界线。
+     */
+    fun renderBorderline() {
+        if (mouseX == null || mouseY == null) return
+
+        val point1 = Point(
+            middlePoint.x - blockLeftWidth * mouseY!! + blockRightWidth * mouseX!!,
+            middlePoint.y - blockLeftHeight * mouseY!! - blockRightHeight * mouseX!!
+        )
+        val point2 = Point(point1.x - blockLeftWidth, point1.y - blockLeftHeight)
+        val point3 = Point(point1.x + blockRightWidth, point1.y - blockRightHeight)
+        val point4 = Point(point2.x + blockRightWidth, point2.y - blockRightHeight)
+
+        val points = listOf(point1, point2, point4, point3, point1) // 形成闭环
+
+        for (i in 0 until 4) {
+            lineRenderer.x1 = points[i].x
+            lineRenderer.y1 = points[i].y
+            lineRenderer.x2 = points[i + 1].x
+            lineRenderer.y2 = points[i + 1].y
+            lineRenderer.render()
+        }
     }
 
     /**
