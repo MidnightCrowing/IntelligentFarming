@@ -6,9 +6,7 @@ import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
-import com.midnightcrowing.render.NanoVGContext.vg
 import com.midnightcrowing.render.TextRenderer
-import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
 import com.midnightcrowing.scenes.FarmScene
 import com.midnightcrowing.utils.GameTick
@@ -39,8 +37,10 @@ class HotBar(val screen: FarmScene) : Widget(screen.window, z = 1) {
         val CHECKBOX_SIZE by lazy { BASE_CHECKBOX_SIZE * SCALED }
     }
 
-    override val renderer: ImageRenderer = createImageRenderer(ResourcesEnum.COMPONENTS_HOT_BAR.inputStream)
-    val itemLabelRenderer: TextRenderer = TextRenderer(vg, fontSize = 20.0)
+    override val renderer: ImageRenderer = ImageRenderer.createImageRenderer(
+        ResourcesEnum.COMPONENTS_HOT_BAR.inputStream
+    )
+    val itemLabelRenderer: TextRenderer = TextRenderer(window.nvg, fontSize = 20.0)
 
     val controller = HotBarController(this)
     val itemCheckBox: ItemCheckBox = ItemCheckBox(this)
@@ -131,7 +131,7 @@ class HotBar(val screen: FarmScene) : Widget(screen.window, z = 1) {
             if (timeDiff >= 3000) {
                 itemLabelRenderer.textOpacity = (1 - (timeDiff - 3000).toDouble() / 200).coerceIn(0.0, 1.0)
             }
-            itemLabelRenderer.drawText()
+            itemLabelRenderer.render()
         }
 
         for ((index, item) in controller.itemsList) {

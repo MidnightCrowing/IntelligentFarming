@@ -3,14 +3,13 @@ package com.midnightcrowing.gui
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
-import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
 
 class ItemCheckBox(parent: Widget) : Widget(parent) {
-    override val renderer: ImageRenderer = createImageRenderer(ResourcesEnum.CHECK_BOX.inputStream)
+    override val renderer: ImageRenderer = ImageRenderer.createImageRenderer(ResourcesEnum.CHECK_BOX.inputStream)
 
-    private var boundsNow = ScreenBounds(0.0, 0.0, 0.0, 0.0)
-    private var boundsTarget = ScreenBounds(0.0, 0.0, 0.0, 0.0)
+    private var boundsNow = ScreenBounds.EMPTY
+    private var boundsTarget = ScreenBounds.EMPTY
 
     private var lastUpdateTime: Long = System.currentTimeMillis()
 

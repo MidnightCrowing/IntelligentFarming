@@ -1,29 +1,29 @@
 package com.midnightcrowing.render
 
-
-/**
- * 纹理管理类，负责加载和绑定纹理，支持透明度。
- */
-import com.midnightcrowing.resource.ResourcesLoader
+import com.midnightcrowing.model.Image
 import org.lwjgl.opengl.ARBFramebufferObject.glGenerateMipmap
 import org.lwjgl.opengl.GL46.*
 import java.io.InputStream
 
 
-fun createImageTexture(inputStream: InputStream?): Texture {
-    if (inputStream == null) {
-        throw IllegalArgumentException("inputStream: 不能为空")
-    }
-    return Texture(inputStream).apply { load() }
-}
-
-
+/**
+ * 纹理管理类，负责加载和绑定纹理，支持透明度。
+ */
 class Texture(private val inputStream: InputStream) {
+    companion object {
+        fun createImageTexture(inputStream: InputStream?): Texture {
+            if (inputStream == null) {
+                throw IllegalArgumentException("inputStream: 不能为空")
+            }
+            return Texture(inputStream).apply { load() }
+        }
+    }
+
     var id: Int = 0
         private set
 
     fun load() {
-        val image = ResourcesLoader.loadImage(inputStream)
+        val image = Image.loadImage(inputStream)
 
         id = glGenTextures()
         glBindTexture(GL_TEXTURE_2D, id)

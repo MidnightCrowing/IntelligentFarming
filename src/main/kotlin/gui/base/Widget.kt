@@ -6,7 +6,7 @@ import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
 
 open class Widget {
-    val window: Window?
+    val window: Window
     val parent: Widget?
 
     open val renderer: ImageRenderer = ImageRenderer()
@@ -38,9 +38,6 @@ open class Widget {
      * 注册事件监听器
      */
     private fun registerListeners() {
-        if (window == null) {
-            return
-        }
         window.eventManager.registerWidget(WindowResizeEvent::class, this)
         window.eventManager.registerWidget(MouseClickEvent::class, this)
         window.eventManager.registerWidget(MouseRightClickEvent::class, this)
@@ -56,9 +53,6 @@ open class Widget {
      * 取消注册事件监听器
      */
     private fun unregisterListener() {
-        if (window == null) {
-            return
-        }
         window.eventManager.unregisterWidget(WindowResizeEvent::class, this)
         window.eventManager.unregisterWidget(MouseClickEvent::class, this)
         window.eventManager.unregisterWidget(MouseRightClickEvent::class, this)

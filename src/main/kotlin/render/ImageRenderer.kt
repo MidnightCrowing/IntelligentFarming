@@ -1,23 +1,26 @@
 package com.midnightcrowing.render
 
 import com.midnightcrowing.model.ScreenBounds
-import org.lwjgl.opengl.GL46
+import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL46.glTexCoord2f
 import org.lwjgl.opengl.GL46.glVertex2f
 import java.io.InputStream
 
-/**
- * 从图片资源中创建一个渲染器
- * @param inputStream 图片资源的输入流
- */
-fun createImageRenderer(inputStream: InputStream?): ImageRenderer {
-    return ImageRenderer(createImageTexture(inputStream))
-}
 
 /**
  * 渲染器，负责渲染场景
  */
 class ImageRenderer {
+    companion object {
+        /**
+         * 从图片资源中创建一个渲染器
+         * @param inputStream 图片资源的输入流
+         */
+        fun createImageRenderer(inputStream: InputStream?): ImageRenderer {
+            return ImageRenderer(Texture.createImageTexture(inputStream))
+        }
+    }
+
     var texture: Texture? = null
         set(value) {
             if (field?.id != value?.id) {
@@ -37,7 +40,7 @@ class ImageRenderer {
 
     private fun bindTexture() {
         texture?.let {
-            GL46.glBindTexture(GL46.GL_TEXTURE_2D, it.id)
+            glBindTexture(GL_TEXTURE_2D, it.id)
         }
     }
 
@@ -46,16 +49,18 @@ class ImageRenderer {
             return
         }
 
+        glEnable(GL_TEXTURE_2D)  // 重新启用纹理
         texture!!.bind()
 
-        GL46.glColor4f(1f, 1f, 1f, alpha.toFloat())
+        glColor4f(1f, 1f, 1f, alpha.toFloat())
 
-        GL46.glBegin(GL46.GL_QUADS)
+        glBegin(GL_QUADS)
         glTexCoord2f(0f, 0f); glVertex2f(x1.toFloat(), y2.toFloat())
         glTexCoord2f(1f, 0f); glVertex2f(x2.toFloat(), y2.toFloat())
         glTexCoord2f(1f, 1f); glVertex2f(x2.toFloat(), y1.toFloat())
         glTexCoord2f(0f, 1f); glVertex2f(x1.toFloat(), y1.toFloat())
-        GL46.glEnd()
+        glEnd()
+        glDisable(GL_TEXTURE_2D)
     }
 
     fun render(screenBounds: ScreenBounds) {

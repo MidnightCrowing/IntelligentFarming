@@ -3,10 +3,8 @@ package com.midnightcrowing.gui.base
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
-import com.midnightcrowing.render.NanoVGContext.vg
 import com.midnightcrowing.render.TextRenderer
 import com.midnightcrowing.render.Texture
-import com.midnightcrowing.resource.ColorEnum
 import com.midnightcrowing.resource.ResourcesEnum
 
 
@@ -32,7 +30,7 @@ class Button : Widget {
         ?: throw IllegalArgumentException("Default texture cannot be null")
 
     // 文字渲染器
-    private val textRenderer = TextRenderer(vg)
+    private val textRenderer = TextRenderer(window.nvg)
 
     var text: String = ""
         set(value) {
@@ -44,7 +42,7 @@ class Button : Widget {
             field = value
             textRenderer.fontSize = value
         }
-    var textColor: DoubleArray = ColorEnum.WHITE.value
+    var textColor: DoubleArray = doubleArrayOf(1.0, 1.0, 1.0, 1.0)
         set(value) {
             field = value
             textRenderer.textColor = value
@@ -62,7 +60,7 @@ class Button : Widget {
     override fun render() {
         super.render()
         if (!isVisible) return
-        textRenderer.drawText()
+        textRenderer.render()
     }
 
     /**

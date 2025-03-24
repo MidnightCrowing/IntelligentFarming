@@ -8,7 +8,6 @@ import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.particles.ParticleSystem
 import com.midnightcrowing.render.LineRenderer
-import com.midnightcrowing.resource.ColorEnum
 
 /**
  * 农场区域类，用于管理农田的布局和作物种植。
@@ -27,9 +26,9 @@ class FarmArea : Widget {
     }
 
     // 布局参数
-    private var middlePoint = Point(0.0, 0.0) // 农田中心点坐标
-    private var leftPoint = Point(0.0, 0.0) // 农田左侧点坐标
-    private var rightPoint = Point(0.0, 0.0) // 农田右侧点坐标
+    private var middlePoint = Point.EMPTY // 农田中心点坐标
+    private var leftPoint = Point.EMPTY // 农田左侧点坐标
+    private var rightPoint = Point.EMPTY // 农田右侧点坐标
     private var blockHeight = 0.0 // 农田块的高度
     private var blockDeep = 0.0 // 农田块的深度
 
@@ -193,19 +192,20 @@ class FarmArea : Widget {
             cropsGrid[y][x] = newCrop
         }
     }
+
     private val particleSystem = ParticleSystem()
 
     override fun onClick(e: MouseClickEvent) {
         val (x, y) = findMouseInField(e.x, e.y) ?: return
-        if (!isAvailable(x, y) || !isExist(x, y)) return
-        val crop = cropsGrid[y][x]
-        crop?.cleanup()
-        cropsGrid[y][x] = null
-
-        // Generate particles at the crop's position
+//        if (!isAvailable(x, y) || !isExist(x, y)) return
+//        val crop = cropsGrid[y][x]
+//        crop?.cleanup()
+//        cropsGrid[y][x] = null
+//
+//        // Generate particles at the crop's position
         val bounds = getBlockBounds(x, y)
         val position = Point((bounds.x1 + bounds.x2) / 2, (bounds.y1 + bounds.y2) / 2)
-        particleSystem.generateParticles(position, ColorEnum.GREEN.value.map { it.toFloat() }.toFloatArray(), 50)
+        particleSystem.generateParticles(position, floatArrayOf(217 / 255f, 185 / 255f, 100 / 255f, 1f), 40)
     }
 
     /**

@@ -21,9 +21,9 @@ class WindowResizeEventListener(
     override fun eventFilter(event: WindowResizeEvent) = triggerEvent(event)
 
     override fun triggerEvent(event: WindowResizeEvent) {
-        // 调用 Window 的回调方法
-        window.onWindowResize(event)
-        window.screen.place()
+        // 调用 Window 和 screen 的回调方法
+        window.handleResize(event.width, event.height)
+        window.screen.place(event.width, event.height)
 
         // 触发事件
         val widgetsCopy = registerWidgets.toList()

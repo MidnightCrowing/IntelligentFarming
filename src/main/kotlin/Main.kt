@@ -1,34 +1,36 @@
 package com.midnightcrowing
 
-import com.midnightcrowing.config.AppConfig
 import com.midnightcrowing.gui.base.Window
-import com.midnightcrowing.resource.FontEnum
 import com.midnightcrowing.resource.ResourcesEnum
-import com.midnightcrowing.resource.ResourcesLoader.loadFont
 import com.midnightcrowing.scenes.MainMenuScreen
+import org.lwjgl.nanovg.NanoVG.nvgCreateFont
 
 
 fun main() {
-    val window = Window(
-        AppConfig.APP_NAME_CN,
-        AppConfig.WINDOW_WIDTH, AppConfig.WINDOW_HEIGHT,
-        AppConfig.WINDOW_MIN_WIDTH, AppConfig.WINDOW_MIN_HEIGHT,
-    )
+    val window = Window.createWindow()
 
+    // TODO
     val fontPath = ResourcesEnum.FONT_DEFAULT.inputStream
     if (fontPath == null) {
         println("字体资源加载失败")
         return
     }
-    loadFont(
-        FontEnum.DEFAULT.value,
+    nvgCreateFont(
+        window.nvg,
+        "default",
         "E:/Projects/IntelligentFarming/build/resources/main/assets/font/unifont-16.0.02.otf"
-//        fontPath
     )
 
     window.screen = MainMenuScreen(window)
 
-    window.loop()
+    while (!window.shouldClose()) {
+        window.update()
+        window.renderBegin()
+        window.render()
+        window.renderEnd()
+        window.swapBuffers() // 交换帧缓冲区
+        window.pollEvents() // 处理窗口事件
+    }
 
     // 释放资源
     window.cleanup()

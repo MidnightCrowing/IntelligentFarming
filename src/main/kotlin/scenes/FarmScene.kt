@@ -8,7 +8,6 @@ import com.midnightcrowing.gui.base.Screen
 import com.midnightcrowing.gui.base.Window
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.render.ImageRenderer
-import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
 
 class FarmScene(window: Window) : Screen(window) {
@@ -30,7 +29,9 @@ class FarmScene(window: Window) : Screen(window) {
         )
     }
 
-    override val bgRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.FARM_BACKGROUND.inputStream)
+    override val bgRenderer: ImageRenderer = ImageRenderer.createImageRenderer(
+        ResourcesEnum.FARM_BACKGROUND.inputStream
+    )
 
     // UI
     val farmArea: FarmArea = FarmArea(window, farmlandBoard = FARMLAND_BOARD)
@@ -42,10 +43,7 @@ class FarmScene(window: Window) : Screen(window) {
         inventory.setHidden(true)
     }
 
-    override fun place() {
-        val w = window.width
-        val h = window.height
-
+    override fun place(w: Int, h: Int) {
         // hotBar
         hotBar.place(
             (w - HotBar.SCALED_WIDTH) / 2, h - HotBar.SCALED_HEIGHT,
@@ -78,7 +76,7 @@ class FarmScene(window: Window) : Screen(window) {
     override fun render() {
         super.render()
         farmArea.render()
-        cropInfoDisplay.render()
+//        cropInfoDisplay.render()
         hotBar.render()
         inventory.render()
     }

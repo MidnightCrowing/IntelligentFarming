@@ -8,16 +8,15 @@ class ParticleSystem {
 
     fun generateParticles(position: Point, color: FloatArray, count: Int) {
         for (i in 0 until count) {
-//            println("生成粒子 $i")
             val randomPosition = Point(
-                position.x + Random.nextDouble(-30.0, 30.0),
-                position.y + Random.nextDouble(-30.0, 30.0)
+                position.x + Random.nextDouble(-30.0, 30.0) + Random.nextDouble(-10.0, 10.0),
+                position.y + Random.nextDouble(-15.0, 40.0) + Random.nextDouble(-5.0, 5.0)
             )
             val velocity = Point(
-                Random.nextDouble(-20.0, 20.0),
-                Random.nextDouble(-20.0, 0.0)
+                Random.nextDouble(-80.0, 80.0),
+                Random.nextDouble(75.0, 150.0)
             )
-            val life = Random.nextFloat() * 1.0
+            val life = Random.nextFloat() * 0.5
             particles.add(Particle(randomPosition, velocity, color, life))
         }
     }

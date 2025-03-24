@@ -3,7 +3,6 @@ package com.midnightcrowing.farmings
 import com.midnightcrowing.farmings.crops.*
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.render.ImageRenderer
-import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
 import kotlin.reflect.KClass
 
@@ -17,7 +16,7 @@ import kotlin.reflect.KClass
  * @param itemEnum 资源枚举
  */
 sealed class FarmItems(parent: Widget, itemEnum: ResourcesEnum) : Widget(parent) {
-    override val renderer: ImageRenderer = createImageRenderer(itemEnum.inputStream)
+    override val renderer: ImageRenderer = ImageRenderer.createImageRenderer(itemEnum.inputStream)
 
     abstract val isSeed: Boolean
 

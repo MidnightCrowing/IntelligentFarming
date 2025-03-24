@@ -37,15 +37,11 @@ class LineRenderer {
     }
 
     fun render() {
-        glDisable(GL_TEXTURE_2D) // 禁用纹理，防止影响纯色矩形
-
         glLineWidth(width.toFloat())
         glColor4f(color[0], color[1], color[2], color[3])
         glBegin(GL_LINES)
         glVertex2f(x1.toFloat(), y1.toFloat())
         glVertex2f(x2.toFloat(), y2.toFloat())
         glEnd()
-
-        glEnable(GL_TEXTURE_2D)  // 重新启用纹理
     }
 }

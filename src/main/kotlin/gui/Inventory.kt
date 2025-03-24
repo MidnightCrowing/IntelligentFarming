@@ -7,7 +7,6 @@ import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
 import com.midnightcrowing.render.RectangleRenderer
-import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
 import com.midnightcrowing.scenes.FarmScene
 
@@ -56,7 +55,7 @@ class Inventory(val screen: FarmScene) : Widget(screen.window, z = 2) {
         val GRID_GAP: Double by lazy { BASE_GRID_GAP * SCALED }
     }
 
-    override val renderer: ImageRenderer = createImageRenderer(ResourcesEnum.INVENTORY.inputStream)
+    override val renderer: ImageRenderer = ImageRenderer.createImageRenderer(ResourcesEnum.INVENTORY.inputStream)
     private val maskActiveBgRender: RectangleRenderer = RectangleRenderer(color = floatArrayOf(1f, 1f, 1f, 0.5f))
     private var maskActiveBgBounds: ScreenBounds? = null
 

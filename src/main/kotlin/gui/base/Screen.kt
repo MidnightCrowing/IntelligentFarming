@@ -5,7 +5,7 @@ import com.midnightcrowing.render.ImageRenderer
 open class Screen(val window: Window) {
     open val bgRenderer: ImageRenderer = ImageRenderer()
 
-    open fun place() {}
+    open fun place(width: Int, height: Int) {}
 
     open fun update() {}
 

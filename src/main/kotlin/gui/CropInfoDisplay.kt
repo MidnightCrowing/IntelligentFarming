@@ -2,7 +2,6 @@ package com.midnightcrowing.gui
 
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.render.ImageRenderer
-import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
 import com.midnightcrowing.scenes.FarmScene
 
@@ -19,7 +18,7 @@ class CropInfoDisplay(val screen: FarmScene) : Widget(screen.window, z = 1) {
         val SCALED_HEIGHT by lazy { BASE_HEIGHT * SCALED }
     }
 
-    override val renderer: ImageRenderer = createImageRenderer(ResourcesEnum.TOAST.inputStream)
+    override val renderer: ImageRenderer = ImageRenderer.createImageRenderer(ResourcesEnum.TOAST.inputStream)
 
     init {
         renderer.alpha = 0.8

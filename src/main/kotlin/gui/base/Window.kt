@@ -1,16 +1,15 @@
 package com.midnightcrowing.gui.base
 
-import com.midnightcrowing.events.Event.WindowResizeEvent
+import com.midnightcrowing.config.AppConfig
 import com.midnightcrowing.events.EventManager
-import com.midnightcrowing.render.NanoVGContext
 import com.midnightcrowing.render.TextRenderer
 import com.midnightcrowing.utils.FPSCounter
 import com.midnightcrowing.utils.GameTick
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
-import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_LEFT
-import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_MIDDLE
+import org.lwjgl.nanovg.NanoVG.*
+import org.lwjgl.nanovg.NanoVGGL2.*
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL46.*
 import org.lwjgl.system.MemoryUtil
@@ -19,40 +18,48 @@ import org.lwjgl.system.MemoryUtil
  * 窗口管理类，负责初始化和管理 GLFW 窗口。
  */
 class Window(
-    var title: String, var width: Int, var height: Int, var minWidth: Int = 0, var minHeight: Int = 0,
+    var title: String,
+    var width: Int,
+    var height: Int,
+    var minWidth: Int = 0,
+    var minHeight: Int = 0,
 ) {
+    companion object {
+        /**
+         * 使用应用配置创建默认窗口
+         */
+        fun createWindow() = Window(
+            AppConfig.APP_NAME_CN,
+            AppConfig.WINDOW_WIDTH,
+            AppConfig.WINDOW_HEIGHT,
+            AppConfig.WINDOW_MIN_WIDTH,
+            AppConfig.WINDOW_MIN_HEIGHT
+        )
+    }
+
     // 窗口句柄
     var handle: Long = 0L
         private set
 
     // 全局事件管理器
-    val eventManager: EventManager
+    val eventManager: EventManager = EventManager(this)
 
-    private val fpsCounter = FPSCounter()
+    val nvg: Long by lazy { nvgCreate(NVG_ANTIALIAS or NVG_STENCIL_STROKES) }
 
     var screen: Screen = Screen(this)
         set(value) {
             val oldScreen = field
             field = value
-            field.place()
+            field.place(width, height)
             oldScreen.cleanup()
         }
 
     init {
         createGLFW()
-
-        // 创建 OpenGL 的能力集，通常用于初始化 OpenGL 的各类扩展功能
-        GL.createCapabilities()
-
-        eventManager = EventManager(this) // 需要在initGLFW之前设置
-
+        createOpenGL()
+        initEventManager()
         initGLFW()
-
-        // Enable texture mapping
-        glEnable(GL_TEXTURE_2D)
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
+        initNanoVG()
     }
 
     private fun createGLFW() {
@@ -69,6 +76,17 @@ class Window(
         glfwMakeContextCurrent(handle)
     }
 
+    private fun createOpenGL() {
+        // 创建 OpenGL 的能力集，通常用于初始化 OpenGL 的各类扩展功能
+        GL.createCapabilities()
+    }
+
+    private fun initEventManager() {
+        // 初始化事件管理器
+        eventManager.initGLFWCallback()
+        eventManager.initListener()
+    }
+
     private fun initGLFW() {
         // 设置交换缓冲区的垂直同步为开启（1表示开启垂直同步，0表示关闭）
         glfwSwapInterval(1)
@@ -83,20 +101,52 @@ class Window(
         glfwSetWindowSizeLimits(handle, minWidth, minHeight, GLFW_DONT_CARE, GLFW_DONT_CARE)
     }
 
-    fun onWindowResize(e: WindowResizeEvent) {
-        width = e.width
-        height = e.height
+    private fun initNanoVG() {
+        if (nvg == 0L) {
+            throw RuntimeException("Failed to create NanoVG context")
+        }
+    }
 
-        glViewport(0, 0, width, height)
-
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        glOrtho(0.0, width.toDouble(), height.toDouble(), 0.0, -1.0, 1.0)
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
+    private val fpsCounter = FPSCounter()
+    private val fpsTextRenderer: TextRenderer = TextRenderer(nvg).apply {
+        x = 5.0; y = 15.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
+    }
+    private val tickTextRenderer: TextRenderer = TextRenderer(nvg).apply {
+        x = 5.0; y = 40.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
     }
 
     fun shouldClose(): Boolean = glfwWindowShouldClose(handle)
+
+    fun update() {
+        // 更新游戏tick
+        GameTick.update()
+        // 更新游戏内容
+        screen.update()
+        // 更新 FPS 计数器
+        fpsCounter.update()
+    }
+
+    fun renderBegin() {
+        // 开始 NanoVG 渲染
+        glEnable(GL_BLEND)  // 确保透明度正常
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        nvgBeginFrame(nvg, width.toFloat(), height.toFloat(), 1f)
+        // 清除颜色和深度缓冲区
+        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+    }
+
+    fun render() {
+        // 渲染窗口内容
+        screen.render()
+        // 渲染 FPS 和 Tick 信息
+        fpsTextRenderer.render("FPS: ${fpsCounter.fps}")
+        tickTextRenderer.render("Tick: ${GameTick.tick}")
+    }
+
+    fun renderEnd() {
+        // 结束 NanoVG 渲染
+        nvgEndFrame(nvg)
+    }
 
     /**
      * 交换帧缓冲区
@@ -108,57 +158,31 @@ class Window(
      */
     fun pollEvents() = glfwPollEvents()
 
-    val fpsTextRenderer: TextRenderer = TextRenderer(NanoVGContext.vg).apply {
-        x = 5.0; y = 15.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
-    }
-    val tickTextRenderer: TextRenderer = TextRenderer(NanoVGContext.vg).apply {
-        x = 5.0; y = 40.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
-    }
+    fun handleResize(width: Int, height: Int) {
+        this.width = width
+        this.height = height
 
-    fun loop() {
-        while (!shouldClose()) {
-            // 清除缓冲区
-            glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-            // 开始 NanoVG 绘制
-            NanoVGContext.beginFrame(this)
+        glViewport(0, 0, width, height)
 
-            GameTick.update()
-
-            // 更新游戏内容
-            screen.update()
-
-            // 渲染内容
-            screen.render()
-
-            fpsCounter.update()
-            fpsTextRenderer.drawText("FPS: ${fpsCounter.fps}")
-            tickTextRenderer.drawText("Tick: ${GameTick.tick}")
-
-            // 结束 NanoVG 绘制
-            NanoVGContext.endFrame()
-            // 交换帧缓冲区
-            swapBuffers()
-            // 处理窗口事件
-            pollEvents()
-        }
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        glOrtho(0.0, width.toDouble(), height.toDouble(), 0.0, -1.0, 1.0)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
     }
 
     /**
      * 关闭窗口
      */
-    fun exit() {
-        glfwSetWindowShouldClose(handle, true)
-    }
+    fun exit() = glfwSetWindowShouldClose(handle, true)
 
     fun cleanup() {
-        // Disable texture mapping
-        glDisable(GL_TEXTURE_2D)
-        NanoVGContext.cleanup()
         screen.cleanup()
+        nvgDelete(nvg)
+        glfwCleanup()
+    }
 
-        // Disable texture mapping
-        glDisable(GL_TEXTURE_2D)
-
+    private fun glfwCleanup() {
         Callbacks.glfwFreeCallbacks(handle)
         glfwDestroyWindow(handle)
         glfwTerminate()

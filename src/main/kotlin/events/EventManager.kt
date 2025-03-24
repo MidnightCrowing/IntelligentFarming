@@ -13,13 +13,8 @@ class EventManager(val window: Window) {
     // 使用 Set 来确保每个事件类型的监听器是唯一的
     private val listeners = mutableMapOf<KClass<out Event>, MutableSet<EventListener<out Event>>>()
 
-    init {
-        initGLFWCallback()
-        initListener()
-    }
-
     /* 设置GLFW事件回调 */
-    private fun initGLFWCallback() {
+    fun initGLFWCallback() {
         // 监听鼠标点击
         glfwSetMouseButtonCallback(window.handle) { _, button, action, mods ->
             triggerMouseButtonEvent(button, action, mods)
@@ -74,7 +69,7 @@ class EventManager(val window: Window) {
         }
     }
 
-    private fun initListener() {
+    fun initListener() {
         // 初始化监听器
         MouseClickListener(window, this)
         MouseRightClickListener(window, this)

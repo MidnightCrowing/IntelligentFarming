@@ -7,12 +7,13 @@ import com.midnightcrowing.gui.base.Window
 import com.midnightcrowing.model.NdcBounds
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
-import com.midnightcrowing.render.createImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
 import com.midnightcrowing.utils.FontSizeUtil.calculateFontSize
 
 class MainMenuScreen(window: Window) : Screen(window) {
-    override val bgRenderer: ImageRenderer = createImageRenderer(ResourcesEnum.MAIN_MENU_BACKGROUND.inputStream)
+    override val bgRenderer: ImageRenderer = ImageRenderer.createImageRenderer(
+        ResourcesEnum.MAIN_MENU_BACKGROUND.inputStream
+    )
     private val startButton = Button(window).apply { text = "开始游戏"; fontSize = 20.0 }
     private val optionButton = Button(window).apply { text = "选项..."; fontSize = 20.0 }
     private val exitButton = Button(window).apply { text = "退出游戏"; fontSize = 20.0 }
@@ -49,7 +50,7 @@ class MainMenuScreen(window: Window) : Screen(window) {
         return NdcBounds(left, top, right, bottom).toScreenBounds(window)
     }
 
-    override fun place() {
+    override fun place(width: Int, height: Int) {
         startButton.place(
             calculateButtonBounds(
                 verticalPos = BTN_OFFSET_Y,
