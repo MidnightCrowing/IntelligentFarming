@@ -52,6 +52,11 @@ class FarmArea : Widget {
         }
 
     /**
+     * 粒子系统，用于生成和管理粒子效果。
+     */
+    private val particleSystem = ParticleSystem()
+
+    /**
      * 构造函数，基于窗口和农田布局数据初始化。
      * @param window 父窗口
      * @param farmlandBoard 农田布局数据
@@ -193,19 +198,22 @@ class FarmArea : Widget {
         }
     }
 
-    private val particleSystem = ParticleSystem()
-
     override fun onClick(e: MouseClickEvent) {
         val (x, y) = findMouseInField(e.x, e.y) ?: return
-//        if (!isAvailable(x, y) || !isExist(x, y)) return
-//        val crop = cropsGrid[y][x]
-//        crop?.cleanup()
-//        cropsGrid[y][x] = null
-//
-//        // Generate particles at the crop's position
-        val bounds = getBlockBounds(x, y)
-        val position = Point((bounds.x1 + bounds.x2) / 2, (bounds.y1 + bounds.y2) / 2)
-        particleSystem.generateParticles(position, floatArrayOf(217 / 255f, 185 / 255f, 100 / 255f, 1f), 40)
+        if (!isAvailable(x, y) || !isExist(x, y)) return
+        val crop = cropsGrid[y][x]
+
+        // Generate particles at the crop's position
+        if (crop != null) {
+            val bounds = getBlockBounds(x, y)
+            val position = Point((bounds.x1 + bounds.x2) / 2, (bounds.y1 + bounds.y2) / 2)
+            crop.nowTextures?.image?.let { image ->
+                particleSystem.generateParticles(position, image, 40)
+            }
+        }
+
+        crop?.cleanup()
+        cropsGrid[y][x] = null
     }
 
     /**
@@ -231,6 +239,11 @@ class FarmArea : Widget {
         )
 
         updateCropsPosition()
+
+        particleSystem.configure(
+            Point(blockHeight / 16 * 15, blockHeight / 64 * 55),
+            blockHeight.toInt() / 10
+        )
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.midnightcrowing.render
 
+import com.midnightcrowing.model.Image
 import com.midnightcrowing.model.ScreenBounds
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL46.glTexCoord2f
@@ -18,6 +19,14 @@ class ImageRenderer {
          */
         fun createImageRenderer(inputStream: InputStream?): ImageRenderer {
             return ImageRenderer(Texture.createImageTexture(inputStream))
+        }
+
+        /**
+         * 从图片资源中创建一个渲染器
+         * @param image 图片资源
+         */
+        fun createImageRenderer(image: Image): ImageRenderer {
+            return ImageRenderer(Texture.createImageTexture(image))
         }
     }
 

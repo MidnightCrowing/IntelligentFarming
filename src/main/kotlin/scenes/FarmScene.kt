@@ -20,7 +20,7 @@ class FarmScene(window: Window) : Screen(window) {
         val BASE_LEFT_POINT: Point = Point(1364.0, (1564 - 37).toDouble())
         val BASE_MIDDLE_POINT: Point = Point(3140.0, (2242 + 17).toDouble())
         val BASE_RIGHT_POINT: Point = Point(4160.0, 1612.0)
-        val FARMLAND_BOARD = listOf(
+        val FARMLAND_BOARD: List<Int> = listOf(
             0b1111111,
             0b1111111,
             0b0000000,

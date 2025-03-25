@@ -9,7 +9,7 @@ import java.io.InputStream
 /**
  * 纹理管理类，负责加载和绑定纹理，支持透明度。
  */
-class Texture(private val inputStream: InputStream) {
+class Texture {
     companion object {
         fun createImageTexture(inputStream: InputStream?): Texture {
             if (inputStream == null) {
@@ -17,14 +17,26 @@ class Texture(private val inputStream: InputStream) {
             }
             return Texture(inputStream).apply { load() }
         }
+
+        fun createImageTexture(image: Image): Texture {
+            return Texture(image).apply { load() }
+        }
+    }
+
+    val image: Image
+
+    constructor(inputStream: InputStream) {
+        image = Image.loadImage(inputStream)
+    }
+
+    constructor(image: Image) {
+        this.image = image
     }
 
     var id: Int = 0
         private set
 
     fun load() {
-        val image = Image.loadImage(inputStream)
-
         id = glGenTextures()
         glBindTexture(GL_TEXTURE_2D, id)
 
@@ -39,8 +51,6 @@ class Texture(private val inputStream: InputStream) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width, image.height, 0, format, GL_UNSIGNED_BYTE, image.buffer)
 
         glGenerateMipmap(GL_TEXTURE_2D) // 生成 Mipmap 以提高缩放质量
-
-        image.cleanup()
     }
 
     fun bind() {
@@ -49,14 +59,15 @@ class Texture(private val inputStream: InputStream) {
 
     fun cleanup() {
         glDeleteTextures(id)
+        image.cleanup()
     }
 
-    fun copy(): Texture {
-        // TODO : 实现纹理的深拷贝
-        val newInputStream = inputStream.javaClass.getResourceAsStream(inputStream.toString())
-            ?: throw IllegalArgumentException("InputStream cannot be null")
-        val newTexture = Texture(newInputStream)
-        newTexture.load()
-        return newTexture
-    }
+//    fun copy(): Texture {
+//        // TODO : 实现纹理的深拷贝
+//        val newInputStream = inputStream.javaClass.getResourceAsStream(inputStream.toString())
+//            ?: throw IllegalArgumentException("InputStream cannot be null")
+//        val newTexture = Texture(newInputStream)
+//        newTexture.load()
+//        return newTexture
+//    }
 }
