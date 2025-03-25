@@ -34,12 +34,13 @@ class FarmScene(window: Window) : Screen(window) {
     )
 
     // UI
-    val farmArea: FarmArea = FarmArea(window, farmlandBoard = FARMLAND_BOARD)
     val cropInfoDisplay: CropInfoDisplay = CropInfoDisplay(this)
+    val farmArea: FarmArea = FarmArea(window, cropInfoDisplay = cropInfoDisplay, farmlandBoard = FARMLAND_BOARD)
     val hotBar: HotBar = HotBar(this)
     val inventory: Inventory = Inventory(this)
 
     init {
+        cropInfoDisplay.setHidden(true)
         inventory.setHidden(true)
     }
 
@@ -58,8 +59,8 @@ class FarmScene(window: Window) : Screen(window) {
 
         // cropInfoDisplay
         cropInfoDisplay.place(
-            (w - CropInfoDisplay.SCALED_WIDTH) / 2, 0.0,
-            (w + CropInfoDisplay.SCALED_WIDTH) / 2, CropInfoDisplay.SCALED_HEIGHT
+            x1 = w * 0.4, y1 = 0.0,
+            x2 = w * 0.6, y2 = w / 16.0
         )
 
         // farmArea
@@ -76,7 +77,7 @@ class FarmScene(window: Window) : Screen(window) {
     override fun render() {
         super.render()
         farmArea.render()
-//        cropInfoDisplay.render()
+        cropInfoDisplay.render()
         hotBar.render()
         inventory.render()
     }

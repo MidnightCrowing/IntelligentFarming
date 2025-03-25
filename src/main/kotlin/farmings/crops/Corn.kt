@@ -1,6 +1,10 @@
 package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
+import com.midnightcrowing.farmings.FarmItems
+import com.midnightcrowing.farmings.FarmItems.CornItem
+import com.midnightcrowing.farmings.FarmItems.CornSeedItem
+import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.render.Texture
 import com.midnightcrowing.resource.ResourcesEnum
 
@@ -15,6 +19,11 @@ class Corn(farmArea: FarmArea) : FarmCropBase(farmArea) {
         6 to Texture.createImageTexture(ResourcesEnum.CORN_GROW_6.inputStream),
         7 to Texture.createImageTexture(ResourcesEnum.CORN_GROW_7.inputStream)
     )
+
+    override fun getFarmItem(parent: Widget): FarmItems =
+        if (isFullyGrown) CornItem(parent) else CornSeedItem(parent)
+
+    override fun toString(): String = "玉米"
 
     override fun copy(): Corn {
         val newCorn = Corn(farmArea)

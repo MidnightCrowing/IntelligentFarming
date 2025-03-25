@@ -2,12 +2,14 @@ package com.midnightcrowing.farmings
 
 import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.farmings.crops.FarmCropBase
+import com.midnightcrowing.gui.CropInfoDisplay
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.gui.base.Window
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.particles.ParticleSystem
 import com.midnightcrowing.render.LineRenderer
+import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT
 
 /**
  * 农场区域类，用于管理农田的布局和作物种植。
@@ -41,28 +43,32 @@ class FarmArea : Widget {
     private var mouseX: Int? = null
     private var mouseY: Int? = null
 
-    /**
-     * 当前激活的种子作物。
-     * 设置新值时，会清理旧作物并为其设置阴影。
-     */
+    // 当前激活的种子作物。
+    // 设置新值时，会清理旧作物并为其设置阴影。
     var activeSeedCrop: FarmCropBase? = null
         set(value) {
             field?.cleanup()
             field = value?.apply { setShadow() }
         }
 
-    /**
-     * 粒子系统，用于生成和管理粒子效果。
-     */
+    // 粒子系统，用于生成和管理粒子效果
     private val particleSystem = ParticleSystem()
+
+    // 农田信息显示组件，用于显示作物信息
+    private val cropInfoDisplay: CropInfoDisplay
+
+    // 拖动状态管理
+    private var isDragging = false
+    private var lastDragPosition: Pair<Int, Int>? = null
 
     /**
      * 构造函数，基于窗口和农田布局数据初始化。
      * @param window 父窗口
      * @param farmlandBoard 农田布局数据
      */
-    constructor(window: Window, farmlandBoard: List<Int>) : super(window) {
+    constructor(window: Window, cropInfoDisplay: CropInfoDisplay, farmlandBoard: List<Int>) : super(window) {
         this.farmlandBoard = farmlandBoard
+        this.cropInfoDisplay = cropInfoDisplay
         rowCount = calculateRowCount()
         columnCount = farmlandBoard.size
         cropsGrid = Array(rowCount) { arrayOfNulls(columnCount) }
@@ -73,8 +79,9 @@ class FarmArea : Widget {
      * @param parent 父组件
      * @param farmlandBoard 农田布局数据
      */
-    constructor(parent: Widget, farmlandBoard: List<Int>) : super(parent) {
+    constructor(parent: Widget, cropInfoDisplay: CropInfoDisplay, farmlandBoard: List<Int>) : super(parent) {
         this.farmlandBoard = farmlandBoard
+        this.cropInfoDisplay = cropInfoDisplay
         rowCount = calculateRowCount()
         columnCount = farmlandBoard.size
         cropsGrid = Array(rowCount) { arrayOfNulls(columnCount) }
@@ -155,65 +162,144 @@ class FarmArea : Widget {
         return if (x in 0 until columnCount && y in 0 until rowCount) x to y else null
     }
 
-    /**
-     * 处理鼠标移动事件。
-     * 如果当前有激活的种子作物，则将其移动到鼠标所在的有效位置。
-     */
+    // region 鼠标事件处理
+
     override fun onMouseMove(e: MouseMoveEvent) {
         activeSeedCrop ?: return
 
-        val (x, y) = findMouseInField(e.x, e.y) ?: run {
-            activeSeedCrop?.place(ScreenBounds.EMPTY)
-            mouseX = null
-            mouseY = null
-            return
+        // 获取当前鼠标位置并更新悬停状态
+        val currentPos = findMouseInField(e.x, e.y).validatePosition()
+        updateHoverState(currentPos)
+
+        // 处理拖动种植
+        if (isDragging && currentPos != null) {
+            handleDragPlanting(currentPos)
         }
-
-        mouseX = x
-        mouseY = y
-
-        activeSeedCrop?.place(
-            if (isAvailable(x, y) && !isExist(x, y)) getBlockBounds(x, y)
-            else ScreenBounds.EMPTY
-        )
     }
 
-    /**
-     * 处理鼠标右键点击事件。
-     * 如果当前有激活的种子作物，则将其种植到鼠标点击的有效位置。
-     */
-    override fun onRightClick(e: MouseRightClickEvent) {
-        val (x, y) = findMouseInField(e.x, e.y) ?: return
-        if (!isAvailable(x, y)) return
-
-        if (isExist(x, y)) {
-            cropsGrid[y][x]?.onFarmRightClick()
-            return
+    override fun onMouseRelease(e: MouseReleasedEvent) {
+        if (e.button == GLFW_MOUSE_BUTTON_RIGHT) {
+            isDragging = false
+            lastDragPosition = null
         }
+    }
 
-        activeSeedCrop?.let { original ->
-            original.place(getBlockBounds(x, y))
-            val newCrop = original.copy().apply { setPlanting() }
-            cropsGrid[y][x] = newCrop
+    override fun onRightClick(e: MouseRightClickEvent) {
+        val currentPos = findMouseInField(e.x, e.y).validatePosition()
+        currentPos ?: return
+
+        when {
+            currentPos.hasCrop() -> handleDragPlanting(currentPos)
+            else -> startDragPlanting(currentPos)
         }
     }
 
     override fun onClick(e: MouseClickEvent) {
-        val (x, y) = findMouseInField(e.x, e.y) ?: return
-        if (!isAvailable(x, y) || !isExist(x, y)) return
-        val crop = cropsGrid[y][x]
-
-        // Generate particles at the crop's position
-        if (crop != null) {
-            val bounds = getBlockBounds(x, y)
-            val position = Point((bounds.x1 + bounds.x2) / 2, (bounds.y1 + bounds.y2) / 2)
-            crop.nowTextures?.image?.let { image ->
-                particleSystem.generateParticles(position, image, 40)
+        findMouseInField(e.x, e.y).validatePosition()?.let { pos ->
+            if (pos.isValid() && pos.hasCrop()) {
+                removeCropWithEffect(pos)
             }
         }
+    }
 
-        crop?.cleanup()
-        cropsGrid[y][x] = null
+    // endregion
+
+    // region 辅助方法和扩展函数
+
+    private fun Pair<Int, Int>?.validatePosition(): Pair<Int, Int>? {
+        return this?.takeIf { (x, y) -> isAvailable(x, y) }
+    }
+
+    private fun Pair<Int, Int>.isValid() = isAvailable(first, second)
+    private fun Pair<Int, Int>.hasCrop() = isExist(first, second)
+    private fun Pair<Int, Int>.crop() = cropsGrid[second][first]
+
+    private fun updateHoverState(pos: Pair<Int, Int>?) {
+        mouseX = pos?.first
+        mouseY = pos?.second
+
+        when {
+            pos == null -> clearHover()
+            pos.hasCrop() -> showCropInfo(pos)
+            else -> showActiveSeed(pos)
+        }
+    }
+
+    private fun handleDragPlanting(pos: Pair<Int, Int>) {
+        val (lastX, lastY) = lastDragPosition ?: return
+
+        // 实现线性插值种植（类似MC的拖动种植）
+        val positions = when {
+            pos.first != lastX -> (Math.min(lastX, pos.first)..Math.max(lastX, pos.first)).map { it to lastY }
+            pos.second != lastY -> (Math.min(lastY, pos.second)..Math.max(lastY, pos.second)).map { lastX to it }
+            else -> listOf(pos)
+        }
+
+        positions.forEach { (x, y) ->
+            if (!isExist(x, y)) {
+                plantCropAt(x, y)
+            }
+        }
+        lastDragPosition = pos
+    }
+
+    private fun startDragPlanting(pos: Pair<Int, Int>) {
+        plantCropAt(pos.first, pos.second)
+        isDragging = true
+        lastDragPosition = pos
+
+        cropInfoDisplay.setVisible(true)
+    }
+
+    private fun plantCropAt(x: Int, y: Int) {
+        activeSeedCrop?.let { original ->
+            original.place(getBlockBounds(x, y))
+            val newCrop = original.copy().apply { setPlanting() }
+            cropsGrid[y][x] = newCrop
+            cropInfoDisplay.setFarmCrop(newCrop)
+        }
+    }
+
+    private fun between(x1: Double, x2: Double, y1: Double, y2: Double) =
+        Point((x1 + x2) / 2, (y1 + y2) / 2)
+
+    private fun removeCropWithEffect(pos: Pair<Int, Int>) {
+        pos.crop()?.let { crop ->
+            generateParticles(crop, pos)
+            crop.cleanup()
+        }
+        cropsGrid[pos.second][pos.first] = null
+        cropInfoDisplay.clear()
+        cropInfoDisplay.setHidden(true)
+    }
+
+    private fun generateParticles(crop: FarmCropBase, pos: Pair<Int, Int>) {
+        val bounds = getBlockBounds(pos.first, pos.second)
+        val center = between(bounds.x1, bounds.x2, bounds.y1, bounds.y2)
+        crop.nowTextures?.image?.let {
+            particleSystem.generateParticles(center, it, 40)
+        }
+    }
+
+    private fun clearHover() {
+        activeSeedCrop?.setHidden(true)
+        cropInfoDisplay.setHidden(true)
+    }
+
+    private fun showCropInfo(pos: Pair<Int, Int>) {
+        activeSeedCrop?.setHidden(true)
+        cropInfoDisplay.apply {
+            setFarmCrop(pos.crop())
+            setHidden(false)
+        }
+    }
+
+    private fun showActiveSeed(pos: Pair<Int, Int>) {
+        activeSeedCrop?.apply {
+            setHidden(false)
+            place(getBlockBounds(pos.first, pos.second))
+        }
+        cropInfoDisplay.setHidden(true)
     }
 
     /**
@@ -251,6 +337,7 @@ class FarmArea : Widget {
      */
     fun update() {
         cropsGrid.forEach { row -> row.forEach { it?.update() } }
+        cropInfoDisplay.update()
         particleSystem.update(0.016f) // Assuming 60 FPS, so deltaTime is approximately 1/60
     }
 

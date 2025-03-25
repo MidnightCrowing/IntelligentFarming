@@ -3,7 +3,6 @@ package com.midnightcrowing.controllers
 import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.gui.HotBar
 import com.midnightcrowing.scenes.FarmScene
-import kotlin.reflect.full.primaryConstructor
 
 class HotBarController(private val hotBar: HotBar) {
     companion object {
@@ -37,17 +36,6 @@ class HotBarController(private val hotBar: HotBar) {
     fun changeActiveItem(id: Int) {
         val item = itemsList[id]
         hotBar.setItemLabelText(item?.toString())
-
-        if (item?.isSeed == true) {
-            val activeSeedCropClass = item.getCrop()
-            if (activeSeedCropClass != null) {
-                val constructor = activeSeedCropClass.primaryConstructor
-                    ?: throw IllegalArgumentException("Class ${activeSeedCropClass.simpleName} has no primary constructor")
-                val activeSeedCrop = constructor.call(screen.farmArea)
-                screen.farmArea.activeSeedCrop = activeSeedCrop
-                return
-            }
-        }
-        screen.farmArea.activeSeedCrop = null
+        screen.farmArea.activeSeedCrop = item?.takeIf { it.isSeed }?.getCrop(screen.farmArea)
     }
 }

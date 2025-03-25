@@ -4,7 +4,6 @@ import com.midnightcrowing.farmings.crops.*
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.render.ImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
-import kotlin.reflect.KClass
 
 
 /**
@@ -20,7 +19,7 @@ sealed class FarmItems(parent: Widget, itemEnum: ResourcesEnum) : Widget(parent)
 
     abstract val isSeed: Boolean
 
-    open fun getCrop(): KClass<out FarmCropBase>? = null
+    open fun getCrop(farmArea: FarmArea): FarmCropBase? = null
 
     class CabbageItem(parent: Widget) : FarmItems(parent, ResourcesEnum.CABBAGE) {
         override fun toString(): String = "卷心菜"
@@ -30,13 +29,13 @@ sealed class FarmItems(parent: Widget, itemEnum: ResourcesEnum) : Widget(parent)
     class CabbageSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.CABBAGE_SEED) {
         override fun toString(): String = "卷心菜种子"
         override val isSeed: Boolean = true
-        override fun getCrop(): KClass<out FarmCropBase> = Cabbage::class
+        override fun getCrop(farmArea: FarmArea): FarmCropBase? = Cabbage(farmArea)
     }
 
     class CarrotItem(parent: Widget) : FarmItems(parent, ResourcesEnum.CARROT) {
         override fun toString(): String = "胡萝卜"
         override val isSeed: Boolean = true
-        override fun getCrop(): KClass<out FarmCropBase> = Carrot::class
+        override fun getCrop(farmArea: FarmArea): FarmCropBase? = Carrot(farmArea)
     }
 
     class CornItem(parent: Widget) : FarmItems(parent, ResourcesEnum.CORN) {
@@ -47,7 +46,7 @@ sealed class FarmItems(parent: Widget, itemEnum: ResourcesEnum) : Widget(parent)
     class CornSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.CORN_SEED) {
         override fun toString(): String = "玉米种子"
         override val isSeed: Boolean = true
-        override fun getCrop(): KClass<out FarmCropBase> = Corn::class
+        override fun getCrop(farmArea: FarmArea): FarmCropBase? = Corn(farmArea)
     }
 
     class CottonItem(parent: Widget) : FarmItems(parent, ResourcesEnum.COTTON) {
@@ -58,19 +57,19 @@ sealed class FarmItems(parent: Widget, itemEnum: ResourcesEnum) : Widget(parent)
     class CottonSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.COTTON_SEED) {
         override fun toString(): String = "棉花种子"
         override val isSeed: Boolean = true
-        override fun getCrop(): KClass<out FarmCropBase> = Cotton::class
+        override fun getCrop(farmArea: FarmArea): FarmCropBase? = Cotton(farmArea)
     }
 
     class OnionItem(parent: Widget) : FarmItems(parent, ResourcesEnum.ONION) {
         override fun toString(): String = "洋葱"
         override val isSeed: Boolean = true
-        override fun getCrop(): KClass<out FarmCropBase> = Onion::class
+        override fun getCrop(farmArea: FarmArea): FarmCropBase? = Onion(farmArea)
     }
 
     class PotatoItem(parent: Widget) : FarmItems(parent, ResourcesEnum.POTATO) {
         override fun toString(): String = "土豆"
         override val isSeed: Boolean = true
-        override fun getCrop(): KClass<out FarmCropBase> = Potato::class
+        override fun getCrop(farmArea: FarmArea): FarmCropBase? = Potato(farmArea)
     }
 
     class TomatoItem(parent: Widget) : FarmItems(parent, ResourcesEnum.TOMATO) {
@@ -81,7 +80,7 @@ sealed class FarmItems(parent: Widget, itemEnum: ResourcesEnum) : Widget(parent)
     class TomatoSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.TOMATO_SEED) {
         override fun toString(): String = "西红柿种子"
         override val isSeed: Boolean = true
-        override fun getCrop(): KClass<out FarmCropBase> = Tomato::class
+        override fun getCrop(farmArea: FarmArea): FarmCropBase? = Tomato(farmArea)
     }
 
     class WheatItem(parent: Widget) : FarmItems(parent, ResourcesEnum.WHEAT) {
@@ -92,6 +91,6 @@ sealed class FarmItems(parent: Widget, itemEnum: ResourcesEnum) : Widget(parent)
     class WheatSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.WHEAT_SEED) {
         override fun toString(): String = "小麦种子"
         override val isSeed: Boolean = true
-        override fun getCrop(): KClass<out FarmCropBase> = Wheat::class
+        override fun getCrop(farmArea: FarmArea): FarmCropBase? = Wheat(farmArea)
     }
 }

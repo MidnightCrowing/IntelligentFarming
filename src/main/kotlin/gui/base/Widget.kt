@@ -35,36 +35,6 @@ open class Widget {
     }
 
     /**
-     * 注册事件监听器
-     */
-    private fun registerListeners() {
-        window.eventManager.registerWidget(WindowResizeEvent::class, this)
-        window.eventManager.registerWidget(MouseClickEvent::class, this)
-        window.eventManager.registerWidget(MouseRightClickEvent::class, this)
-        window.eventManager.registerWidget(MouseEnterEvent::class, this)
-        window.eventManager.registerWidget(MouseLeaveEvent::class, this)
-        window.eventManager.registerWidget(MouseMoveEvent::class, this)
-        window.eventManager.registerWidget(MousePressedEvent::class, this)
-        window.eventManager.registerWidget(MouseReleasedEvent::class, this)
-        window.eventManager.registerWidget(KeyPressedEvent::class, this)
-    }
-
-    /**
-     * 取消注册事件监听器
-     */
-    private fun unregisterListener() {
-        window.eventManager.unregisterWidget(WindowResizeEvent::class, this)
-        window.eventManager.unregisterWidget(MouseClickEvent::class, this)
-        window.eventManager.unregisterWidget(MouseRightClickEvent::class, this)
-        window.eventManager.unregisterWidget(MouseEnterEvent::class, this)
-        window.eventManager.unregisterWidget(MouseLeaveEvent::class, this)
-        window.eventManager.unregisterWidget(MouseMoveEvent::class, this)
-        window.eventManager.unregisterWidget(MousePressedEvent::class, this)
-        window.eventManager.unregisterWidget(MouseReleasedEvent::class, this)
-        window.eventManager.unregisterWidget(KeyPressedEvent::class, this)
-    }
-
-    /**
      * 判断给定坐标是否在组件范围内
      */
     fun containsPoint(x: Double, y: Double): Boolean {
@@ -108,6 +78,38 @@ open class Widget {
         unregisterListener()
     }
 
+    // region 事件处理
+
+    /**
+     * 注册事件监听器
+     */
+    private fun registerListeners() {
+        window.eventManager.registerWidget(WindowResizeEvent::class, this)
+        window.eventManager.registerWidget(MouseClickEvent::class, this)
+        window.eventManager.registerWidget(MouseRightClickEvent::class, this)
+        window.eventManager.registerWidget(MouseEnterEvent::class, this)
+        window.eventManager.registerWidget(MouseLeaveEvent::class, this)
+        window.eventManager.registerWidget(MouseMoveEvent::class, this)
+        window.eventManager.registerWidget(MousePressedEvent::class, this)
+        window.eventManager.registerWidget(MouseReleasedEvent::class, this)
+        window.eventManager.registerWidget(KeyPressedEvent::class, this)
+    }
+
+    /**
+     * 取消注册事件监听器
+     */
+    private fun unregisterListener() {
+        window.eventManager.unregisterWidget(WindowResizeEvent::class, this)
+        window.eventManager.unregisterWidget(MouseClickEvent::class, this)
+        window.eventManager.unregisterWidget(MouseRightClickEvent::class, this)
+        window.eventManager.unregisterWidget(MouseEnterEvent::class, this)
+        window.eventManager.unregisterWidget(MouseLeaveEvent::class, this)
+        window.eventManager.unregisterWidget(MouseMoveEvent::class, this)
+        window.eventManager.unregisterWidget(MousePressedEvent::class, this)
+        window.eventManager.unregisterWidget(MouseReleasedEvent::class, this)
+        window.eventManager.unregisterWidget(KeyPressedEvent::class, this)
+    }
+
     open fun onWindowResize(e: WindowResizeEvent) {}
 
     /**
@@ -146,4 +148,6 @@ open class Widget {
     open fun onMouseMove(e: MouseMoveEvent) {}
 
     open fun onKeyPress(e: KeyPressedEvent) {}
+
+    // endregion
 }

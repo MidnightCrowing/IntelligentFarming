@@ -8,7 +8,7 @@ import com.midnightcrowing.model.NdcBounds
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.ImageRenderer
 import com.midnightcrowing.resource.ResourcesEnum
-import com.midnightcrowing.utils.FontSizeUtil.calculateFontSize
+import com.midnightcrowing.utils.LayoutScaler.scaleValue
 
 class MainMenuScreen(window: Window) : Screen(window) {
     override val bgRenderer: ImageRenderer = ImageRenderer.createImageRenderer(
@@ -61,7 +61,7 @@ class MainMenuScreen(window: Window) : Screen(window) {
         optionButton.place(calculateButtonBounds(bottomRowY, isLeftButton = true))
         exitButton.place(calculateButtonBounds(bottomRowY))
 
-        val fontSize: Double = calculateFontSize(window.width)
+        val fontSize: Double = scaleValue(window.width)
         startButton.fontSize = fontSize
         optionButton.fontSize = fontSize
         exitButton.fontSize = fontSize

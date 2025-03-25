@@ -1,6 +1,10 @@
 package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
+import com.midnightcrowing.farmings.FarmItems
+import com.midnightcrowing.farmings.FarmItems.TomatoItem
+import com.midnightcrowing.farmings.FarmItems.TomatoSeedItem
+import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.render.Texture
 import com.midnightcrowing.resource.ResourcesEnum
 import com.midnightcrowing.utils.GameTick
@@ -24,6 +28,11 @@ class Tomato(farmArea: FarmArea) : FarmCropBase(farmArea) {
             plantedTick = (GameTick.tick - growthDuration * 0.56).toLong()
         }
     }
+
+    override fun getFarmItem(parent: Widget): FarmItems =
+        if (isFullyGrown) TomatoItem(parent) else TomatoSeedItem(parent)
+
+    override fun toString(): String = "番茄"
 
     override fun copy(): Tomato {
         val newTomato = Tomato(farmArea)

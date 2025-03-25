@@ -32,7 +32,7 @@ sealed class CustomEvent : Event() {
      * @param x 释放的 X 屏幕坐标
      * @param y 释放的 Y 屏幕坐标
      */
-    data class MouseReleasedEvent(val x: Double, val y: Double) : Event()
+    data class MouseReleasedEvent(val x: Double, val y: Double, val button: Int) : Event()
 
     /**
      * 鼠标移入事件

@@ -23,12 +23,10 @@ class MouseReleasedListener(
     override fun getSendEventType(): Array<KClass<out Event>> = arrayOf(MouseReleasedEvent::class)
 
     override fun eventFilter(event: MouseButtonEvent) {
-        if (event.button == GLFW_MOUSE_BUTTON_LEFT) {
-            if (event.action == GLFW_PRESS) {
-                recordPressedWidget()
-            } else if (event.action == GLFW_RELEASE) {
-                triggerEvent(event)
-            }
+        if (event.action == GLFW_PRESS) {
+            recordPressedWidget()
+        } else if (event.action == GLFW_RELEASE) {
+            triggerEvent(event)
         }
     }
 
@@ -51,7 +49,7 @@ class MouseReleasedListener(
             }
         }
 
-        pressedWidget?.onMouseRelease(MouseReleasedEvent(x, y))
+        pressedWidget?.onMouseRelease(MouseReleasedEvent(x, y, event.button))
         pressedWidget = null
     }
 

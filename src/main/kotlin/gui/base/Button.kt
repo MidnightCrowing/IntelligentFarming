@@ -2,7 +2,7 @@ package com.midnightcrowing.gui.base
 
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.render.ImageRenderer
+import com.midnightcrowing.render.NineSliceRenderer
 import com.midnightcrowing.render.TextRenderer
 import com.midnightcrowing.render.Texture
 import com.midnightcrowing.resource.ResourcesEnum
@@ -26,8 +26,9 @@ class Button : Widget {
     }
 
     // 渲染器，默认使用 DEFAULT 纹理
-    override val renderer: ImageRenderer = textures[ButtonTextures.DEFAULT]?.let { ImageRenderer(it) }
-        ?: throw IllegalArgumentException("Default texture cannot be null")
+    val nineSliceRenderer: NineSliceRenderer? = textures[ButtonTextures.DEFAULT]?.let {
+        NineSliceRenderer(it, textureBorder = 4f, vertexBorder = 10f)
+    }
 
     // 文字渲染器
     private val textRenderer = TextRenderer(window.nvg)
@@ -58,8 +59,8 @@ class Button : Widget {
      * 渲染按钮及其文字。
      */
     override fun render() {
-        super.render()
         if (!isVisible) return
+        nineSliceRenderer?.render(widgetBounds)
         textRenderer.render()
     }
 
@@ -87,6 +88,11 @@ class Button : Widget {
      * 设置当前按钮的纹理。
      */
     private fun setTexture(state: ButtonTextures) {
-        textures[state]?.let { renderer.texture = it }
+        textures[state]?.let { nineSliceRenderer?.texture = it }
+    }
+
+    override fun cleanup() {
+        super.cleanup()
+        textures.values.forEach { it?.cleanup() } // 清理所有纹理
     }
 }

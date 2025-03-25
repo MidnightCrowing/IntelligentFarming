@@ -1,6 +1,7 @@
 package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
+import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.render.Texture
 import com.midnightcrowing.utils.GameTick
@@ -20,6 +21,11 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
 
     open var plantedTick: Long = 0
     open var growthDuration: Double = triangularRandom(0.0, 20000.0, 1000.0)
+    var growthProgress: Double = 0.0
+        private set(value) {
+            field = value
+            setGrowthProgressTexture(value)
+        }
     val isFullyGrown: Boolean get() = GameTick.tick - plantedTick >= growthDuration
 
     fun setGrowthProgressTexture(progress: Double) {
@@ -46,8 +52,7 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
             nowTextures = growFullTexture
         } else {
             val elapsedTicks = GameTick.tick - plantedTick
-            val growthProgress = elapsedTicks / growthDuration
-            setGrowthProgressTexture(growthProgress)
+            growthProgress = elapsedTicks / growthDuration
         }
     }
 
@@ -66,6 +71,10 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
             max - sqrt((1 - u) * (max - min) * (max - mode))
         }
     }
+
+    abstract fun getFarmItem(parent: Widget): FarmItems
+
+    override fun toString(): String = "未知农作物"
 
     open fun onFarmRightClick() {}
 

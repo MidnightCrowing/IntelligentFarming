@@ -2,9 +2,7 @@ package com.midnightcrowing.render
 
 import com.midnightcrowing.model.Image
 import com.midnightcrowing.model.ScreenBounds
-import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GL46.glTexCoord2f
-import org.lwjgl.opengl.GL46.glVertex2f
+import org.lwjgl.opengl.GL46.*
 import java.io.InputStream
 
 
