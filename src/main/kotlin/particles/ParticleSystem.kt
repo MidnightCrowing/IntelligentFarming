@@ -61,7 +61,12 @@ class ParticleSystem {
      */
     fun update(deltaTime: Float) {
         particles.forEach { it.update(deltaTime) }
-        particles.removeIf { it.isDead() } // 移除生命周期结束的粒子
+        particles.removeIf {
+            if (it.isDead()) {
+                it.cleanup() // 先释放资源
+            }
+            it.isDead()
+        } // 移除生命周期结束的粒子
     }
 
     /**

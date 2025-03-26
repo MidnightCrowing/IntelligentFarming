@@ -79,4 +79,9 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
     open fun onFarmRightClick() {}
 
     abstract fun copy(): FarmCropBase
+
+    override fun cleanup() {
+        growDuringTextures.values.forEach { it.cleanup() }
+        unregisterListener()
+    }
 }

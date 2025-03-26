@@ -57,4 +57,8 @@ class Particle(
     fun updateSize(newSize: Int) {
         this.size = newSize
     }
+
+    fun cleanup() {
+        renderer.cleanup()
+    }
 }

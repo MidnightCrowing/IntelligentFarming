@@ -12,6 +12,8 @@ data class ScreenBounds(var x1: Double, var y1: Double, var x2: Double, var y2: 
     val width: Double get() = x2 - x1
     val height: Double get() = y2 - y1
 
+    val between: Point get() = Point((x1 + x2) / 2, (y1 + y2) / 2)
+
     /**
      * 将屏幕坐标转换为 NDC (Normalized Device Coordinates) 归一化坐标。
      *

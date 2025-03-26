@@ -98,7 +98,7 @@ open class Widget {
     /**
      * 取消注册事件监听器
      */
-    private fun unregisterListener() {
+    internal fun unregisterListener() {
         window.eventManager.unregisterWidget(WindowResizeEvent::class, this)
         window.eventManager.unregisterWidget(MouseClickEvent::class, this)
         window.eventManager.unregisterWidget(MouseRightClickEvent::class, this)

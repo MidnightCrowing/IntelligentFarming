@@ -48,12 +48,11 @@ class CropInfoDisplay(val screen: FarmScene) : Widget(screen.window, z = 1) {
         if (crop != newCrop) {
             crop = newCrop
             titleText.text = newCrop?.toString() ?: ""
-            updateItem(newCrop?.getFarmItem(this))
         }
     }
 
     private fun updateItem(newItem: FarmItems?) {
-        if (item !== newItem) {  // 仅在 item 变化时才替换
+        if (item?.let { it::class } != newItem?.let { it::class }) {  // 仅在 item 变化时才替换
             item?.cleanup()
             item = newItem
             item?.place(itemBounds)

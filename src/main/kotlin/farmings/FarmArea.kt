@@ -16,51 +16,39 @@ import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT
  * 继承自[Widget]，支持鼠标事件处理和渲染。
  */
 class FarmArea : Widget {
-    private val lineRenderer: LineRenderer = LineRenderer(width = 2.0, color = floatArrayOf(0f, 0f, 0f, 0.7f))
+    // region 数据结构 & 配置参数
+    /**
+     * 网格位置数据类（列，行）
+     */
+    data class GridPosition(val x: Int, val y: Int)
 
-    private val farmlandBoard: List<Int> // 农田布局数据，每个整数表示一列的可用地块
-    private val rowCount: Int // 农田的行数
-    private val columnCount: Int // 农田的列数
-    private val cropsGrid: Array<Array<FarmCropBase?>> // 作物网格，存储每个地块上的作物
+    private fun GridPosition?.validatePosition(): GridPosition? = this?.takeIf { pos -> isAvailable(pos) }
+    private fun GridPosition.isValid() = isAvailable(this)
+    private fun GridPosition.hasCrop() = isExist(this)
+    private fun GridPosition.crop() = cropsGrid[y][x]
 
-    private companion object {
-        const val SPARE_AREA_WIDTH = 20 // 农田边缘留白宽度
-    }
+    /* 配置参数 */
+    private val farmlandBoard: List<Int>    // 农田布局位掩码（每个Int表示一列的可用行）
+    private val edgePadding = 20            // 农田区域边缘留白
 
-    // 布局参数
-    private var middlePoint = Point.EMPTY // 农田中心点坐标
-    private var leftPoint = Point.EMPTY // 农田左侧点坐标
-    private var rightPoint = Point.EMPTY // 农田右侧点坐标
-    private var blockHeight = 0.0 // 农田块的高度
-    private var blockDeep = 0.0 // 农田块的深度
+    /* 布局参数 */
+    private lateinit var leftPoint: Point    // 农田左侧基准点
+    private lateinit var middlePoint: Point  // 农田中心基准点
+    private lateinit var rightPoint: Point   // 农田右侧基准点
+    private var blockDeep = 0.0              // 耕地深度
+    private var blockHeight = 0.0            // 地块高度
+    private val rowCount: Int by lazy { farmlandBoard.maxOf { Integer.SIZE - Integer.numberOfLeadingZeros(it) } }
+    private val columnCount: Int by lazy { farmlandBoard.size }
 
-    // 计算属性：农田块的宽度和高度
-    private val blockLeftWidth: Double get() = (middlePoint.x - leftPoint.x) / rowCount
-    private val blockLeftHeight: Double get() = (middlePoint.y - leftPoint.y) / rowCount
-    private val blockRightWidth: Double get() = (rightPoint.x - middlePoint.x) / columnCount
-    private val blockRightHeight: Double get() = (middlePoint.y - rightPoint.y) / columnCount
+    /* 地块尺寸计算属性 */
+    private val leftBlockWidth: Double get() = (middlePoint.x - leftPoint.x) / rowCount
+    private val leftBlockHeight: Double get() = (middlePoint.y - leftPoint.y) / rowCount
+    private val rightBlockWidth: Double get() = (rightPoint.x - middlePoint.x) / columnCount
+    private val rightBlockHeight: Double get() = (middlePoint.y - rightPoint.y) / columnCount
 
-    private var mouseX: Int? = null
-    private var mouseY: Int? = null
+    // endregion
 
-    // 当前激活的种子作物。
-    // 设置新值时，会清理旧作物并为其设置阴影。
-    var activeSeedCrop: FarmCropBase? = null
-        set(value) {
-            field?.cleanup()
-            field = value?.apply { setShadow() }
-        }
-
-    // 粒子系统，用于生成和管理粒子效果
-    private val particleSystem = ParticleSystem()
-
-    // 农田信息显示组件，用于显示作物信息
-    private val cropInfoDisplay: CropInfoDisplay
-
-    // 拖动状态管理
-    private var isDragging = false
-    private var lastDragPosition: Pair<Int, Int>? = null
-
+    // region 初始化
     /**
      * 构造函数，基于窗口和农田布局数据初始化。
      * @param window 父窗口
@@ -69,9 +57,7 @@ class FarmArea : Widget {
     constructor(window: Window, cropInfoDisplay: CropInfoDisplay, farmlandBoard: List<Int>) : super(window) {
         this.farmlandBoard = farmlandBoard
         this.cropInfoDisplay = cropInfoDisplay
-        rowCount = calculateRowCount()
-        columnCount = farmlandBoard.size
-        cropsGrid = Array(rowCount) { arrayOfNulls(columnCount) }
+        this.cropsGrid = Array(rowCount) { arrayOfNulls(columnCount) }
     }
 
     /**
@@ -82,52 +68,87 @@ class FarmArea : Widget {
     constructor(parent: Widget, cropInfoDisplay: CropInfoDisplay, farmlandBoard: List<Int>) : super(parent) {
         this.farmlandBoard = farmlandBoard
         this.cropInfoDisplay = cropInfoDisplay
-        rowCount = calculateRowCount()
-        columnCount = farmlandBoard.size
-        cropsGrid = Array(rowCount) { arrayOfNulls(columnCount) }
+        this.cropsGrid = Array(rowCount) { arrayOfNulls(columnCount) }
+    }
+    // endregion
+
+    // region 作物管理
+    private val cropsGrid: Array<Array<FarmCropBase?>>
+    var activeSeedCrop: FarmCropBase? = null         // 当前选中的种子
+        set(value) {
+            field?.cleanup()
+            field = value?.apply { setShadow() }
+        }
+
+    /**
+     * 在指定位置种植作物。
+     * @param pos 作物位置
+     */
+    private fun plantCropAt(pos: GridPosition) {
+        activeSeedCrop?.let { original ->
+            original.place(getBlockBounds(pos))
+            val newCrop = original.copy().apply { setPlanting() }
+            cropsGrid[pos.y][pos.x] = newCrop
+            cropInfoDisplay.setFarmCrop(newCrop)
+        }
     }
 
     /**
-     * 计算农田的行数。
-     * @return 行数
+     * 移除指定位置的作物，并生成粒子效果。
+     * @param pos 作物位置
      */
-    private fun calculateRowCount() = farmlandBoard.maxOf {
-        Integer.SIZE - Integer.numberOfLeadingZeros(it)
+    private fun removeCropWithEffect(pos: GridPosition) {
+        pos.crop()?.let { crop ->
+            generateParticles(crop, pos)
+            crop.cleanup()
+        }
+        cropsGrid[pos.y][pos.x] = null
+        cropInfoDisplay.clear()
+        cropInfoDisplay.setHidden(true)
     }
 
+    /**
+     * 生成粒子效果。
+     * @param crop 作物对象
+     * @param pos 作物位置
+     */
+    private fun generateParticles(crop: FarmCropBase, pos: GridPosition) {
+        crop.nowTextures?.image?.let {
+            particleSystem.generateParticles(getBlockBounds(pos).between, it, 40)
+        }
+    }
+
+    // endregion
+
+    // region 位置计算 & 坐标转换
     /**
      * 判断指定位置是否可用。
-     * @param x 列索引
-     * @param y 行索引
      * @return 如果位置可用且未超出范围，返回true；否则返回false
      */
-    fun isAvailable(x: Int, y: Int): Boolean {
-        if (x !in 0 until columnCount || y !in 0 until rowCount) return false
-        return (farmlandBoard[x] and (1 shl (rowCount - 1 - y))) != 0
+    private fun isAvailable(pos: GridPosition): Boolean {
+        if (pos.x !in 0 until columnCount || pos.y !in 0 until rowCount) return false
+        return (farmlandBoard[pos.x] and (1 shl (rowCount - 1 - pos.y))) != 0
     }
 
     /**
      * 判断指定位置是否已存在作物。
-     * @param x 列索引
-     * @param y 行索引
      * @return 如果位置存在作物，返回true；否则返回false
      */
-    fun isExist(x: Int, y: Int) = cropsGrid.getOrNull(y)?.getOrNull(x) != null
+    private fun isExist(pos: GridPosition) = cropsGrid.getOrNull(pos.y)?.getOrNull(pos.x) != null
 
     /**
      * 获取指定位置的屏幕边界。
-     * @param x 列索引
-     * @param y 行索引
      * @return 如果位置可用，返回对应的[ScreenBounds]；否则返回[ScreenBounds.EMPTY]
      */
-    fun getBlockBounds(x: Int, y: Int): ScreenBounds {
-        if (!isAvailable(x, y)) return ScreenBounds.EMPTY
+    private fun getBlockBounds(pos: GridPosition): ScreenBounds {
+        if (!pos.isValid()) return ScreenBounds.EMPTY
 
+        val (x, y) = pos
         return ScreenBounds(
-            x1 = middlePoint.x - blockLeftWidth * (y + 1) + blockRightWidth * x,
-            x2 = middlePoint.x - blockLeftWidth * y + blockRightWidth * (x + 1),
-            y1 = middlePoint.y - blockHeight - blockLeftHeight * (y + 1) - blockRightHeight * (x + 1),
-            y2 = middlePoint.y - blockLeftHeight * y - blockRightHeight * x
+            x1 = middlePoint.x - leftBlockWidth * (y + 1) + rightBlockWidth * x,
+            x2 = middlePoint.x - leftBlockWidth * y + rightBlockWidth * (x + 1),
+            y1 = middlePoint.y - blockHeight - leftBlockHeight * (y + 1) - rightBlockHeight * (x + 1),
+            y2 = middlePoint.y - leftBlockHeight * y - rightBlockHeight * x
         )
     }
 
@@ -137,7 +158,7 @@ class FarmArea : Widget {
      * @param mouseY 鼠标Y坐标
      * @return 如果找到有效位置，返回对应的(列, 行)索引；否则返回null
      */
-    fun findMouseInField(mouseX: Double, mouseY: Double): Pair<Int, Int>? {
+    private fun findMouseInField(mouseX: Double, mouseY: Double): GridPosition? {
         val vx = Point(
             (middlePoint.x - rightPoint.x) / columnCount,
             (middlePoint.y - rightPoint.y) / columnCount
@@ -159,10 +180,16 @@ class FarmArea : Widget {
 
         val x = col.toInt()
         val y = row.toInt()
-        return if (x in 0 until columnCount && y in 0 until rowCount) x to y else null
+        return if (x in 0 until columnCount && y in 0 until rowCount) GridPosition(x, y) else null
     }
 
+    // endregion
+
     // region 鼠标事件处理
+    /* 交互状态 */
+    private var hoverPosition: GridPosition? = null  // 当前鼠标悬停位置
+    private var isDragging = false                   // 拖动种植状态
+    private var lastDragPosition: GridPosition? = null
 
     override fun onMouseMove(e: MouseMoveEvent) {
         activeSeedCrop ?: return
@@ -202,21 +229,12 @@ class FarmArea : Widget {
         }
     }
 
-    // endregion
-
-    // region 辅助方法和扩展函数
-
-    private fun Pair<Int, Int>?.validatePosition(): Pair<Int, Int>? {
-        return this?.takeIf { (x, y) -> isAvailable(x, y) }
-    }
-
-    private fun Pair<Int, Int>.isValid() = isAvailable(first, second)
-    private fun Pair<Int, Int>.hasCrop() = isExist(first, second)
-    private fun Pair<Int, Int>.crop() = cropsGrid[second][first]
-
-    private fun updateHoverState(pos: Pair<Int, Int>?) {
-        mouseX = pos?.first
-        mouseY = pos?.second
+    /**
+     * 更新鼠标悬停状态。
+     * @param pos 当前鼠标悬停的网格位置，可能为空。
+     */
+    private fun updateHoverState(pos: GridPosition?) {
+        hoverPosition = pos
 
         when {
             pos == null -> clearHover()
@@ -225,68 +243,42 @@ class FarmArea : Widget {
         }
     }
 
-    private fun handleDragPlanting(pos: Pair<Int, Int>) {
-        val (lastX, lastY) = lastDragPosition ?: return
-
-        // 实现线性插值种植（类似MC的拖动种植）
-        val positions = when {
-            pos.first != lastX -> (Math.min(lastX, pos.first)..Math.max(lastX, pos.first)).map { it to lastY }
-            pos.second != lastY -> (Math.min(lastY, pos.second)..Math.max(lastY, pos.second)).map { lastX to it }
-            else -> listOf(pos)
-        }
-
-        positions.forEach { (x, y) ->
-            if (!isExist(x, y)) {
-                plantCropAt(x, y)
-            }
+    /**
+     * 处理拖动种植作物的逻辑。
+     * @param pos 当前拖动到的网格位置。
+     */
+    private fun handleDragPlanting(pos: GridPosition) {
+        if (!pos.hasCrop()) {
+            plantCropAt(pos)
         }
         lastDragPosition = pos
     }
 
-    private fun startDragPlanting(pos: Pair<Int, Int>) {
-        plantCropAt(pos.first, pos.second)
+    /**
+     * 开始拖动种植作物。
+     * @param pos 开始拖动的网格位置。
+     */
+    private fun startDragPlanting(pos: GridPosition) {
+        plantCropAt(pos)
         isDragging = true
         lastDragPosition = pos
 
         cropInfoDisplay.setVisible(true)
     }
 
-    private fun plantCropAt(x: Int, y: Int) {
-        activeSeedCrop?.let { original ->
-            original.place(getBlockBounds(x, y))
-            val newCrop = original.copy().apply { setPlanting() }
-            cropsGrid[y][x] = newCrop
-            cropInfoDisplay.setFarmCrop(newCrop)
-        }
-    }
-
-    private fun between(x1: Double, x2: Double, y1: Double, y2: Double) =
-        Point((x1 + x2) / 2, (y1 + y2) / 2)
-
-    private fun removeCropWithEffect(pos: Pair<Int, Int>) {
-        pos.crop()?.let { crop ->
-            generateParticles(crop, pos)
-            crop.cleanup()
-        }
-        cropsGrid[pos.second][pos.first] = null
-        cropInfoDisplay.clear()
-        cropInfoDisplay.setHidden(true)
-    }
-
-    private fun generateParticles(crop: FarmCropBase, pos: Pair<Int, Int>) {
-        val bounds = getBlockBounds(pos.first, pos.second)
-        val center = between(bounds.x1, bounds.x2, bounds.y1, bounds.y2)
-        crop.nowTextures?.image?.let {
-            particleSystem.generateParticles(center, it, 40)
-        }
-    }
-
+    /**
+     * 清除鼠标悬停状态，隐藏相关 UI 元素。
+     */
     private fun clearHover() {
         activeSeedCrop?.setHidden(true)
         cropInfoDisplay.setHidden(true)
     }
 
-    private fun showCropInfo(pos: Pair<Int, Int>) {
+    /**
+     * 显示指定网格位置的作物信息。
+     * @param pos 目标网格位置，需包含作物。
+     */
+    private fun showCropInfo(pos: GridPosition) {
         activeSeedCrop?.setHidden(true)
         cropInfoDisplay.apply {
             setFarmCrop(pos.crop())
@@ -294,14 +286,21 @@ class FarmArea : Widget {
         }
     }
 
-    private fun showActiveSeed(pos: Pair<Int, Int>) {
+    /**
+     * 显示当前选中的种子作物。
+     * @param pos 目标网格位置。
+     */
+    private fun showActiveSeed(pos: GridPosition) {
         activeSeedCrop?.apply {
             setHidden(false)
-            place(getBlockBounds(pos.first, pos.second))
+            place(getBlockBounds(pos))
         }
         cropInfoDisplay.setHidden(true)
     }
 
+    // endregion
+
+    // region 更新
     /**
      * 设置农田的布局参数并更新作物位置。
      * @param blockDeep 农田块的深度
@@ -318,10 +317,10 @@ class FarmArea : Widget {
         this.rightPoint = rightPoint
 
         super.place(
-            x1 = leftPoint.x - SPARE_AREA_WIDTH,
-            x2 = rightPoint.x + SPARE_AREA_WIDTH,
-            y1 = leftPoint.y - middlePoint.y + rightPoint.y - SPARE_AREA_WIDTH,
-            y2 = middlePoint.y + SPARE_AREA_WIDTH
+            x1 = leftPoint.x - edgePadding,
+            x2 = rightPoint.x + edgePadding,
+            y1 = leftPoint.y - middlePoint.y + rightPoint.y - edgePadding,
+            y2 = middlePoint.y + edgePadding
         )
 
         updateCropsPosition()
@@ -342,6 +341,29 @@ class FarmArea : Widget {
     }
 
     /**
+     * 更新所有作物的位置。
+     */
+    private fun updateCropsPosition() {
+        for (y in 0 until rowCount) {
+            for (x in 0 until columnCount) {
+                cropsGrid[y][x]?.place(getBlockBounds(GridPosition(x, y)))
+            }
+        }
+    }
+
+    // endregion
+
+    // region 渲染与清理
+    /* 渲染组件 */
+    private val borderRenderer = LineRenderer(width = 2.0, color = floatArrayOf(0f, 0f, 0f, 0.7f))
+
+    // 粒子系统，用于生成和管理粒子效果
+    private val particleSystem = ParticleSystem()
+
+    // 农田信息显示组件，用于显示作物信息
+    private val cropInfoDisplay: CropInfoDisplay
+
+    /**
      * 渲染农田和作物。
      */
     override fun render() {
@@ -356,25 +378,25 @@ class FarmArea : Widget {
      * 渲染农田的边界线。
      * 如果鼠标坐标有效，则绘制边界线。
      */
-    fun renderBorderline() {
-        if (mouseX == null || mouseY == null) return
+    private fun renderBorderline() {
+        if (hoverPosition == null) return
 
         val point1 = Point(
-            middlePoint.x - blockLeftWidth * mouseY!! + blockRightWidth * mouseX!!,
-            middlePoint.y - blockLeftHeight * mouseY!! - blockRightHeight * mouseX!!
+            middlePoint.x - leftBlockWidth * hoverPosition!!.y + rightBlockWidth * hoverPosition!!.x,
+            middlePoint.y - leftBlockHeight * hoverPosition!!.y - rightBlockHeight * hoverPosition!!.x
         )
-        val point2 = Point(point1.x - blockLeftWidth, point1.y - blockLeftHeight)
-        val point3 = Point(point1.x + blockRightWidth, point1.y - blockRightHeight)
-        val point4 = Point(point2.x + blockRightWidth, point2.y - blockRightHeight)
+        val point2 = Point(point1.x - leftBlockWidth, point1.y - leftBlockHeight)
+        val point3 = Point(point1.x + rightBlockWidth, point1.y - rightBlockHeight)
+        val point4 = Point(point2.x + rightBlockWidth, point2.y - rightBlockHeight)
 
         val points = listOf(point1, point2, point4, point3, point1) // 形成闭环
 
         for (i in 0 until 4) {
-            lineRenderer.x1 = points[i].x
-            lineRenderer.y1 = points[i].y
-            lineRenderer.x2 = points[i + 1].x
-            lineRenderer.y2 = points[i + 1].y
-            lineRenderer.render()
+            borderRenderer.x1 = points[i].x
+            borderRenderer.y1 = points[i].y
+            borderRenderer.x2 = points[i + 1].x
+            borderRenderer.y2 = points[i + 1].y
+            borderRenderer.render()
         }
     }
 
@@ -386,15 +408,5 @@ class FarmArea : Widget {
         activeSeedCrop?.cleanup()
         cropsGrid.forEach { row -> row.forEach { it?.cleanup() } }
     }
-
-    /**
-     * 更新所有作物的位置。
-     */
-    private fun updateCropsPosition() {
-        for (y in 0 until rowCount) {
-            for (x in 0 until columnCount) {
-                cropsGrid[y][x]?.place(getBlockBounds(x, y))
-            }
-        }
-    }
+    // endregion
 }
