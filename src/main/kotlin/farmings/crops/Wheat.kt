@@ -1,23 +1,24 @@
 package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
+import com.midnightcrowing.farmings.FarmCropBase
 import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.farmings.FarmItems.WheatItem
 import com.midnightcrowing.farmings.FarmItems.WheatSeedItem
 import com.midnightcrowing.gui.base.Widget
-import com.midnightcrowing.render.Texture
-import com.midnightcrowing.resource.ResourcesEnum
+import com.midnightcrowing.model.Texture
+import com.midnightcrowing.resource.TextureResourcesEnum
 
 class Wheat(farmArea: FarmArea) : FarmCropBase(farmArea) {
     override val growDuringTextures: Map<Int, Texture> = mapOf(
-        0 to Texture.createImageTexture(ResourcesEnum.WHEAT_GROW_0.inputStream),
-        1 to Texture.createImageTexture(ResourcesEnum.WHEAT_GROW_1.inputStream),
-        2 to Texture.createImageTexture(ResourcesEnum.WHEAT_GROW_2.inputStream),
-        3 to Texture.createImageTexture(ResourcesEnum.WHEAT_GROW_3.inputStream),
-        4 to Texture.createImageTexture(ResourcesEnum.WHEAT_GROW_4.inputStream),
-        5 to Texture.createImageTexture(ResourcesEnum.WHEAT_GROW_5.inputStream),
-        6 to Texture.createImageTexture(ResourcesEnum.WHEAT_GROW_6.inputStream),
-        7 to Texture.createImageTexture(ResourcesEnum.WHEAT_GROW_7.inputStream)
+        0 to TextureResourcesEnum.WHEAT_GROW_0.texture,
+        1 to TextureResourcesEnum.WHEAT_GROW_1.texture,
+        2 to TextureResourcesEnum.WHEAT_GROW_2.texture,
+        3 to TextureResourcesEnum.WHEAT_GROW_3.texture,
+        4 to TextureResourcesEnum.WHEAT_GROW_4.texture,
+        5 to TextureResourcesEnum.WHEAT_GROW_5.texture,
+        6 to TextureResourcesEnum.WHEAT_GROW_6.texture,
+        7 to TextureResourcesEnum.WHEAT_GROW_7.texture
     )
 
     override fun getFarmItem(parent: Widget): FarmItems =
@@ -28,7 +29,7 @@ class Wheat(farmArea: FarmArea) : FarmCropBase(farmArea) {
     override fun copy(): Wheat {
         val newWheat = Wheat(farmArea)
         newWheat.place(this.widgetBounds)
-        newWheat.renderer.texture = newWheat.growInitTexture
+        newWheat.nowTextures = newWheat.nowTextures
         return newWheat
     }
 }

@@ -1,33 +1,14 @@
 package com.midnightcrowing.render
 
-import com.midnightcrowing.model.Image
 import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.model.Texture
 import org.lwjgl.opengl.GL46.*
-import java.io.InputStream
 
 
 /**
  * 渲染器，负责渲染场景
  */
-class ImageRenderer {
-    companion object {
-        /**
-         * 从图片资源中创建一个渲染器
-         * @param inputStream 图片资源的输入流
-         */
-        fun createImageRenderer(inputStream: InputStream?): ImageRenderer {
-            return ImageRenderer(Texture.createImageTexture(inputStream))
-        }
-
-        /**
-         * 从图片资源中创建一个渲染器
-         * @param image 图片资源
-         */
-        fun createImageRenderer(image: Image): ImageRenderer {
-            return ImageRenderer(Texture.createImageTexture(image))
-        }
-    }
-
+class TextureRenderer {
     var texture: Texture? = null
         set(value) {
             if (field?.id != value?.id) {
@@ -75,6 +56,6 @@ class ImageRenderer {
     }
 
     fun cleanup() {
-        texture?.cleanup()
+        texture = null
     }
 }

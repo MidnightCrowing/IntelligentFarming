@@ -1,41 +1,35 @@
 package com.midnightcrowing.controllers
 
-import com.midnightcrowing.farmings.FarmItems
+import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.gui.HotBar
-import com.midnightcrowing.scenes.FarmScene
+import com.midnightcrowing.model.item.ItemRegistry
+import com.midnightcrowing.model.item.ItemStack
 
-class HotBarController(private val hotBar: HotBar) {
-    companion object {
-        const val DEFAULT_SELECT_ID = 0 // 默认选中项的ID
-    }
+class HotBarController(gameController: GameController) {
+    private lateinit var hotBar: HotBar
+    private val invController: InventoryController = gameController.inventory
+    private val farmController: FarmAreaController = gameController.farmArea
+    private val farmArea: FarmArea by lazy { farmController.farmArea }
 
-    private val screen: FarmScene = hotBar.screen
+    val defaultSelectId = 0 // 默认选中项的ID
+    val itemsList: List<ItemStack> get() = invController.hotBarItems
 
-    var itemsList: MutableMap<Int, FarmItems?> = mutableMapOf<Int, FarmItems?>().apply {
-        for (i in 0..8) {
-            val item = when (i) {
-                0 -> FarmItems.CabbageSeedItem(hotBar)
-                1 -> FarmItems.CarrotItem(hotBar)
-                2 -> FarmItems.CornSeedItem(hotBar)
-                3 -> FarmItems.CottonSeedItem(hotBar)
-                4 -> FarmItems.OnionItem(hotBar)
-                5 -> FarmItems.PotatoItem(hotBar)
-                6 -> FarmItems.WheatSeedItem(hotBar)
-                7 -> null
-                8 -> FarmItems.TomatoSeedItem(hotBar)
-                else -> null
-            }
-            this[i] = item
+    // 当前选中网格 ID
+    var selectedGridId: Int = 0
+        set(value) {
+            require(value in 0..8) { "selectedGridId 必须在 0 到 8 之间" }
+            field = value
         }
-    }
 
-    init {
-        changeActiveItem(DEFAULT_SELECT_ID)
+    fun init(hotBar: HotBar) {
+        this.hotBar = hotBar
+        changeActiveItem(defaultSelectId)
     }
 
     fun changeActiveItem(id: Int) {
-        val item = itemsList[id]
+        selectedGridId = id
+        val item = ItemRegistry.createItem(itemsList[id].id, hotBar)
         hotBar.setItemLabelText(item?.toString())
-        screen.farmArea.activeSeedCrop = item?.takeIf { it.isSeed }?.getCrop(screen.farmArea)
+        farmArea.activeSeedCrop = item?.getCrop(farmArea)
     }
 }

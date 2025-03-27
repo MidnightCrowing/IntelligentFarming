@@ -2,7 +2,6 @@ package com.midnightcrowing.model
 
 import org.lwjgl.stb.STBImage
 import org.lwjgl.system.MemoryUtil
-import java.awt.Color
 import java.io.InputStream
 import java.nio.ByteBuffer
 import kotlin.random.Random
@@ -103,30 +102,6 @@ data class Image(val buffer: ByteBuffer, val width: Int, val height: Int) {
         }
 
         throw RuntimeException("Unable to find a suitable region with less than 20% transparency after $maxAttempts attempts")
-    }
-
-    fun getRandomColors(count: Int = 5): List<Color> {
-        val colors = mutableListOf<Color>()
-        val bufferCopy = buffer.duplicate() // 避免修改原始 buffer 位置
-        val maxIndex = buffer.capacity() - 4 // 避免访问超界
-
-        while (colors.size < count) {
-            val index = Random.nextInt(0, width * height) * 4
-
-            if (index < 0 || index + 3 >= maxIndex) {
-                continue // 跳过当前循环，避免访问越界
-            }
-
-            val r = bufferCopy.get(index).toInt() and 0xFF
-            val g = bufferCopy.get(index + 1).toInt() and 0xFF
-            val b = bufferCopy.get(index + 2).toInt() and 0xFF
-            val a = bufferCopy.get(index + 3).toInt() and 0xFF
-
-            if (a > 50) { // 过滤透明像素
-                colors.add(Color(r, g, b))
-            }
-        }
-        return colors
     }
 
     /**

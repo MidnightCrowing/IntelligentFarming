@@ -1,8 +1,7 @@
 package com.midnightcrowing.farmings
 
+import com.midnightcrowing.controllers.FarmAreaController
 import com.midnightcrowing.events.CustomEvent.*
-import com.midnightcrowing.farmings.crops.FarmCropBase
-import com.midnightcrowing.gui.CropInfoDisplay
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.gui.base.Window
 import com.midnightcrowing.model.Point
@@ -26,6 +25,8 @@ class FarmArea : Widget {
     private fun GridPosition.isValid() = isAvailable(this)
     private fun GridPosition.hasCrop() = isExist(this)
     private fun GridPosition.crop() = cropsGrid[y][x]
+
+    private val controller: FarmAreaController
 
     /* 配置参数 */
     private val farmlandBoard: List<Int>    // 农田布局位掩码（每个Int表示一列的可用行）
@@ -54,21 +55,16 @@ class FarmArea : Widget {
      * @param window 父窗口
      * @param farmlandBoard 农田布局数据
      */
-    constructor(window: Window, cropInfoDisplay: CropInfoDisplay, farmlandBoard: List<Int>) : super(window) {
+    constructor(
+        window: Window,
+        controller: FarmAreaController,
+        farmlandBoard: List<Int>,
+    ) : super(window) {
         this.farmlandBoard = farmlandBoard
-        this.cropInfoDisplay = cropInfoDisplay
+        this.controller = controller
         this.cropsGrid = Array(rowCount) { arrayOfNulls(columnCount) }
-    }
 
-    /**
-     * 构造函数，基于父组件和农田布局数据初始化。
-     * @param parent 父组件
-     * @param farmlandBoard 农田布局数据
-     */
-    constructor(parent: Widget, cropInfoDisplay: CropInfoDisplay, farmlandBoard: List<Int>) : super(parent) {
-        this.farmlandBoard = farmlandBoard
-        this.cropInfoDisplay = cropInfoDisplay
-        this.cropsGrid = Array(rowCount) { arrayOfNulls(columnCount) }
+        controller.init(this)
     }
     // endregion
 
@@ -89,7 +85,7 @@ class FarmArea : Widget {
             original.place(getBlockBounds(pos))
             val newCrop = original.copy().apply { setPlanting() }
             cropsGrid[pos.y][pos.x] = newCrop
-            cropInfoDisplay.setFarmCrop(newCrop)
+            controller.cropInfoController.setFarmCrop(newCrop)
         }
     }
 
@@ -103,8 +99,8 @@ class FarmArea : Widget {
             crop.cleanup()
         }
         cropsGrid[pos.y][pos.x] = null
-        cropInfoDisplay.clear()
-        cropInfoDisplay.setHidden(true)
+        controller.cropInfo.clear()
+        controller.cropInfo.setHidden(true)
     }
 
     /**
@@ -113,8 +109,30 @@ class FarmArea : Widget {
      * @param pos 作物位置
      */
     private fun generateParticles(crop: FarmCropBase, pos: GridPosition) {
-        crop.nowTextures?.image?.let {
+        crop.nowTextures?.let {
             particleSystem.generateParticles(getBlockBounds(pos).between, it, 40)
+        }
+    }
+
+    fun plantAllCrops() {
+        for (y in 0 until rowCount) {
+            for (x in 0 until columnCount) {
+                val pos = GridPosition(x, y)
+                if (pos.isValid() && !pos.hasCrop()) {
+                    plantCropAt(pos)
+                }
+            }
+        }
+    }
+
+    fun clearAllCrops() {
+        for (y in 0 until rowCount) {
+            for (x in 0 until columnCount) {
+                val pos = GridPosition(x, y)
+                if (pos.hasCrop()) {
+                    removeCropWithEffect(pos)
+                }
+            }
         }
     }
 
@@ -250,6 +268,8 @@ class FarmArea : Widget {
     private fun handleDragPlanting(pos: GridPosition) {
         if (!pos.hasCrop()) {
             plantCropAt(pos)
+        } else {
+            pos.crop()?.onFarmRightClick()
         }
         lastDragPosition = pos
     }
@@ -263,7 +283,7 @@ class FarmArea : Widget {
         isDragging = true
         lastDragPosition = pos
 
-        cropInfoDisplay.setVisible(true)
+        controller.cropInfo.setVisible(true)
     }
 
     /**
@@ -271,7 +291,7 @@ class FarmArea : Widget {
      */
     private fun clearHover() {
         activeSeedCrop?.setHidden(true)
-        cropInfoDisplay.setHidden(true)
+        controller.cropInfo.setHidden(true)
     }
 
     /**
@@ -280,10 +300,8 @@ class FarmArea : Widget {
      */
     private fun showCropInfo(pos: GridPosition) {
         activeSeedCrop?.setHidden(true)
-        cropInfoDisplay.apply {
-            setFarmCrop(pos.crop())
-            setHidden(false)
-        }
+        controller.cropInfoController.setFarmCrop(pos.crop())
+        controller.cropInfo.setHidden(false)
     }
 
     /**
@@ -295,7 +313,7 @@ class FarmArea : Widget {
             setHidden(false)
             place(getBlockBounds(pos))
         }
-        cropInfoDisplay.setHidden(true)
+        controller.cropInfo.setHidden(true)
     }
 
     // endregion
@@ -336,7 +354,7 @@ class FarmArea : Widget {
      */
     fun update() {
         cropsGrid.forEach { row -> row.forEach { it?.update() } }
-        cropInfoDisplay.update()
+        controller.cropInfo.update()
         particleSystem.update(0.016f) // Assuming 60 FPS, so deltaTime is approximately 1/60
     }
 
@@ -359,9 +377,6 @@ class FarmArea : Widget {
 
     // 粒子系统，用于生成和管理粒子效果
     private val particleSystem = ParticleSystem()
-
-    // 农田信息显示组件，用于显示作物信息
-    private val cropInfoDisplay: CropInfoDisplay
 
     /**
      * 渲染农田和作物。

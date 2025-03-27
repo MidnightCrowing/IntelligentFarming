@@ -3,13 +3,13 @@ package com.midnightcrowing.gui.base
 import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event.WindowResizeEvent
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.render.ImageRenderer
+import com.midnightcrowing.render.TextureRenderer
 
 open class Widget {
     val window: Window
     val parent: Widget?
 
-    open val renderer: ImageRenderer = ImageRenderer()
+    open val renderer: TextureRenderer = TextureRenderer()
     val z: Int
     var widgetBounds: ScreenBounds = ScreenBounds.EMPTY
         private set
@@ -83,7 +83,7 @@ open class Widget {
     /**
      * 注册事件监听器
      */
-    private fun registerListeners() {
+    internal fun registerListeners() {
         window.eventManager.registerWidget(WindowResizeEvent::class, this)
         window.eventManager.registerWidget(MouseClickEvent::class, this)
         window.eventManager.registerWidget(MouseRightClickEvent::class, this)

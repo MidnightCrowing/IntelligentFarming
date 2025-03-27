@@ -1,28 +1,14 @@
 package com.midnightcrowing.render
 
 import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.model.Texture
 import org.lwjgl.opengl.GL46.*
-import java.io.InputStream
 
 class NineSliceRenderer(
     var texture: Texture,
     val textureBorder: Float, // 纹理边框宽度（像素单位）
     val vertexBorder: Float,  // 屏幕渲染边框宽度（屏幕单位）
 ) {
-    companion object {
-        /**
-         * 从图片资源中创建一个渲染器
-         * @param inputStream 图片资源的输入流
-         */
-        fun createNineSliceRenderer(
-            inputStream: InputStream?,
-            textureBorder: Float, // 纹理边框宽度（像素单位）
-            vertexBorder: Float,  // 屏幕渲染边框宽度（屏幕单位）
-        ): NineSliceRenderer {
-            return NineSliceRenderer(Texture.createImageTexture(inputStream), textureBorder, vertexBorder)
-        }
-    }
-
     private val texWidth = texture.image.width
     private val texHeight = texture.image.height
 
@@ -107,9 +93,5 @@ class NineSliceRenderer(
         glTexCoord2f(q.u2, q.v1); glVertex2f(q.x2, q.y1) // 右上角
         glTexCoord2f(q.u2, q.v2); glVertex2f(q.x2, q.y2) // 右下角
         glTexCoord2f(q.u1, q.v2); glVertex2f(q.x1, q.y2) // 左下角
-    }
-
-    fun cleanup() {
-        texture.cleanup()
     }
 }

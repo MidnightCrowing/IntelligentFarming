@@ -1,25 +1,26 @@
 package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
+import com.midnightcrowing.farmings.FarmCropBase
 import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.farmings.FarmItems.TomatoItem
 import com.midnightcrowing.farmings.FarmItems.TomatoSeedItem
 import com.midnightcrowing.gui.base.Widget
-import com.midnightcrowing.render.Texture
-import com.midnightcrowing.resource.ResourcesEnum
+import com.midnightcrowing.model.Texture
+import com.midnightcrowing.resource.TextureResourcesEnum
 import com.midnightcrowing.utils.GameTick
 
 class Tomato(farmArea: FarmArea) : FarmCropBase(farmArea) {
     override val growDuringTextures: Map<Int, Texture> = mapOf(
-        0 to Texture.createImageTexture(ResourcesEnum.BUDDING_TOMATO_GROW_0.inputStream),
-        1 to Texture.createImageTexture(ResourcesEnum.BUDDING_TOMATO_GROW_1.inputStream),
-        2 to Texture.createImageTexture(ResourcesEnum.BUDDING_TOMATO_GROW_2.inputStream),
-        3 to Texture.createImageTexture(ResourcesEnum.BUDDING_TOMATO_GROW_3.inputStream),
-        4 to Texture.createImageTexture(ResourcesEnum.BUDDING_TOMATO_GROW_4.inputStream),
-        5 to Texture.createImageTexture(ResourcesEnum.TOMATO_GROW_0.inputStream),
-        6 to Texture.createImageTexture(ResourcesEnum.TOMATO_GROW_1.inputStream),
-        7 to Texture.createImageTexture(ResourcesEnum.TOMATO_GROW_2.inputStream),
-        8 to Texture.createImageTexture(ResourcesEnum.TOMATO_GROW_3.inputStream)
+        0 to TextureResourcesEnum.BUDDING_TOMATO_GROW_0.texture,
+        1 to TextureResourcesEnum.BUDDING_TOMATO_GROW_1.texture,
+        2 to TextureResourcesEnum.BUDDING_TOMATO_GROW_2.texture,
+        3 to TextureResourcesEnum.BUDDING_TOMATO_GROW_3.texture,
+        4 to TextureResourcesEnum.BUDDING_TOMATO_GROW_4.texture,
+        5 to TextureResourcesEnum.TOMATO_GROW_0.texture,
+        6 to TextureResourcesEnum.TOMATO_GROW_1.texture,
+        7 to TextureResourcesEnum.TOMATO_GROW_2.texture,
+        8 to TextureResourcesEnum.TOMATO_GROW_3.texture
     )
 
     override fun onFarmRightClick() {
@@ -37,7 +38,7 @@ class Tomato(farmArea: FarmArea) : FarmCropBase(farmArea) {
     override fun copy(): Tomato {
         val newTomato = Tomato(farmArea)
         newTomato.place(this.widgetBounds)
-        newTomato.renderer.texture = newTomato.growInitTexture
+        newTomato.nowTextures = newTomato.nowTextures
         return newTomato
     }
 }

@@ -1,9 +1,9 @@
 package com.midnightcrowing.gui.base
 
-import com.midnightcrowing.render.ImageRenderer
+import com.midnightcrowing.render.TextureRenderer
 
 open class Screen(val window: Window) {
-    open val bgRenderer: ImageRenderer = ImageRenderer()
+    open val bgRenderer: TextureRenderer = TextureRenderer()
 
     open fun place(width: Int, height: Int) {}
 

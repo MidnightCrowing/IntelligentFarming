@@ -1,16 +1,19 @@
 package com.midnightcrowing.gui
 
-import com.midnightcrowing.events.CustomEvent.KeyPressedEvent
-import com.midnightcrowing.events.CustomEvent.MouseMoveEvent
+import com.midnightcrowing.controllers.InventoryController
+import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.render.ImageRenderer
+import com.midnightcrowing.model.item.ItemRegistry
+import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.render.RectangleRenderer
-import com.midnightcrowing.resource.ResourcesEnum
+import com.midnightcrowing.render.TextureRenderer
+import com.midnightcrowing.resource.TextureResourcesEnum
 import com.midnightcrowing.scenes.FarmScene
+import org.lwjgl.glfw.GLFW.GLFW_KEY_E
 
-class Inventory(val screen: FarmScene) : Widget(screen.window, z = 2) {
+class Inventory(val screen: FarmScene, private val controller: InventoryController) : Widget(screen.window, z = 2) {
     companion object {
         private const val BASE_WIDTH = 352
         private const val BASE_HEIGHT = 198
@@ -55,7 +58,12 @@ class Inventory(val screen: FarmScene) : Widget(screen.window, z = 2) {
         val GRID_GAP: Double by lazy { BASE_GRID_GAP * SCALED }
     }
 
-    override val renderer: ImageRenderer = ImageRenderer.createImageRenderer(ResourcesEnum.INVENTORY.inputStream)
+    init {
+        controller.init(this)
+        controller.setItem(0, ItemStack("minecraft:cabbage_seed", 2)) // 示例物品
+    }
+
+    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.INVENTORY.texture)
     private val maskActiveBgRender: RectangleRenderer = RectangleRenderer(color = floatArrayOf(1f, 1f, 1f, 0.5f))
     private var maskActiveBgBounds: ScreenBounds? = null
 
@@ -138,8 +146,12 @@ class Inventory(val screen: FarmScene) : Widget(screen.window, z = 2) {
         maskActiveBgBounds = null
     }
 
+    override fun onClick(e: MouseClickEvent) {
+        super.onClick(e)
+    }
+
     override fun onKeyPress(e: KeyPressedEvent) {
-        if (e.key == 69) {
+        if (e.key == GLFW_KEY_E) {
             if (!isVisible) {
                 screen.hotBar.setHidden(true)
             } else {
@@ -151,8 +163,27 @@ class Inventory(val screen: FarmScene) : Widget(screen.window, z = 2) {
 
     override fun render() {
         super.render()
-        if (isVisible && maskActiveBgBounds != null) {
+        if (!isVisible) {
+            return
+        }
+        // 渲染快捷栏物品
+        controller.hotBarItems.forEachIndexed { index, item ->
+            renderItem(item, calculateQuickBarGridBounds(index))
+        }
+        // 渲染背包物品
+        controller.mainInvItems.forEachIndexed { index, item ->
+            renderItem(item, calculateBagBarGridBounds(index % BAG_BAR_COL_NUM, index / BAG_BAR_COL_NUM))
+        }
+        if (maskActiveBgBounds != null) {
             maskActiveBgRender.render()
+        }
+    }
+
+    fun renderItem(stack: ItemStack, position: ScreenBounds) {
+        if (!stack.isEmpty()) {
+            val item = ItemRegistry.createItem(stack.id, this)
+            item?.place(position)
+            item?.render(stack.count)
         }
     }
 

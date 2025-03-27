@@ -2,8 +2,12 @@ package com.midnightcrowing.farmings
 
 import com.midnightcrowing.farmings.crops.*
 import com.midnightcrowing.gui.base.Widget
-import com.midnightcrowing.render.ImageRenderer
-import com.midnightcrowing.resource.ResourcesEnum
+import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.render.TextRenderer
+import com.midnightcrowing.render.TextureRenderer
+import com.midnightcrowing.resource.TextureResourcesEnum
+import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_MIDDLE
+import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_RIGHT
 
 
 /**
@@ -14,83 +18,141 @@ import com.midnightcrowing.resource.ResourcesEnum
  * @param parent 父组件
  * @param itemEnum 资源枚举
  */
-sealed class FarmItems(parent: Widget, itemEnum: ResourcesEnum) : Widget(parent) {
-    override val renderer: ImageRenderer = ImageRenderer.createImageRenderer(itemEnum.inputStream)
+sealed class FarmItems(parent: Widget, textureEnum: TextureResourcesEnum) : Widget(parent) {
+    override val renderer: TextureRenderer = TextureRenderer(textureEnum.texture)
+    val numTextRenderer: TextRenderer = TextRenderer(parent.window.nvg).apply {
+        fontSize = 40.0
+        textAlign = NVG_ALIGN_RIGHT or NVG_ALIGN_MIDDLE
+        textColor = doubleArrayOf(230 / 255.0, 230 / 255.0, 230 / 255.0, 1.0)
 
-    abstract val isSeed: Boolean
+        shadowOffsetX = 4.0
+        shadowOffsetY = 3.0
+    }
 
     open fun getCrop(farmArea: FarmArea): FarmCropBase? = null
 
-    class CabbageItem(parent: Widget) : FarmItems(parent, ResourcesEnum.CABBAGE) {
-        override fun toString(): String = "卷心菜"
-        override val isSeed: Boolean = false
+    override fun place(bounds: ScreenBounds) {
+        super.place(bounds)
+        numTextRenderer.x = bounds.x2 + 5
+        numTextRenderer.y = bounds.y2 - 12
     }
 
-    class CabbageSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.CABBAGE_SEED) {
+    fun render(num: Int) {
+        super.render()
+        if (num > 1) {
+            numTextRenderer.render(num.toString())
+        }
+    }
+
+    class CabbageItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.CABBAGE) {
+        companion object {
+            const val id: String = "minecraft:cabbage"
+        }
+
+        override fun toString(): String = "卷心菜"
+    }
+
+    class CabbageSeedItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.CABBAGE_SEED) {
+        companion object {
+            const val id: String = "minecraft:cabbage_seed"
+        }
+
         override fun toString(): String = "卷心菜种子"
-        override val isSeed: Boolean = true
         override fun getCrop(farmArea: FarmArea): FarmCropBase? = Cabbage(farmArea)
     }
 
-    class CarrotItem(parent: Widget) : FarmItems(parent, ResourcesEnum.CARROT) {
+    class CarrotItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.CARROT) {
+        companion object {
+            const val id: String = "minecraft:carrot"
+        }
+
         override fun toString(): String = "胡萝卜"
-        override val isSeed: Boolean = true
         override fun getCrop(farmArea: FarmArea): FarmCropBase? = Carrot(farmArea)
     }
 
-    class CornItem(parent: Widget) : FarmItems(parent, ResourcesEnum.CORN) {
+    class CornItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.CORN) {
+        companion object {
+            const val id: String = "minecraft:corn"
+        }
+
         override fun toString(): String = "玉米"
-        override val isSeed: Boolean = false
     }
 
-    class CornSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.CORN_SEED) {
+    class CornSeedItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.CORN_SEED) {
+        companion object {
+            const val id: String = "minecraft:corn_seed"
+        }
+
         override fun toString(): String = "玉米种子"
-        override val isSeed: Boolean = true
         override fun getCrop(farmArea: FarmArea): FarmCropBase? = Corn(farmArea)
     }
 
-    class CottonItem(parent: Widget) : FarmItems(parent, ResourcesEnum.COTTON) {
+    class CottonItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.COTTON) {
+        companion object {
+            const val id: String = "minecraft:cotton"
+        }
+
         override fun toString(): String = "棉花"
-        override val isSeed: Boolean = false
     }
 
-    class CottonSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.COTTON_SEED) {
+    class CottonSeedItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.COTTON_SEED) {
+        companion object {
+            const val id: String = "minecraft:cotton_seed"
+        }
+
         override fun toString(): String = "棉花种子"
-        override val isSeed: Boolean = true
         override fun getCrop(farmArea: FarmArea): FarmCropBase? = Cotton(farmArea)
     }
 
-    class OnionItem(parent: Widget) : FarmItems(parent, ResourcesEnum.ONION) {
+    class OnionItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.ONION) {
+        companion object {
+            const val id: String = "minecraft:onion"
+        }
+
         override fun toString(): String = "洋葱"
-        override val isSeed: Boolean = true
         override fun getCrop(farmArea: FarmArea): FarmCropBase? = Onion(farmArea)
     }
 
-    class PotatoItem(parent: Widget) : FarmItems(parent, ResourcesEnum.POTATO) {
+    class PotatoItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.POTATO) {
+        companion object {
+            const val id: String = "minecraft:potato"
+        }
+
         override fun toString(): String = "土豆"
-        override val isSeed: Boolean = true
         override fun getCrop(farmArea: FarmArea): FarmCropBase? = Potato(farmArea)
     }
 
-    class TomatoItem(parent: Widget) : FarmItems(parent, ResourcesEnum.TOMATO) {
+    class TomatoItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.TOMATO) {
+        companion object {
+            const val id: String = "minecraft:tomato"
+        }
+
         override fun toString(): String = "西红柿"
-        override val isSeed: Boolean = false
     }
 
-    class TomatoSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.TOMATO_SEED) {
+    class TomatoSeedItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.TOMATO_SEED) {
+        companion object {
+            const val id: String = "minecraft:tomato_seed"
+        }
+
         override fun toString(): String = "西红柿种子"
-        override val isSeed: Boolean = true
         override fun getCrop(farmArea: FarmArea): FarmCropBase? = Tomato(farmArea)
     }
 
-    class WheatItem(parent: Widget) : FarmItems(parent, ResourcesEnum.WHEAT) {
+    class WheatItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.WHEAT) {
+        companion object {
+            const val id: String = "minecraft:wheat"
+        }
+
         override fun toString(): String = "小麦"
-        override val isSeed: Boolean = false
     }
 
-    class WheatSeedItem(parent: Widget) : FarmItems(parent, ResourcesEnum.WHEAT_SEED) {
+    class WheatSeedItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.WHEAT_SEED) {
+        companion object {
+            const val id: String = "minecraft:wheat_seed"
+        }
+
         override fun toString(): String = "小麦种子"
-        override val isSeed: Boolean = true
         override fun getCrop(farmArea: FarmArea): FarmCropBase? = Wheat(farmArea)
     }
 }

@@ -1,28 +1,13 @@
-package com.midnightcrowing.render
+package com.midnightcrowing.model
 
-import com.midnightcrowing.model.Image
-import org.lwjgl.opengl.ARBFramebufferObject.glGenerateMipmap
+import org.lwjgl.opengl.ARBFramebufferObject
 import org.lwjgl.opengl.GL46.*
 import java.io.InputStream
 
-
 /**
- * 纹理管理类，负责加载和绑定纹理，支持透明度。
+ * 纹理类，负责加载和绑定纹理，支持透明度。
  */
 class Texture {
-    companion object {
-        fun createImageTexture(inputStream: InputStream?): Texture {
-            if (inputStream == null) {
-                throw IllegalArgumentException("inputStream: 不能为空")
-            }
-            return Texture(inputStream).apply { load() }
-        }
-
-        fun createImageTexture(image: Image): Texture {
-            return Texture(image).apply { load() }
-        }
-    }
-
     val image: Image
 
     constructor(inputStream: InputStream) {
@@ -50,7 +35,7 @@ class Texture {
         val format = if (image.hasAlphaChannel()) GL_RGBA else GL_RGB
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width, image.height, 0, format, GL_UNSIGNED_BYTE, image.buffer)
 
-        glGenerateMipmap(GL_TEXTURE_2D) // 生成 Mipmap 以提高缩放质量
+        ARBFramebufferObject.glGenerateMipmap(GL_TEXTURE_2D) // 生成 Mipmap 以提高缩放质量
     }
 
     fun bind() {
@@ -60,14 +45,6 @@ class Texture {
     fun cleanup() {
         glDeleteTextures(id)
         image.cleanup()
+        println("纹理 $id 已被删除")
     }
-
-//    fun copy(): Texture {
-//        // TODO : 实现纹理的深拷贝
-//        val newInputStream = inputStream.javaClass.getResourceAsStream(inputStream.toString())
-//            ?: throw IllegalArgumentException("InputStream cannot be null")
-//        val newTexture = Texture(newInputStream)
-//        newTexture.load()
-//        return newTexture
-//    }
 }

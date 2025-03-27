@@ -1,5 +1,6 @@
 package com.midnightcrowing.scenes
 
+import com.midnightcrowing.controllers.GameController
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.gui.CropInfoDisplay
 import com.midnightcrowing.gui.HotBar
@@ -7,8 +8,8 @@ import com.midnightcrowing.gui.Inventory
 import com.midnightcrowing.gui.base.Screen
 import com.midnightcrowing.gui.base.Window
 import com.midnightcrowing.model.Point
-import com.midnightcrowing.render.ImageRenderer
-import com.midnightcrowing.resource.ResourcesEnum
+import com.midnightcrowing.render.TextureRenderer
+import com.midnightcrowing.resource.TextureResourcesEnum
 
 class FarmScene(window: Window) : Screen(window) {
     private companion object {
@@ -29,15 +30,16 @@ class FarmScene(window: Window) : Screen(window) {
         )
     }
 
-    override val bgRenderer: ImageRenderer = ImageRenderer.createImageRenderer(
-        ResourcesEnum.FARM_BACKGROUND.inputStream
-    )
+    override val bgRenderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.FARM_BACKGROUND.texture)
+
+    // controller
+    val gameController: GameController = GameController()
 
     // UI
-    val cropInfoDisplay: CropInfoDisplay = CropInfoDisplay(this)
-    val farmArea: FarmArea = FarmArea(window, cropInfoDisplay = cropInfoDisplay, farmlandBoard = FARMLAND_BOARD)
-    val hotBar: HotBar = HotBar(this)
-    val inventory: Inventory = Inventory(this)
+    val cropInfoDisplay: CropInfoDisplay = CropInfoDisplay(this, gameController.cropInfo)
+    val farmArea: FarmArea = FarmArea(window, gameController.farmArea, farmlandBoard = FARMLAND_BOARD)
+    val inventory: Inventory = Inventory(this, gameController.inventory)
+    val hotBar: HotBar = HotBar(this, gameController.hotBar)
 
     init {
         cropInfoDisplay.setHidden(true)

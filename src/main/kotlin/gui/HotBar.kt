@@ -1,18 +1,22 @@
 package com.midnightcrowing.gui
 
 import com.midnightcrowing.controllers.HotBarController
-import com.midnightcrowing.controllers.HotBarController.Companion.DEFAULT_SELECT_ID
+import com.midnightcrowing.events.CustomEvent.KeyPressedEvent
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
+import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.render.ImageRenderer
+import com.midnightcrowing.model.item.ItemRegistry
+import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.render.TextRenderer
-import com.midnightcrowing.resource.ResourcesEnum
+import com.midnightcrowing.render.TextureRenderer
+import com.midnightcrowing.resource.TextureResourcesEnum
 import com.midnightcrowing.scenes.FarmScene
 import com.midnightcrowing.utils.GameTick
+import org.lwjgl.glfw.GLFW.*
 
 
-class HotBar(val screen: FarmScene) : Widget(screen.window, z = 1) {
+class HotBar(val screen: FarmScene, private val controller: HotBarController) : Widget(screen.window, z = 1) {
     companion object {
         // 基础尺寸常量
         private const val BASE_WIDTH = 364
@@ -37,20 +41,27 @@ class HotBar(val screen: FarmScene) : Widget(screen.window, z = 1) {
         val CHECKBOX_SIZE by lazy { BASE_CHECKBOX_SIZE * SCALED }
     }
 
-    override val renderer: ImageRenderer = ImageRenderer.createImageRenderer(
-        ResourcesEnum.COMPONENTS_HOT_BAR.inputStream
-    )
-    val itemLabelRenderer: TextRenderer = TextRenderer(window.nvg, fontSize = 20.0)
+    // 渲染器
+    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.COMPONENTS_HOT_BAR.texture)
+    val itemLabelRenderer: TextRenderer = TextRenderer(window.nvg).apply { fontSize = 20.0 }
 
-    val controller = HotBarController(this)
-    val itemCheckBox: ItemCheckBox = ItemCheckBox(this)
+    // 物品选中框
+    private val itemCheckBox: ItemCheckBox = ItemCheckBox(this)
 
-    var textRenderTime: Long = GameTick.tick
+    // 物品缓存，避免每次渲染时重复创建
+    private val itemCache = mutableMapOf<String, FarmItems?>()
+
+    // 上次呈现文本的时间
+    private var textRenderTime: Long = GameTick.tick
 
     // 网格起始坐标
     private var gridStartX: Double = 0.0
     private var gridStartY: Double = 0.0
     private var gridEndY: Double = 0.0
+
+    init {
+        controller.init(this)
+    }
 
     fun setItemLabelText(text: String?) {
         if (text == null) {
@@ -71,15 +82,8 @@ class HotBar(val screen: FarmScene) : Widget(screen.window, z = 1) {
 
         itemLabelRenderer.x = (x1 + x2) / 2
         itemLabelRenderer.y = y1 - 30
-        itemCheckBox.place(getGridBoundsWithCheckbox(selectedGridId))
+        itemCheckBox.place(getGridBoundsWithCheckbox(controller.selectedGridId))
     }
-
-    // 选中网格 ID
-    private var selectedGridId: Int = DEFAULT_SELECT_ID
-        set(value) {
-            require(value in 0..8) { "selectedGridId 必须在 0 到 8 之间" }
-            field = value
-        }
 
     // 计算网格边界
     private fun calculateGridBounds(id: Int): ScreenBounds {
@@ -116,10 +120,25 @@ class HotBar(val screen: FarmScene) : Widget(screen.window, z = 1) {
 
     override fun onClick(e: MouseClickEvent) {
         findGridCheckboxIdAt(e.x)?.let {
-            selectedGridId = it
             itemCheckBox.moveTo(getGridBoundsWithCheckbox(it))
             controller.changeActiveItem(it)
         }
+    }
+
+    override fun onKeyPress(e: KeyPressedEvent) {
+        var selectedGridId = controller.selectedGridId
+        when (e.key) {
+            in GLFW_KEY_1..GLFW_KEY_9 -> {
+                val keyIndex = e.key - GLFW_KEY_1
+                selectedGridId = keyIndex
+            }
+
+            GLFW_KEY_LEFT -> if (selectedGridId > 0) selectedGridId -= 1
+            GLFW_KEY_RIGHT -> if (selectedGridId < 8) selectedGridId += 1
+            else -> return
+        }
+        itemCheckBox.moveTo(getGridBoundsWithCheckbox(selectedGridId))
+        controller.changeActiveItem(selectedGridId)
     }
 
     override fun render() {
@@ -134,12 +153,17 @@ class HotBar(val screen: FarmScene) : Widget(screen.window, z = 1) {
             itemLabelRenderer.render()
         }
 
-        for ((index, item) in controller.itemsList) {
-            item?.place(getGridBounds(index))
-            item?.render()
-        }
+        controller.itemsList.forEachIndexed { index, item -> renderItem(item, getGridBounds(index)) }
 
         itemCheckBox.render()
+    }
+
+    fun renderItem(stack: ItemStack, position: ScreenBounds) {
+        if (!stack.isEmpty()) {
+            val item = itemCache.getOrPut(stack.id) { ItemRegistry.createItem(stack.id, this) }
+            item?.place(position)
+            item?.render(stack.count)
+        }
     }
 
     override fun cleanup() {

@@ -1,9 +1,7 @@
-package com.midnightcrowing.farmings.crops
+package com.midnightcrowing.farmings
 
-import com.midnightcrowing.farmings.FarmArea
-import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.gui.base.Widget
-import com.midnightcrowing.render.Texture
+import com.midnightcrowing.model.Texture
 import com.midnightcrowing.utils.GameTick
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -14,7 +12,7 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
     val growFullTexture: Texture get() = growDuringTextures.values.last()
 
     var nowTextures: Texture? = null
-        private set(value) {
+        internal set(value) {
             field = value
             renderer.texture = value
         }
@@ -64,7 +62,7 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
      * @return 一个介于 min 和 max 之间的随机值。
      */
     fun triangularRandom(min: Double, max: Double, mode: Double): Double {
-        val u = Random.nextDouble()
+        val u = Random.Default.nextDouble()
         return if (u < (mode - min) / (max - min)) {
             min + sqrt(u * (max - min) * (mode - min))
         } else {
@@ -79,9 +77,4 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
     open fun onFarmRightClick() {}
 
     abstract fun copy(): FarmCropBase
-
-    override fun cleanup() {
-        growDuringTextures.values.forEach { it.cleanup() }
-        unregisterListener()
-    }
 }

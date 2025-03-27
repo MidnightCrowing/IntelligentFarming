@@ -2,10 +2,10 @@ package com.midnightcrowing.gui.base
 
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.model.Texture
 import com.midnightcrowing.render.NineSliceRenderer
 import com.midnightcrowing.render.TextRenderer
-import com.midnightcrowing.render.Texture
-import com.midnightcrowing.resource.ResourcesEnum
+import com.midnightcrowing.resource.TextureResourcesEnum
 
 
 /**
@@ -21,9 +21,11 @@ class Button : Widget {
     constructor(parent: Widget) : super(parent)
 
     // 纹理映射，加载对应状态的按钮纹理
-    private val textures: Map<ButtonTextures, Texture?> = ButtonTextures.entries.associateWith { type ->
-        ResourcesEnum.valueOf("BUTTON_${type.name}").inputStream?.let { Texture(it).apply { load() } }
-    }
+    private val textures: Map<ButtonTextures, Texture> = mapOf(
+        ButtonTextures.DEFAULT to TextureResourcesEnum.BUTTON_DEFAULT.texture,
+        ButtonTextures.HOVER to TextureResourcesEnum.BUTTON_HOVER.texture,
+        ButtonTextures.DISABLED to TextureResourcesEnum.BUTTON_DISABLED.texture
+    )
 
     // 渲染器，默认使用 DEFAULT 纹理
     val nineSliceRenderer: NineSliceRenderer? = textures[ButtonTextures.DEFAULT]?.let {
@@ -47,6 +49,11 @@ class Button : Widget {
         set(value) {
             field = value
             textRenderer.textColor = value
+        }
+    var textSpacing: Double = 1.0
+        set(value) {
+            field = value
+            textRenderer.textSpacing = value
         }
 
     override fun place(bounds: ScreenBounds) {
@@ -89,10 +96,5 @@ class Button : Widget {
      */
     private fun setTexture(state: ButtonTextures) {
         textures[state]?.let { nineSliceRenderer?.texture = it }
-    }
-
-    override fun cleanup() {
-        super.cleanup()
-        textures.values.forEach { it?.cleanup() } // 清理所有纹理
     }
 }

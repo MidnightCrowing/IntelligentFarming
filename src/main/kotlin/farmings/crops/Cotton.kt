@@ -1,23 +1,24 @@
 package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
+import com.midnightcrowing.farmings.FarmCropBase
 import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.farmings.FarmItems.CottonItem
 import com.midnightcrowing.farmings.FarmItems.CottonSeedItem
 import com.midnightcrowing.gui.base.Widget
-import com.midnightcrowing.render.Texture
-import com.midnightcrowing.resource.ResourcesEnum
+import com.midnightcrowing.model.Texture
+import com.midnightcrowing.resource.TextureResourcesEnum
 
 class Cotton(farmArea: FarmArea) : FarmCropBase(farmArea) {
     override val growDuringTextures: Map<Int, Texture> = mapOf(
-        0 to Texture.createImageTexture(ResourcesEnum.COTTON_GROW_0.inputStream),
-        1 to Texture.createImageTexture(ResourcesEnum.COTTON_GROW_0.inputStream),
-        2 to Texture.createImageTexture(ResourcesEnum.COTTON_GROW_0.inputStream),
-        3 to Texture.createImageTexture(ResourcesEnum.COTTON_GROW_0.inputStream),
-        4 to Texture.createImageTexture(ResourcesEnum.COTTON_GROW_4.inputStream),
-        5 to Texture.createImageTexture(ResourcesEnum.COTTON_GROW_4.inputStream),
-        6 to Texture.createImageTexture(ResourcesEnum.COTTON_GROW_4.inputStream),
-        7 to Texture.createImageTexture(ResourcesEnum.COTTON_GROW_7.inputStream)
+        0 to TextureResourcesEnum.COTTON_GROW_0.texture,
+        1 to TextureResourcesEnum.COTTON_GROW_0.texture,
+        2 to TextureResourcesEnum.COTTON_GROW_0.texture,
+        3 to TextureResourcesEnum.COTTON_GROW_0.texture,
+        4 to TextureResourcesEnum.COTTON_GROW_4.texture,
+        5 to TextureResourcesEnum.COTTON_GROW_4.texture,
+        6 to TextureResourcesEnum.COTTON_GROW_4.texture,
+        7 to TextureResourcesEnum.COTTON_GROW_7.texture
     )
 
     override fun getFarmItem(parent: Widget): FarmItems =
@@ -28,7 +29,7 @@ class Cotton(farmArea: FarmArea) : FarmCropBase(farmArea) {
     override fun copy(): Cotton {
         val newCotton = Cotton(farmArea)
         newCotton.place(this.widgetBounds)
-        newCotton.renderer.texture = newCotton.growInitTexture
+        newCotton.nowTextures = newCotton.nowTextures
         return newCotton
     }
 }

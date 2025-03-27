@@ -1,7 +1,8 @@
 package com.midnightcrowing.particles
 
-import com.midnightcrowing.model.Image
 import com.midnightcrowing.model.Point
+import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.model.Texture
 import kotlin.random.Random
 
 /**
@@ -10,9 +11,13 @@ import kotlin.random.Random
  */
 class ParticleSystem {
     private val particles = mutableListOf<Particle>()
+    private val renderer = ParticleRenderer() // 负责渲染粒子
 
     // 位置随机性控制
     private var positionVariation: Point = Point(60.0, 55.0)
+
+    // 粒子贴图大小
+    private var textureSize: Int = 50
 
     // 粒子缩放大小
     private var particleSize: Int = 6
@@ -20,10 +25,12 @@ class ParticleSystem {
     /**
      * 生成粒子效果
      * @param origin 生成粒子的中心位置
-     * @param image  粒子贴图
-     * @param count  生成粒子的数量
+     * @param texture 粒子贴图
+     * @param count 生成粒子的数量
      */
-    fun generateParticles(origin: Point, image: Image, count: Int) {
+    fun generateParticles(origin: Point, texture: Texture, count: Int) {
+        val (imgWidth, imgHeight) = texture.image.run { width to height }
+
         repeat(count) {
             val randomPosition = Point(
                 x = origin.x + Random.nextDouble(
@@ -43,15 +50,22 @@ class ParticleSystem {
 
             val lifetime = Random.nextFloat() * 0.5
 
-            val particle = Particle(
+            val startX = Random.nextInt(imgWidth - textureSize).toDouble()
+            val startY = Random.nextInt(imgHeight - textureSize).toDouble()
+
+            particles += Particle(
+                texture = texture,
+                textureBounds = ScreenBounds(
+                    startX / imgWidth,
+                    startY / imgHeight,
+                    (startX + textureSize) / imgWidth,
+                    (startY + textureSize) / imgHeight
+                ),
                 position = randomPosition,
                 velocity = velocity,
-                image = image.extractSquareRegion(50), // 生成粒子贴图
                 lifetime = lifetime,
                 size = particleSize
             )
-
-            particles.add(particle)
         }
     }
 
@@ -61,12 +75,7 @@ class ParticleSystem {
      */
     fun update(deltaTime: Float) {
         particles.forEach { it.update(deltaTime) }
-        particles.removeIf {
-            if (it.isDead()) {
-                it.cleanup() // 先释放资源
-            }
-            it.isDead()
-        } // 移除生命周期结束的粒子
+        particles.removeIf { it.isDead() } // 移除生命周期结束的粒子
     }
 
     /**
@@ -84,6 +93,6 @@ class ParticleSystem {
      * 渲染所有粒子
      */
     fun render() {
-        particles.forEach { it.render() }
+        renderer.renderAll(particles)
     }
 }
