@@ -8,6 +8,8 @@ class FarmAreaController(gameController: GameController) {
 
     val cropInfoController: CropInfoDisplayControllers = gameController.cropInfo
     val cropInfo: CropInfoDisplay by lazy { cropInfoController.cropInfoDisplay }
+    val hotController: HotBarController by lazy { gameController.hotBar }
+    val invController: InventoryController by lazy { gameController.inventory }
 
     fun init(farmArea: FarmArea) {
         this.farmArea = farmArea

@@ -36,7 +36,7 @@ class MouseMoveListener(
         val widgetsCopy = moveListeners.toList()
         val highestZWidget = widgetsCopy
             .filter { it.isVisible }
-            .filter { it.containsPoint(mouseX, mouseY) }
+            .filter { it.containsPoint(mouseX, mouseY, event = MouseMoveEvent::class) }
             .maxByOrNull { it.z }
 
         highestZWidget?.onMouseMove(MouseMoveEvent(mouseX, mouseY))
@@ -45,7 +45,7 @@ class MouseMoveListener(
     private fun handleMouseEnterAndLeave(mouseX: Double, mouseY: Double) {
         // 处理 MouseEnterEvent
         enterListeners.forEach { (widget, hasEntered) ->
-            val isInside = widget.containsPoint(mouseX, mouseY)
+            val isInside = widget.containsPoint(mouseX, mouseY, event = MouseEnterEvent::class)
             if (isInside && !hasEntered) {
                 widget.onMouseEnter()
                 enterListeners[widget] = true
@@ -56,7 +56,7 @@ class MouseMoveListener(
 
         // 处理 MouseLeaveEvent
         leaveListeners.forEach { (widget, wasInside) ->
-            val isInside = widget.containsPoint(mouseX, mouseY)
+            val isInside = widget.containsPoint(mouseX, mouseY, event = MouseLeaveEvent::class)
             if (!isInside && wasInside) {
                 widget.onMouseLeave()
                 leaveListeners[widget] = false

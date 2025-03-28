@@ -42,7 +42,6 @@ class FarmScene(window: Window) : Screen(window) {
     val hotBar: HotBar = HotBar(this, gameController.hotBar)
 
     init {
-        cropInfoDisplay.setHidden(true)
         inventory.setHidden(true)
     }
 

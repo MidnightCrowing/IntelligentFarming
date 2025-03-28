@@ -2,6 +2,7 @@ package com.midnightcrowing.farmings
 
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.model.Texture
+import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.utils.GameTick
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -18,7 +19,7 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
         }
 
     open var plantedTick: Long = 0
-    open var growthDuration: Double = triangularRandom(0.0, 20000.0, 1000.0)
+    open var growthDuration: Double = triangularRandom(80000.0, 200000.0, 13000.0)
     var growthProgress: Double = 0.0
         private set(value) {
             field = value
@@ -70,11 +71,29 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
         }
     }
 
-    abstract fun getFarmItem(parent: Widget): FarmItems
+    open fun getItemStack(): ItemStack = ItemStack.EMPTY
+
+    open fun getDrops(): Array<ItemStack> = arrayOf(ItemStack.EMPTY)
+
+    /**
+     * 模拟二项分布生成掉落物数量
+     * @param n 最大掉落次数
+     * @param p 单次掉落概率
+     * @return 掉落物数量
+     */
+    internal fun generateDropCount(n: Int, p: Double): Int {
+        var dropCount = 0
+        repeat(n) {
+            if (Random.nextDouble() < p) {
+                dropCount++
+            }
+        }
+        return dropCount
+    }
 
     override fun toString(): String = "未知农作物"
 
-    open fun onFarmRightClick() {}
+    open fun onFarmRightClick(): Array<ItemStack>? = null
 
     abstract fun copy(): FarmCropBase
 }

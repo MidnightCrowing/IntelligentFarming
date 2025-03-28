@@ -3,6 +3,7 @@ package com.midnightcrowing.gui
 import com.midnightcrowing.controllers.CropInfoDisplayControllers
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.render.NineSliceRenderer
 import com.midnightcrowing.render.TextRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
@@ -45,7 +46,8 @@ class CropInfoDisplay(
     }
 
     fun clear() {
-        controller.item?.cleanup()
+        controller.item = ItemStack.EMPTY
+        controller.itemWidget?.cleanup()
         titleText.text = ""
         valueText.text = ""
     }
@@ -63,7 +65,7 @@ class CropInfoDisplay(
 
         // 计算物品区域
         itemBounds = ScreenBounds(itemX, itemY, itemX + itemSize, itemY + itemSize)
-        controller.item?.place(itemBounds)
+        controller.itemWidget?.place(itemBounds)
 
         // 计算字体大小和文本偏移
         val titleSize = scaleValue(window.width, 21.0, 31.0)
@@ -93,7 +95,7 @@ class CropInfoDisplay(
     }
 
     fun update() {
-        controller.updateItem(controller.crop?.getFarmItem(this))
+        controller.updateItem(controller.crop?.getItemStack())
         valueText.apply {
             text =
                 if (controller.crop?.isFullyGrown == true) "成熟"
@@ -103,9 +105,9 @@ class CropInfoDisplay(
     }
 
     override fun render() {
-        if (!isVisible) return
+        if (!isVisible || controller.item.isEmpty()) return
         bgRenderer.render(widgetBounds)
-        controller.item?.render()
+        controller.itemWidget?.render()
         titleText.render()
         descText.render()
         valueText.render()
@@ -113,6 +115,6 @@ class CropInfoDisplay(
 
     override fun cleanup() {
         super.cleanup()
-        controller.item?.cleanup()
+        controller.itemWidget?.cleanup()
     }
 }

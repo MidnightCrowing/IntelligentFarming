@@ -51,5 +51,16 @@ sealed class CustomEvent : Event() {
      */
     data class MouseMoveEvent(val x: Double, val y: Double) : Event()
 
+    /**
+     * 鼠标滚轮事件
+     * @param offsetX 滚动的 X 偏移量
+     * @param offsetY 滚动的 Y 偏移量
+     */
+    data class MouseScrollEvent(val offsetX: Double, val offsetY: Double) : Event()
+
+    /**
+     * 按键按下事件
+     * @param key 按键代码
+     */
     data class KeyPressedEvent(val key: Int) : Event()
 }

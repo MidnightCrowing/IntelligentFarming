@@ -1,8 +1,8 @@
 package com.midnightcrowing.gui
 
 import com.midnightcrowing.controllers.HotBarController
-import com.midnightcrowing.events.CustomEvent.KeyPressedEvent
-import com.midnightcrowing.events.CustomEvent.MouseClickEvent
+import com.midnightcrowing.events.CustomEvent.*
+import com.midnightcrowing.events.Event
 import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.model.ScreenBounds
@@ -14,6 +14,7 @@ import com.midnightcrowing.resource.TextureResourcesEnum
 import com.midnightcrowing.scenes.FarmScene
 import com.midnightcrowing.utils.GameTick
 import org.lwjgl.glfw.GLFW.*
+import kotlin.reflect.KClass
 
 
 class HotBar(val screen: FarmScene, private val controller: HotBarController) : Widget(screen.window, z = 1) {
@@ -43,13 +44,13 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
 
     // 渲染器
     override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.COMPONENTS_HOT_BAR.texture)
-    val itemLabelRenderer: TextRenderer = TextRenderer(window.nvg).apply { fontSize = 20.0 }
+    private val itemLabelRenderer: TextRenderer = TextRenderer(window.nvg).apply { fontSize = 20.0 }
 
     // 物品选中框
-    private val itemCheckBox: ItemCheckBox = ItemCheckBox(this)
+    internal val itemCheckBox: ItemCheckBox = ItemCheckBox(this)
 
     // 物品缓存，避免每次渲染时重复创建
-    private val itemCache = mutableMapOf<String, FarmItems?>()
+    internal val itemCache = mutableMapOf<String, FarmItems?>()
 
     // 上次呈现文本的时间
     private var textRenderTime: Long = GameTick.tick
@@ -63,7 +64,9 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
         controller.init(this)
     }
 
-    fun setItemLabelText(text: String?) {
+    internal fun getItemCache(id: String): FarmItems? = itemCache.getOrPut(id) { ItemRegistry.createItem(id, this) }
+
+    internal fun setItemLabelText(text: String?) {
         if (text == null) {
             itemLabelRenderer.text = ""
             return
@@ -98,10 +101,10 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
     }
 
     // 获取普通网格位置
-    fun getGridBounds(id: Int): ScreenBounds = calculateGridBounds(id)
+    private fun getGridBounds(id: Int): ScreenBounds = calculateGridBounds(id)
 
     // 获取带选中框的网格位置
-    fun getGridBoundsWithCheckbox(id: Int): ScreenBounds {
+    internal fun getGridBoundsWithCheckbox(id: Int): ScreenBounds {
         val itemBounds = calculateGridBounds(id)
         return ScreenBounds(
             x1 = itemBounds.x1 - CHECKBOX_SIZE,
@@ -118,10 +121,25 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
             x in bounds.x1..bounds.x2
         }
 
+    override fun containsPoint(x: Double, y: Double, event: KClass<out Event>?): Boolean {
+        return if (event == MouseScrollEvent::class) {
+            true
+        } else {
+            super.containsPoint(x, y, event)
+        }
+    }
+
     override fun onClick(e: MouseClickEvent) {
         findGridCheckboxIdAt(e.x)?.let {
-            itemCheckBox.moveTo(getGridBoundsWithCheckbox(it))
-            controller.changeActiveItem(it)
+            controller.selectedGridId = it
+        }
+    }
+
+    override fun onScroll(e: MouseScrollEvent) {
+        if (e.offsetY < 0) {
+            controller.selectedGridId = (controller.selectedGridId + 1).coerceAtMost(8)
+        } else if (e.offsetY > 0) {
+            controller.selectedGridId = (controller.selectedGridId - 1).coerceAtLeast(0)
         }
     }
 
@@ -137,8 +155,7 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
             GLFW_KEY_RIGHT -> if (selectedGridId < 8) selectedGridId += 1
             else -> return
         }
-        itemCheckBox.moveTo(getGridBoundsWithCheckbox(selectedGridId))
-        controller.changeActiveItem(selectedGridId)
+        controller.selectedGridId = selectedGridId
     }
 
     override fun render() {
@@ -153,14 +170,21 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
             itemLabelRenderer.render()
         }
 
-        controller.itemsList.forEachIndexed { index, item -> renderItem(item, getGridBounds(index)) }
+        renderItems()
 
         itemCheckBox.render()
     }
 
-    fun renderItem(stack: ItemStack, position: ScreenBounds) {
+    private fun renderItems() {
+        controller.itemsList.forEachIndexed { index, item -> renderItem(item, getGridBounds(index)) }
+
+        // 清理不在stack.id里的物品
+        itemCache.keys.retainAll(controller.itemsList.map { it.id })
+    }
+
+    private fun renderItem(stack: ItemStack, position: ScreenBounds) {
         if (!stack.isEmpty()) {
-            val item = itemCache.getOrPut(stack.id) { ItemRegistry.createItem(stack.id, this) }
+            val item = getItemCache(stack.id)
             item?.place(position)
             item?.render(stack.count)
         }

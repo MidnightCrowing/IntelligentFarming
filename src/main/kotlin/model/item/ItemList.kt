@@ -19,4 +19,8 @@ class ItemList(size: Int) {
         require(ints.first >= 0 && ints.last < items.size) { "Index out of bounds: $ints" }
         return items.slice(ints)
     }
+
+    fun <R> map(transform: (ItemStack) -> R): List<R> {
+        return items.map(transform)
+    }
 }

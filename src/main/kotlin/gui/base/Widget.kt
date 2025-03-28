@@ -1,9 +1,11 @@
 package com.midnightcrowing.gui.base
 
 import com.midnightcrowing.events.CustomEvent.*
+import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.WindowResizeEvent
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.render.TextureRenderer
+import kotlin.reflect.KClass
 
 open class Widget {
     val window: Window
@@ -36,8 +38,11 @@ open class Widget {
 
     /**
      * 判断给定坐标是否在组件范围内
+     * @param x X 坐标
+     * @param y Y 坐标
+     * @param event 事件类型，可用于需要对特定事件进行处理的情况
      */
-    fun containsPoint(x: Double, y: Double): Boolean {
+    open fun containsPoint(x: Double, y: Double, event: KClass<out Event>? = null): Boolean {
         return x in widgetBounds.x1..widgetBounds.x2 && y in widgetBounds.y1..widgetBounds.y2
     }
 
@@ -52,6 +57,13 @@ open class Widget {
     fun toggleVisible() {
         visible = !visible
     }
+
+    /**
+     * 获取鼠标在窗口中的坐标
+     *
+     * @return 一个包含鼠标 x 和 y 坐标的 Pair
+     */
+    fun getCursorPos(): Pair<Double, Double> = window.getCursorPos()
 
     open fun place(x1: Double, y1: Double, x2: Double, y2: Double) {
         widgetBounds = ScreenBounds(x1, y1, x2, y2)
@@ -92,6 +104,7 @@ open class Widget {
         window.eventManager.registerWidget(MouseMoveEvent::class, this)
         window.eventManager.registerWidget(MousePressedEvent::class, this)
         window.eventManager.registerWidget(MouseReleasedEvent::class, this)
+        window.eventManager.registerWidget(MouseScrollEvent::class, this)
         window.eventManager.registerWidget(KeyPressedEvent::class, this)
     }
 
@@ -107,6 +120,7 @@ open class Widget {
         window.eventManager.unregisterWidget(MouseMoveEvent::class, this)
         window.eventManager.unregisterWidget(MousePressedEvent::class, this)
         window.eventManager.unregisterWidget(MouseReleasedEvent::class, this)
+        window.eventManager.unregisterWidget(MouseScrollEvent::class, this)
         window.eventManager.unregisterWidget(KeyPressedEvent::class, this)
     }
 
@@ -147,6 +161,14 @@ open class Widget {
      */
     open fun onMouseMove(e: MouseMoveEvent) {}
 
+    /**
+     * 鼠标滚轮事件
+     */
+    open fun onScroll(e: MouseScrollEvent) {}
+
+    /**
+     * 按键按下事件
+     */
     open fun onKeyPress(e: KeyPressedEvent) {}
 
     // endregion

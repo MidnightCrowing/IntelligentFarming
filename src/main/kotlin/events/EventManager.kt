@@ -23,6 +23,10 @@ class EventManager(val window: Window) {
         glfwSetCursorPosCallback(window.handle) { _, xPos, yPos ->
             triggerCursorPosEvent(xPos, yPos)
         }
+        // 监听鼠标滚轮
+        glfwSetScrollCallback(window.handle) { _, offsetX, offsetY ->
+            triggerScrollEvent(offsetX, offsetY)
+        }
         // 监听窗口大小变化
         glfwSetFramebufferSizeCallback(window.handle) { _, width, height ->
             triggerWindowResizeEvent(width, height)
@@ -47,6 +51,15 @@ class EventManager(val window: Window) {
             @Suppress("UNCHECKED_CAST")
             (listener as EventListener<CursorMoveEvent>).eventFilter(
                 CursorMoveEvent(xPos, yPos)
+            )
+        }
+    }
+
+    fun triggerScrollEvent(offsetX: Double, offsetY: Double) {
+        listeners[ScrollEvent::class]?.forEach { listener ->
+            @Suppress("UNCHECKED_CAST")
+            (listener as EventListener<ScrollEvent>).eventFilter(
+                ScrollEvent(offsetX, offsetY)
             )
         }
     }
@@ -76,6 +89,7 @@ class EventManager(val window: Window) {
         MouseMoveListener(window, this)
         MousePressedListener(window, this)
         MouseReleasedListener(window, this)
+        MouseScrollListener(window, this)
         KeyPressedListener(window, this)
         WindowResizeEventListener(window, this)
     }

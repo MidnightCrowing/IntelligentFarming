@@ -6,7 +6,8 @@ import com.midnightcrowing.events.Event.MouseButtonEvent
 import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.gui.base.Window
-import org.lwjgl.glfw.GLFW.*
+import org.lwjgl.glfw.GLFW.GLFW_PRESS
+import org.lwjgl.glfw.GLFW.GLFW_RELEASE
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredFunctions
 
@@ -31,24 +32,12 @@ class MouseReleasedListener(
     }
 
     private fun recordPressedWidget() {
-        val (x, y) = DoubleArray(1).let { xPos ->
-            DoubleArray(1).let { yPos ->
-                glfwGetCursorPos(window.handle, xPos, yPos)
-                xPos[0] to yPos[0]
-            }
-        }
-
-        pressedWidget = releaseableWidgets.find { it.containsPoint(x, y) }
+        val (x, y) = window.getCursorPos()
+        pressedWidget = releaseableWidgets.find { it.containsPoint(x, y, event = MouseReleasedEvent::class) }
     }
 
     override fun triggerEvent(event: MouseButtonEvent) {
-        val (x, y) = DoubleArray(1).let { xPos ->
-            DoubleArray(1).let { yPos ->
-                glfwGetCursorPos(window.handle, xPos, yPos)
-                xPos[0] to yPos[0]
-            }
-        }
-
+        val (x, y) = window.getCursorPos()
         pressedWidget?.onMouseRelease(MouseReleasedEvent(x, y, event.button))
         pressedWidget = null
     }

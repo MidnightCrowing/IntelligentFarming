@@ -10,6 +10,8 @@ import com.midnightcrowing.particles.ParticleSystem
 import com.midnightcrowing.render.LineRenderer
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT
 
+// TODO: 重构本文件
+
 /**
  * 农场区域类，用于管理农田的布局和作物种植。
  * 继承自[Widget]，支持鼠标事件处理和渲染。
@@ -70,10 +72,14 @@ class FarmArea : Widget {
 
     // region 作物管理
     private val cropsGrid: Array<Array<FarmCropBase?>>
-    var activeSeedCrop: FarmCropBase? = null         // 当前选中的种子
+    var activeSeedCrop: FarmCropBase? = null
         set(value) {
             field?.cleanup()
-            field = value?.apply { setShadow() }
+            field = value?.apply {
+                setShadow()
+                setVisible(field?.isVisible ?: true)
+                place(field?.widgetBounds ?: ScreenBounds.EMPTY)
+            }
         }
 
     /**
@@ -85,6 +91,7 @@ class FarmArea : Widget {
             original.place(getBlockBounds(pos))
             val newCrop = original.copy().apply { setPlanting() }
             cropsGrid[pos.y][pos.x] = newCrop
+            controller.hotController.plantCrop()
             controller.cropInfoController.setFarmCrop(newCrop)
         }
     }
@@ -96,11 +103,15 @@ class FarmArea : Widget {
     private fun removeCropWithEffect(pos: GridPosition) {
         pos.crop()?.let { crop ->
             generateParticles(crop, pos)
+            for (item in crop.getDrops()) {
+                if (item.isEmpty() || item.count <= 0) continue
+                controller.invController.addItem(item)
+                controller.hotController.update()
+            }
             crop.cleanup()
         }
         cropsGrid[pos.y][pos.x] = null
         controller.cropInfo.clear()
-        controller.cropInfo.setHidden(true)
     }
 
     /**
@@ -114,27 +125,27 @@ class FarmArea : Widget {
         }
     }
 
-    fun plantAllCrops() {
-        for (y in 0 until rowCount) {
-            for (x in 0 until columnCount) {
-                val pos = GridPosition(x, y)
-                if (pos.isValid() && !pos.hasCrop()) {
-                    plantCropAt(pos)
-                }
-            }
-        }
-    }
-
-    fun clearAllCrops() {
-        for (y in 0 until rowCount) {
-            for (x in 0 until columnCount) {
-                val pos = GridPosition(x, y)
-                if (pos.hasCrop()) {
-                    removeCropWithEffect(pos)
-                }
-            }
-        }
-    }
+//    fun plantAllCrops() {
+//        for (y in 0 until rowCount) {
+//            for (x in 0 until columnCount) {
+//                val pos = GridPosition(x, y)
+//                if (pos.isValid() && !pos.hasCrop()) {
+//                    plantCropAt(pos)
+//                }
+//            }
+//        }
+//    }
+//
+//    fun clearAllCrops() {
+//        for (y in 0 until rowCount) {
+//            for (x in 0 until columnCount) {
+//                val pos = GridPosition(x, y)
+//                if (pos.hasCrop()) {
+//                    removeCropWithEffect(pos)
+//                }
+//            }
+//        }
+//    }
 
     // endregion
 
@@ -210,11 +221,11 @@ class FarmArea : Widget {
     private var lastDragPosition: GridPosition? = null
 
     override fun onMouseMove(e: MouseMoveEvent) {
-        activeSeedCrop ?: return
-
         // 获取当前鼠标位置并更新悬停状态
         val currentPos = findMouseInField(e.x, e.y).validatePosition()
         updateHoverState(currentPos)
+
+        activeSeedCrop ?: return
 
         // 处理拖动种植
         if (isDragging && currentPos != null) {
@@ -254,11 +265,13 @@ class FarmArea : Widget {
     private fun updateHoverState(pos: GridPosition?) {
         hoverPosition = pos
 
-        when {
-            pos == null -> clearHover()
-            pos.hasCrop() -> showCropInfo(pos)
-            else -> showActiveSeed(pos)
+        if (pos == null || !pos.isValid() || pos.hasCrop()) {
+            activeSeedCrop?.setHidden(true)
+        } else if (activeSeedCrop != null) {
+            activeSeedCrop?.setVisible(true)
+            showActiveSeed(pos)
         }
+        showCropInfo(pos)
     }
 
     /**
@@ -268,8 +281,15 @@ class FarmArea : Widget {
     private fun handleDragPlanting(pos: GridPosition) {
         if (!pos.hasCrop()) {
             plantCropAt(pos)
+            activeSeedCrop?.setHidden(true)
         } else {
-            pos.crop()?.onFarmRightClick()
+            pos.crop()?.onFarmRightClick()?.let { it ->
+                for (item in it) {
+                    if (item.isEmpty() || item.count <= 0) continue
+                    controller.invController.addItem(item)
+                    controller.hotController.update()
+                }
+            }
         }
         lastDragPosition = pos
     }
@@ -280,28 +300,17 @@ class FarmArea : Widget {
      */
     private fun startDragPlanting(pos: GridPosition) {
         plantCropAt(pos)
+        activeSeedCrop?.setHidden(true)
         isDragging = true
         lastDragPosition = pos
-
-        controller.cropInfo.setVisible(true)
-    }
-
-    /**
-     * 清除鼠标悬停状态，隐藏相关 UI 元素。
-     */
-    private fun clearHover() {
-        activeSeedCrop?.setHidden(true)
-        controller.cropInfo.setHidden(true)
     }
 
     /**
      * 显示指定网格位置的作物信息。
      * @param pos 目标网格位置，需包含作物。
      */
-    private fun showCropInfo(pos: GridPosition) {
-        activeSeedCrop?.setHidden(true)
-        controller.cropInfoController.setFarmCrop(pos.crop())
-        controller.cropInfo.setHidden(false)
+    private fun showCropInfo(pos: GridPosition?) {
+        controller.cropInfoController.setFarmCrop(pos?.crop())
     }
 
     /**
@@ -313,7 +322,6 @@ class FarmArea : Widget {
             setHidden(false)
             place(getBlockBounds(pos))
         }
-        controller.cropInfo.setHidden(true)
     }
 
     // endregion

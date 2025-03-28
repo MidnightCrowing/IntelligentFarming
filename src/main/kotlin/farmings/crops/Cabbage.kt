@@ -2,11 +2,10 @@ package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
-import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.farmings.FarmItems.CabbageItem
 import com.midnightcrowing.farmings.FarmItems.CabbageSeedItem
-import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.model.Texture
+import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.resource.TextureResourcesEnum
 
 class Cabbage(farmArea: FarmArea) : FarmCropBase(farmArea) {
@@ -21,8 +20,19 @@ class Cabbage(farmArea: FarmArea) : FarmCropBase(farmArea) {
         7 to TextureResourcesEnum.CABBAGE_GROW_7.texture
     )
 
-    override fun getFarmItem(parent: Widget): FarmItems =
-        if (isFullyGrown) CabbageItem(parent) else CabbageSeedItem(parent)
+    override fun getItemStack(): ItemStack =
+        if (isFullyGrown) ItemStack(CabbageItem.id, 1) else ItemStack(CabbageSeedItem.id, 1)
+
+    override fun getDrops(): Array<ItemStack> {
+        return if (isFullyGrown) {
+            arrayOf(
+                ItemStack(CabbageSeedItem.id, 1 + generateDropCount(n = 3, p = 8.0 / 15)),
+                ItemStack(CabbageItem.id, 1),
+            )
+        } else {
+            arrayOf(ItemStack(CabbageSeedItem.id, 1))
+        }
+    }
 
     override fun toString(): String = "卷心菜"
 

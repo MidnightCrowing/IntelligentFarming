@@ -2,11 +2,10 @@ package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
-import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.farmings.FarmItems.CottonItem
 import com.midnightcrowing.farmings.FarmItems.CottonSeedItem
-import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.model.Texture
+import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.resource.TextureResourcesEnum
 
 class Cotton(farmArea: FarmArea) : FarmCropBase(farmArea) {
@@ -21,8 +20,19 @@ class Cotton(farmArea: FarmArea) : FarmCropBase(farmArea) {
         7 to TextureResourcesEnum.COTTON_GROW_7.texture
     )
 
-    override fun getFarmItem(parent: Widget): FarmItems =
-        if (isFullyGrown) CottonItem(parent) else CottonSeedItem(parent)
+    override fun getItemStack(): ItemStack =
+        if (isFullyGrown) ItemStack(CottonItem.id, 1) else ItemStack(CottonSeedItem.id, 1)
+
+    override fun getDrops(): Array<ItemStack> {
+        return if (isFullyGrown) {
+            arrayOf(
+                ItemStack(CottonSeedItem.id, 1 + generateDropCount(n = 4, p = 4.0 / 7)),
+                ItemStack(CottonItem.id, 1),
+            )
+        } else {
+            arrayOf(ItemStack(CottonSeedItem.id, 1))
+        }
+    }
 
     override fun toString(): String = "棉花"
 

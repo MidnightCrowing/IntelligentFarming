@@ -172,6 +172,18 @@ class Window(
     }
 
     /**
+     * 获取鼠标在窗口中的坐标
+     *
+     * @return 一个包含鼠标 x 和 y 坐标的 Pair
+     */
+    fun getCursorPos(): Pair<Double, Double> {
+        val xpos = DoubleArray(1)
+        val ypos = DoubleArray(1)
+        glfwGetCursorPos(handle, xpos, ypos)
+        return Pair(xpos[0], ypos[0])
+    }
+
+    /**
      * 关闭窗口
      */
     fun exit() = glfwSetWindowShouldClose(handle, true)

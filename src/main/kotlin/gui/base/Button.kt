@@ -6,6 +6,7 @@ import com.midnightcrowing.model.Texture
 import com.midnightcrowing.render.NineSliceRenderer
 import com.midnightcrowing.render.TextRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
+import com.midnightcrowing.utils.LayoutScaler.scaleValue
 
 
 /**
@@ -60,6 +61,8 @@ class Button : Widget {
         super.place(bounds)
         textRenderer.x = (widgetBounds.x1 + widgetBounds.x2) / 2
         textRenderer.y = (widgetBounds.y1 + widgetBounds.y2) / 2
+
+        nineSliceRenderer?.let { it.vertexBorder = scaleValue(window.width, 10.0, 15.0).toFloat() }
     }
 
     /**

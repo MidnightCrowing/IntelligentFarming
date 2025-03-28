@@ -2,11 +2,10 @@ package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
-import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.farmings.FarmItems.TomatoItem
 import com.midnightcrowing.farmings.FarmItems.TomatoSeedItem
-import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.model.Texture
+import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.resource.TextureResourcesEnum
 import com.midnightcrowing.utils.GameTick
 
@@ -23,15 +22,27 @@ class Tomato(farmArea: FarmArea) : FarmCropBase(farmArea) {
         8 to TextureResourcesEnum.TOMATO_GROW_3.texture
     )
 
-    override fun onFarmRightClick() {
+    override fun onFarmRightClick(): Array<ItemStack>? {
         if (isFullyGrown) {
-            growthDuration = triangularRandom(0.0, 80000.0, 12000.0)
+            val drops = getDrops()
+            growthDuration = triangularRandom(90000.0, 800000.0, 120000.0)
             plantedTick = (GameTick.tick - growthDuration * 0.56).toLong()
+            return drops
         }
+        return null
     }
 
-    override fun getFarmItem(parent: Widget): FarmItems =
-        if (isFullyGrown) TomatoItem(parent) else TomatoSeedItem(parent)
+    override fun getItemStack(): ItemStack =
+        if (isFullyGrown) ItemStack(TomatoItem.id, 1) else ItemStack(TomatoSeedItem.id, 1)
+
+    override fun getDrops(): Array<ItemStack> = if (isFullyGrown) {
+        arrayOf(
+            ItemStack(TomatoSeedItem.id, 1),
+            ItemStack(TomatoItem.id, 1 + generateDropCount(n = 2, p = 8.0 / 15)),
+        )
+    } else {
+        arrayOf(ItemStack(TomatoSeedItem.id, 1))
+    }
 
     override fun toString(): String = "番茄"
 

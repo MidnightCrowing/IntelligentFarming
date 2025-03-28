@@ -6,8 +6,8 @@ import org.lwjgl.opengl.GL46.*
 
 class NineSliceRenderer(
     var texture: Texture,
-    val textureBorder: Float, // 纹理边框宽度（像素单位）
-    val vertexBorder: Float,  // 屏幕渲染边框宽度（屏幕单位）
+    var textureBorder: Float, // 纹理边框宽度（像素单位）
+    var vertexBorder: Float,  // 屏幕渲染边框宽度（屏幕单位）
 ) {
     private val texWidth = texture.image.width
     private val texHeight = texture.image.height

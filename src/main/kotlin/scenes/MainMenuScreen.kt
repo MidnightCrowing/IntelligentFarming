@@ -39,6 +39,7 @@ class MainMenuScreen(window: Window) : Screen(window) {
         ItemRegistry.register(FarmItems.CabbageItem.id) { parent -> FarmItems.CabbageItem(parent) }
         ItemRegistry.register(FarmItems.CabbageSeedItem.id) { parent -> FarmItems.CabbageSeedItem(parent) }
         ItemRegistry.register(FarmItems.CarrotItem.id) { parent -> FarmItems.CarrotItem(parent) }
+        ItemRegistry.register(FarmItems.GoldenCarrot.id) { parent -> FarmItems.GoldenCarrot(parent) }
         ItemRegistry.register(FarmItems.CornItem.id) { parent -> FarmItems.CornItem(parent) }
         ItemRegistry.register(FarmItems.CornSeedItem.id) { parent -> FarmItems.CornSeedItem(parent) }
         ItemRegistry.register(FarmItems.CottonItem.id) { parent -> FarmItems.CottonItem(parent) }

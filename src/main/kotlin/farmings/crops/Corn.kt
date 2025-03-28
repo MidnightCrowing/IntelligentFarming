@@ -2,11 +2,10 @@ package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
-import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.farmings.FarmItems.CornItem
 import com.midnightcrowing.farmings.FarmItems.CornSeedItem
-import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.model.Texture
+import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.resource.TextureResourcesEnum
 
 class Corn(farmArea: FarmArea) : FarmCropBase(farmArea) {
@@ -21,8 +20,19 @@ class Corn(farmArea: FarmArea) : FarmCropBase(farmArea) {
         7 to TextureResourcesEnum.CORN_GROW_7.texture
     )
 
-    override fun getFarmItem(parent: Widget): FarmItems =
-        if (isFullyGrown) CornItem(parent) else CornSeedItem(parent)
+    override fun getItemStack(): ItemStack =
+        if (isFullyGrown) ItemStack(CornItem.id, 1) else ItemStack(CornSeedItem.id, 1)
+
+    override fun getDrops(): Array<ItemStack> {
+        return if (isFullyGrown) {
+            arrayOf(
+                ItemStack(CornSeedItem.id, 1 + generateDropCount(n = 4, p = 8.0 / 15)),
+                ItemStack(CornItem.id, 1),
+            )
+        } else {
+            arrayOf(ItemStack(CornSeedItem.id, 1))
+        }
+    }
 
     override fun toString(): String = "玉米"
 

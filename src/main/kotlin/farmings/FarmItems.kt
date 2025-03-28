@@ -16,7 +16,7 @@ import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_RIGHT
  * 每个子类代表一种特定的农作物或种子。
  *
  * @param parent 父组件
- * @param itemEnum 资源枚举
+ * @param textureEnum 纹理资源枚举
  */
 sealed class FarmItems(parent: Widget, textureEnum: TextureResourcesEnum) : Widget(parent) {
     override val renderer: TextureRenderer = TextureRenderer(textureEnum.texture)
@@ -68,6 +68,14 @@ sealed class FarmItems(parent: Widget, textureEnum: TextureResourcesEnum) : Widg
 
         override fun toString(): String = "胡萝卜"
         override fun getCrop(farmArea: FarmArea): FarmCropBase? = Carrot(farmArea)
+    }
+
+    class GoldenCarrot(parent: Widget) : FarmItems(parent, TextureResourcesEnum.GOLDEN_CARROT) {
+        companion object {
+            const val id: String = "minecraft:golden_carrot"
+        }
+
+        override fun toString(): String = "金胡萝卜"
     }
 
     class CornItem(parent: Widget) : FarmItems(parent, TextureResourcesEnum.CORN) {
