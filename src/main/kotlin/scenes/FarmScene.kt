@@ -73,7 +73,10 @@ class FarmScene(window: Window) : Screen(window) {
         farmArea.place(blkDeep, blkH, lPt, mPt, rPt)
     }
 
-    override fun update() = farmArea.update()
+    override fun update() {
+        gameController.update()
+        farmArea.update()
+    }
 
     override fun render() {
         super.render()

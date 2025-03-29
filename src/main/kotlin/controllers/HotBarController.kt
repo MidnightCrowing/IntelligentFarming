@@ -25,7 +25,7 @@ class HotBarController(gameController: GameController) {
 
             val item = hotBar.getItemCache(itemsList[value].id)
             hotBar.setItemLabelText(item?.toString())
-            farmArea.activeSeedCrop = item?.getCrop(farmArea)
+            farmController.activeSeedCrop = item?.getCrop(farmArea)
 
             field = value
         }
@@ -35,7 +35,7 @@ class HotBarController(gameController: GameController) {
         this.selectedGridId = defaultSelectId
     }
 
-    fun plantCrop() {
+    fun onPlantCrop() {
         val item = itemsList[selectedGridId]
         if (!item.isEmpty()) {
             item.count -= 1

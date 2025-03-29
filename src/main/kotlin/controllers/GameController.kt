@@ -5,4 +5,8 @@ class GameController() {
     val farmArea: FarmAreaController = FarmAreaController(this)
     val inventory: InventoryController = InventoryController(this)
     val hotBar: HotBarController = HotBarController(this)
+
+    fun update() {
+        farmArea.update()
+    }
 }

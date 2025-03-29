@@ -177,15 +177,10 @@ class Inventory(val screen: FarmScene, private val controller: InventoryControll
                         val count = draggingItem.count + inventoryItem.count
                         if (count > 64) {
                             // 叠加物品超过64，计算并交换数量
-                            if (draggingItem.count < inventoryItem.count) {
-                                inventoryItem.count = 64
-                                draggingItem.count = count - 64
-                            } else {
-                                draggingItem.count = 64
-                                inventoryItem.count = count - 64
-                            }
-                            draggingItemWidget.item = inventoryItem
-                            controller.setItem(it, draggingItem)
+                            inventoryItem.count = 64
+                            draggingItem.count = count - 64
+                            draggingItemWidget.item = draggingItem
+                            controller.setItem(it, inventoryItem)
                             draggingItemWidget.onParentMouseMove(getCursorPos())
                         } else {
                             // 背包格子有物品，拖动物品也不为空，且id相同，叠加物品

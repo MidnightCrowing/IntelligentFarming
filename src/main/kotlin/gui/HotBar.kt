@@ -137,9 +137,9 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
 
     override fun onScroll(e: MouseScrollEvent) {
         if (e.offsetY < 0) {
-            controller.selectedGridId = (controller.selectedGridId + 1).coerceAtMost(8)
+            controller.selectedGridId = (controller.selectedGridId + 1) % 9
         } else if (e.offsetY > 0) {
-            controller.selectedGridId = (controller.selectedGridId - 1).coerceAtLeast(0)
+            controller.selectedGridId = (controller.selectedGridId + 8) % 9
         }
     }
 
@@ -151,8 +151,8 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
                 selectedGridId = keyIndex
             }
 
-            GLFW_KEY_LEFT -> if (selectedGridId > 0) selectedGridId -= 1
-            GLFW_KEY_RIGHT -> if (selectedGridId < 8) selectedGridId += 1
+            GLFW_KEY_LEFT -> selectedGridId = (selectedGridId + 8) % 9
+            GLFW_KEY_RIGHT -> selectedGridId = (selectedGridId + 1) % 9
             else -> return
         }
         controller.selectedGridId = selectedGridId

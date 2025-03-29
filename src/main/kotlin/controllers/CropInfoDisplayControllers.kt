@@ -25,7 +25,7 @@ class CropInfoDisplayControllers() {
     }
 
     // 更新作物信息
-    fun setFarmCrop(newCrop: FarmCropBase?) {
+    fun update(newCrop: FarmCropBase?) {
         if (crop != newCrop) {
             crop = newCrop
             cropInfoDisplay.titleText.text = newCrop?.toString() ?: ""

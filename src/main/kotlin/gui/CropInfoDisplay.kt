@@ -3,7 +3,6 @@ package com.midnightcrowing.gui
 import com.midnightcrowing.controllers.CropInfoDisplayControllers
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.render.NineSliceRenderer
 import com.midnightcrowing.render.TextRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
@@ -43,13 +42,6 @@ class CropInfoDisplay(
     }
     private val valueText = TextRenderer(window.nvg).apply {
         textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
-    }
-
-    fun clear() {
-        controller.item = ItemStack.EMPTY
-        controller.itemWidget?.cleanup()
-        titleText.text = ""
-        valueText.text = ""
     }
 
     override fun place(x1: Double, y1: Double, x2: Double, y2: Double) {

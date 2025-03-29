@@ -21,11 +21,10 @@ import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_RIGHT
 sealed class FarmItems(parent: Widget, textureEnum: TextureResourcesEnum) : Widget(parent) {
     override val renderer: TextureRenderer = TextureRenderer(textureEnum.texture)
     val numTextRenderer: TextRenderer = TextRenderer(parent.window.nvg).apply {
-        fontSize = 40.0
+        fontSize = 32.0
         textAlign = NVG_ALIGN_RIGHT or NVG_ALIGN_MIDDLE
-        textColor = doubleArrayOf(230 / 255.0, 230 / 255.0, 230 / 255.0, 1.0)
 
-        shadowOffsetX = 4.0
+        shadowOffsetX = 3.0
         shadowOffsetY = 3.0
     }
 
@@ -33,8 +32,8 @@ sealed class FarmItems(parent: Widget, textureEnum: TextureResourcesEnum) : Widg
 
     override fun place(bounds: ScreenBounds) {
         super.place(bounds)
-        numTextRenderer.x = bounds.x2 + 5
-        numTextRenderer.y = bounds.y2 - 12
+        numTextRenderer.x = bounds.x2 + 3
+        numTextRenderer.y = bounds.y2 - 10
     }
 
     fun render(num: Int) {

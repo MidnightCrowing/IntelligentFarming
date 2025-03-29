@@ -16,6 +16,8 @@ class TextRenderer(private val nvg: Long) {
     var textOpacity: Double = 1.0
     var textSpacing: Double = 1.0
 
+    var shadow: Boolean = true
+    var shadowColor: DoubleArray = doubleArrayOf(62.0 / 255, 62.0 / 255, 62.0 / 255)
     var shadowOffsetX: Double = 2.0
     var shadowOffsetY: Double = 2.0
 
@@ -31,9 +33,11 @@ class TextRenderer(private val nvg: Long) {
     private fun renderTextWithOffset(stack: MemoryStack, text: String) {
         val a = (textColor[3] * textOpacity).toFloat()
 
-        setColor(stack, 62 / 255f, 62 / 255f, 62 / 255f, a).also {
-            nvgFillColor(nvg, it)
-            nvgText(nvg, (x + shadowOffsetX).toFloat(), (y + shadowOffsetY).toFloat(), text)
+        if (shadow) {
+            setColor(stack, shadowColor[0].toFloat(), shadowColor[1].toFloat(), shadowColor[2].toFloat(), a).also {
+                nvgFillColor(nvg, it)
+                nvgText(nvg, (x + shadowOffsetX).toFloat(), (y + shadowOffsetY).toFloat(), text)
+            }
         }
 
         setColor(stack, textColor[0].toFloat(), textColor[1].toFloat(), textColor[2].toFloat(), a).also {

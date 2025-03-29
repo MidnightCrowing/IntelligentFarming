@@ -3,6 +3,7 @@ package com.midnightcrowing.gui.base
 import com.midnightcrowing.config.AppConfig
 import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.render.TextRenderer
+import com.midnightcrowing.resource.ResourcesEnum
 import com.midnightcrowing.utils.FPSCounter
 import com.midnightcrowing.utils.GameTick
 import org.lwjgl.glfw.Callbacks
@@ -13,12 +14,15 @@ import org.lwjgl.nanovg.NanoVGGL2.*
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL46.*
 import org.lwjgl.system.MemoryUtil
+import java.io.File
+import java.io.IOException
 
 /**
  * 窗口管理类，负责初始化和管理 GLFW 窗口。
  */
 class Window(
-    var title: String,
+    var name: String,  // 英文名称
+    var title: String, // 中文名称
     var width: Int,
     var height: Int,
     var minWidth: Int = 0,
@@ -29,6 +33,7 @@ class Window(
          * 使用应用配置创建默认窗口
          */
         fun createWindow() = Window(
+            AppConfig.APP_NAME,
             AppConfig.APP_NAME_CN,
             AppConfig.WINDOW_WIDTH,
             AppConfig.WINDOW_HEIGHT,
@@ -60,6 +65,7 @@ class Window(
         initEventManager()
         initGLFW()
         initNanoVG()
+        createFont()
     }
 
     private fun createGLFW() {
@@ -104,6 +110,31 @@ class Window(
     private fun initNanoVG() {
         if (nvg == 0L) {
             throw RuntimeException("Failed to create NanoVG context")
+        }
+    }
+
+    private fun createFont() {
+        val fontPath = ResourcesEnum.FONT_DEFAULT.inputStream ?: run {
+            println("字体资源加载失败")
+            return
+        }
+
+        val byteArray = fontPath.readBytes()
+        val tempDir = System.getProperty("java.io.tmpdir")
+        val fontFile = File(tempDir, "${name}_temp_font.otf")
+
+        if (!fontFile.exists()) {
+            try {
+                fontFile.writeBytes(byteArray)
+            } catch (e: IOException) {
+                println("写入临时文件失败: ${e.message}")
+                return
+            }
+        }
+
+        val fontId = nvgCreateFont(nvg, "default", fontFile.absolutePath)
+        if (fontId == -1) {
+            println("字体加载失败")
         }
     }
 

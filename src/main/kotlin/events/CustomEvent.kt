@@ -25,7 +25,7 @@ sealed class CustomEvent : Event() {
      * @param x 按下的 X 屏幕坐标
      * @param y 按下的 Y 屏幕坐标
      */
-    data class MousePressedEvent(val x: Double, val y: Double) : Event()
+    data class MousePressedEvent(val x: Double, val y: Double, val button: Int) : Event()
 
     /**
      * 鼠标释放事件，鼠标松开时触发。即使鼠标拖拽到按钮区域之外释放也会触发。

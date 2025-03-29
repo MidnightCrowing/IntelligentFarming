@@ -6,7 +6,6 @@ import com.midnightcrowing.events.Event.MouseButtonEvent
 import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.gui.base.Window
-import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT
 import org.lwjgl.glfw.GLFW.GLFW_PRESS
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredFunctions
@@ -23,7 +22,7 @@ class MousePressedListener(
     override fun getSendEventType(): Array<KClass<out Event>> = arrayOf(MousePressedEvent::class)
 
     override fun eventFilter(event: MouseButtonEvent) {
-        if (event.button == GLFW_MOUSE_BUTTON_LEFT && event.action == GLFW_PRESS) {
+        if (event.action == GLFW_PRESS) {
             triggerEvent(event)
         }
     }
@@ -37,7 +36,7 @@ class MousePressedListener(
             .filter { it.containsPoint(x, y, event = MousePressedEvent::class) }
             .maxByOrNull { it.z }
 
-        highestZWidget?.onMousePress(MousePressedEvent(x, y))
+        highestZWidget?.onMousePress(MousePressedEvent(x, y, event.button))
     }
 
     override fun registerWidget(widget: Widget) {
