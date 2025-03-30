@@ -63,4 +63,10 @@ sealed class CustomEvent : Event() {
      * @param key 按键代码
      */
     data class KeyPressedEvent(val key: Int) : Event()
+
+    /**
+     * 按键释放事件
+     * @param key 按键代码
+     */
+    data class KeyReleasedEvent(val key: Int) : Event()
 }

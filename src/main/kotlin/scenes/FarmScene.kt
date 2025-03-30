@@ -76,10 +76,10 @@ class FarmScene(window: Window) : Screen(window) {
     override fun update() {
         gameController.update()
         farmArea.update()
+        inventory.update()
     }
 
-    override fun render() {
-        super.render()
+    override fun doRender() {
         farmArea.render()
         cropInfoDisplay.render()
         hotBar.render()
@@ -88,6 +88,7 @@ class FarmScene(window: Window) : Screen(window) {
 
     override fun cleanup() {
         super.cleanup()
+        bgRenderer.texture?.cleanup()
         bgRenderer.cleanup()
         farmArea.cleanup()
         cropInfoDisplay.cleanup()

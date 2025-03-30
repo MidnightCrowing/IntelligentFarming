@@ -13,7 +13,7 @@ import com.midnightcrowing.render.RectangleRenderer
 import com.midnightcrowing.render.TextureRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
 import com.midnightcrowing.scenes.FarmScene
-import org.lwjgl.glfw.GLFW.GLFW_KEY_E
+import org.lwjgl.glfw.GLFW.*
 import kotlin.reflect.KClass
 
 class Inventory(val screen: FarmScene, private val controller: InventoryController) : Widget(screen.window, z = 2) {
@@ -105,14 +105,20 @@ class Inventory(val screen: FarmScene, private val controller: InventoryControll
     }
 
     override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.INVENTORY.texture)
-    private val draggingItemWidget: DraggingItem = DraggingItem(this).apply {
+    private val backgroundRender: RectangleRenderer = RectangleRenderer(
+        color = floatArrayOf(0f, 0f, 0f, 0.73f),
+    )
+    private val dragWidget: DraggingItem = DraggingItem(this).apply {
         width = BAG_GRID_WIDTH; height = BAG_GRID_Height
     }
     private val maskActiveBgRender: RectangleRenderer = RectangleRenderer(color = floatArrayOf(1f, 1f, 1f, 0.5f))
     private var maskActiveBgBounds: ScreenBounds? = null
 
     // 物品缓存，避免每次渲染时重复创建
-    internal val itemCache = mutableMapOf<String, FarmItems?>()
+    internal val itemCache: MutableMap<String, FarmItems?> = mutableMapOf<String, FarmItems?>()
+    private var mouseIndex: Int? = null
+    private var mouseLeftPressed: Boolean = false
+    private var isShiftPressed: Boolean = false
 
     // 工具函数，获取物品缓存
     private fun getItemCache(id: String): FarmItems? = itemCache.getOrPut(id) { ItemRegistry.createItem(id, this) }
@@ -133,68 +139,63 @@ class Inventory(val screen: FarmScene, private val controller: InventoryControll
         return ScreenBounds(x1, y1, x2, y2)
     }
 
+    private fun handleItemDragAndDrop(index: Int) {
+        when (dragWidget.item.isEmpty() to controller.getItem(index).isEmpty()) {
+            // 背包格子是空的，拖动物品也是空的，直接返回
+            true to true -> return
+            // 背包格子有物品，拖动物品是空的，直接取出物品
+            true to false -> {
+                dragWidget.item = controller.popItem(index)
+                dragWidget.onParentMouseMove(getCursorPos())
+            }
+            // 背包格子是空的，拖动物品不为空，直接放入物品
+            false to true -> {
+                controller.setItem(index, dragWidget.item)
+                dragWidget.item = ItemStack.EMPTY
+            }
+            // 背包格子有物品，拖动物品也不为空
+            else -> {
+                val invItem = controller.popItem(index)
+                val dragItem = dragWidget.item
+
+                if (dragItem.id == invItem.id) {
+                    // id相同，叠加物品
+                    val count = dragItem.count + invItem.count
+                    invItem.count = minOf(count, 64)
+                    dragItem.count = maxOf(0, count - 64)
+                    dragWidget.item = if (dragItem.count == 0) ItemStack.EMPTY else dragItem
+                    controller.setItem(index, invItem)
+                    dragWidget.onParentMouseMove(getCursorPos())
+                } else {
+                    // id不同，交换物品
+                    controller.setItem(index, dragWidget.item)
+                    dragWidget.item = invItem
+                    dragWidget.onParentMouseMove(getCursorPos())
+                }
+            }
+        }
+    }
+
+    fun update() {
+        if (mouseLeftPressed) {
+            mouseIndex?.let { it ->
+                val item = controller.popItem(it)
+                val target = if (it > 8) "hotbar" else "main"
+                val result = if (isShiftPressed) controller.addItem(item, target) else false
+
+                if (!result) {
+                    controller.setItem(it, item)
+                }
+            }
+        }
+    }
+
     override fun containsPoint(x: Double, y: Double, event: KClass<out Event>?): Boolean = true
 
-    override fun onMouseMove(e: MouseMoveEvent) {
-        maskActiveBgBounds = Point(e.x, e.y).bagBarGridPosition
-            ?.let { calculateBagBarGridBounds(it.first, it.second) }
-            ?: Point(e.x, e.y).quickBarGridPosition
-                ?.let { calculateQuickBarGridBounds(it) }
-
-        maskActiveBgBounds?.let {
-            maskActiveBgRender.apply { x1 = it.x1; y1 = it.y1; x2 = it.x2; y2 = it.y2 }
-        }
-
-        draggingItemWidget.onParentMouseMove(e)
-    }
-
-    override fun onMouseLeave() {
-        maskActiveBgBounds = null
-    }
-
     override fun onClick(e: MouseClickEvent) {
-        // TODO
-        Point(e.x, e.y).index?.let { it ->
-            if (draggingItemWidget.item.isEmpty()) {
-                if (controller.getItem(it).isEmpty()) {
-                    // 背包格子是空的，拖动物品也是空的，直接返回
-                    return
-                } else {
-                    // 背包格子有物品，拖动物品是空的，直接取出物品
-                    draggingItemWidget.item = controller.popItem(it)
-                    draggingItemWidget.onParentMouseMove(getCursorPos())
-                }
-            } else {
-                if (controller.getItem(it).isEmpty()) {
-                    // 背包格子是空的，拖动物品不为空，直接放入物品
-                    controller.setItem(it, draggingItemWidget.item)
-                    draggingItemWidget.item = ItemStack.EMPTY
-                } else {
-                    val inventoryItem = controller.popItem(it)
-                    val draggingItem = draggingItemWidget.item
-
-                    if (draggingItem.id == inventoryItem.id) {
-                        val count = draggingItem.count + inventoryItem.count
-                        if (count > 64) {
-                            // 叠加物品超过64，计算并交换数量
-                            inventoryItem.count = 64
-                            draggingItem.count = count - 64
-                            draggingItemWidget.item = draggingItem
-                            controller.setItem(it, inventoryItem)
-                            draggingItemWidget.onParentMouseMove(getCursorPos())
-                        } else {
-                            // 背包格子有物品，拖动物品也不为空，且id相同，叠加物品
-                            inventoryItem.count += draggingItem.count
-                            draggingItemWidget.item = ItemStack.EMPTY
-                            controller.setItem(it, inventoryItem)
-                        }
-                    } else {
-                        // 背包格子有物品，拖动物品也不为空，且id不同，交换物品
-                        controller.setItem(it, draggingItemWidget.item)
-                        draggingItemWidget.item = inventoryItem
-                        draggingItemWidget.onParentMouseMove(getCursorPos())
-                    }
-                }
+        if (!isShiftPressed) {
+            Point(e.x, e.y).index?.let { it ->
+                handleItemDragAndDrop(it)
             }
         }
     }
@@ -203,36 +204,83 @@ class Inventory(val screen: FarmScene, private val controller: InventoryControll
         super.onRightClick(e)
     }
 
+    override fun onMousePress(e: MousePressedEvent) {
+        if (e.button == GLFW_MOUSE_BUTTON_LEFT) {
+            mouseLeftPressed = true
+        }
+    }
+
+    override fun onMouseRelease(e: MouseReleasedEvent) {
+        if (e.button == GLFW_MOUSE_BUTTON_LEFT) {
+            mouseLeftPressed = false
+        }
+    }
+
+    override fun onMouseMove(e: MouseMoveEvent) {
+        val pos = Point(e.x, e.y)
+        mouseIndex = pos.index
+
+        maskActiveBgBounds = pos.bagBarGridPosition
+            ?.let { calculateBagBarGridBounds(it.first, it.second) }
+            ?: pos.quickBarGridPosition
+                ?.let { calculateQuickBarGridBounds(it) }
+
+        maskActiveBgBounds?.let {
+            maskActiveBgRender.apply { x1 = it.x1; y1 = it.y1; x2 = it.x2; y2 = it.y2 }
+        }
+
+        dragWidget.onParentMouseMove(e)
+    }
+
+    override fun onMouseLeave() {
+        maskActiveBgBounds = null
+    }
+
     override fun onKeyPress(e: KeyPressedEvent) {
-        if (e.key != GLFW_KEY_E) {
-            return
-        }
+        if (e.key == GLFW_KEY_E) {
+            if (!isVisible) {
+                screen.hotBar.setHidden(true)
+            } else {
+                screen.hotBar.setHidden(false)
+            }
+            toggleVisible()
+            controller.hotBarController.update()
 
-        if (!isVisible) {
-            screen.hotBar.setHidden(true)
-        } else {
-            screen.hotBar.setHidden(false)
+            val (x, y) = window.getCursorPos()
+            this.onMouseMove(MouseMoveEvent(x, y))
+        } else if (e.key == GLFW_KEY_LEFT_SHIFT) {
+            isShiftPressed = true
         }
-        toggleVisible()
-        controller.hotBarController.update()
+    }
 
-        val (x, y) = window.getCursorPos()
-        this.onMouseMove(MouseMoveEvent(x, y))
+    override fun onKeyReleased(e: KeyReleasedEvent) {
+        if (e.key == GLFW_KEY_LEFT_SHIFT) {
+            isShiftPressed = false
+        }
+    }
+
+    override fun place(x1: Double, y1: Double, x2: Double, y2: Double) {
+        super.place(x1, y1, x2, y2)
+        backgroundRender.x2 = window.width.toDouble()
+        backgroundRender.y2 = window.height.toDouble()
     }
 
     override fun render() {
-        super.render()
         if (!isVisible) {
             return
         }
 
+        // 渲染背景遮罩
+        backgroundRender.render()
+
+        super.render()
         renderItems()
 
         if (maskActiveBgBounds != null) {
             maskActiveBgRender.render()
         }
 
-        draggingItemWidget.render()
+        dragWidget.render()
     }
 
     private fun renderItems() {
@@ -259,6 +307,6 @@ class Inventory(val screen: FarmScene, private val controller: InventoryControll
 
     override fun cleanup() {
         super.cleanup()
-        draggingItemWidget.cleanup()
+        dragWidget.cleanup()
     }
 }

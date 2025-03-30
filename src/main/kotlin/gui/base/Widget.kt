@@ -79,8 +79,14 @@ open class Widget {
     open fun render() {
         if (isVisible) {
             renderer.render(widgetBounds)
+            doRender() // 子类自定义渲染
         }
     }
+
+    /**
+     * 提供钩子方法，供子类添加渲染逻辑，避免重复判断 `isVisible`
+     */
+    protected open fun doRender() {}
 
     /**
      * 清理资源
@@ -95,7 +101,7 @@ open class Widget {
     /**
      * 注册事件监听器
      */
-    internal fun registerListeners() {
+    protected fun registerListeners() {
         window.eventManager.registerWidget(WindowResizeEvent::class, this)
         window.eventManager.registerWidget(MouseClickEvent::class, this)
         window.eventManager.registerWidget(MouseRightClickEvent::class, this)
@@ -106,12 +112,13 @@ open class Widget {
         window.eventManager.registerWidget(MouseReleasedEvent::class, this)
         window.eventManager.registerWidget(MouseScrollEvent::class, this)
         window.eventManager.registerWidget(KeyPressedEvent::class, this)
+        window.eventManager.registerWidget(KeyReleasedEvent::class, this)
     }
 
     /**
      * 取消注册事件监听器
      */
-    internal fun unregisterListener() {
+    protected fun unregisterListener() {
         window.eventManager.unregisterWidget(WindowResizeEvent::class, this)
         window.eventManager.unregisterWidget(MouseClickEvent::class, this)
         window.eventManager.unregisterWidget(MouseRightClickEvent::class, this)
@@ -122,8 +129,12 @@ open class Widget {
         window.eventManager.unregisterWidget(MouseReleasedEvent::class, this)
         window.eventManager.unregisterWidget(MouseScrollEvent::class, this)
         window.eventManager.unregisterWidget(KeyPressedEvent::class, this)
+        window.eventManager.unregisterWidget(KeyReleasedEvent::class, this)
     }
 
+    /**
+     * 窗口大小改变事件
+     */
     open fun onWindowResize(e: WindowResizeEvent) {}
 
     /**
@@ -170,6 +181,11 @@ open class Widget {
      * 按键按下事件
      */
     open fun onKeyPress(e: KeyPressedEvent) {}
+
+    /**
+     * 按键释放事件
+     */
+    open fun onKeyReleased(e: KeyReleasedEvent) {}
 
     // endregion
 }

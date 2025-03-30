@@ -10,7 +10,7 @@ class HotBarController(gameController: GameController) {
     private val farmController: FarmAreaController = gameController.farmArea
     private val farmArea: FarmArea by lazy { farmController.farmArea }
 
-    val defaultSelectId = 0 // 默认选中项的ID
+    val defaultSelectId: Int = 0 // 默认选中项的ID
     val itemsList: List<ItemStack> get() = invController.hotBarItems
 
     // 当前选中网格 ID

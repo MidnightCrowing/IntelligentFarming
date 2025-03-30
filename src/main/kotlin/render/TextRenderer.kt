@@ -2,6 +2,7 @@ package com.midnightcrowing.render
 
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NanoVG.*
+import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryStack
 
 class TextRenderer(private val nvg: Long) {
@@ -58,7 +59,11 @@ class TextRenderer(private val nvg: Long) {
             nvgFontFace(nvg, fontName)                       // 设置字体
             nvgTextAlign(nvg, textAlign)                     // 设置文本对齐
 
-            renderTextWithOffset(stack, text)      // 绘制带阴影的文本
+            renderTextWithOffset(stack, text)                // 绘制带阴影的文本
         }
+
+        nvgEndFrame(nvg)
+        glEnable(GL_BLEND)  // 确保透明度正常
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     }
 }

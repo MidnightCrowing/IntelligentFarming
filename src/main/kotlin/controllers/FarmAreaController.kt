@@ -19,8 +19,8 @@ class FarmAreaController(gameController: GameController) {
 
     data class GridPosition(val x: Int, val y: Int)
 
-    private fun GridPosition.hasCrop() = isExist(this)
-    private val GridPosition.crop get() = cropsGrid[y][x]
+    private fun GridPosition.hasCrop(): Boolean = isExist(this)
+    private val GridPosition.crop: FarmCropBase? get() = cropsGrid[y][x]
 
     // 农田参数
     private lateinit var farmlandBoard: List<Int>    // 农田布局位掩码（每个Int表示一列的可用行）

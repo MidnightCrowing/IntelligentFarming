@@ -14,10 +14,6 @@ class Texture {
         image = Image.loadImage(inputStream)
     }
 
-    constructor(image: Image) {
-        this.image = image
-    }
-
     var id: Int = 0
         private set
 

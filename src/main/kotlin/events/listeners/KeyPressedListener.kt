@@ -13,7 +13,7 @@ import kotlin.reflect.full.declaredFunctions
 class KeyPressedListener(
     val window: Window,
     eventManager: EventManager,
-) : EventListener<KeyEvent>(eventManager) {
+) : BaseEventListener<KeyEvent>(eventManager) {
     private val pressableWidgets = mutableListOf<Widget>()
 
     override fun getReceiveEventType(): KClass<KeyEvent> = KeyEvent::class

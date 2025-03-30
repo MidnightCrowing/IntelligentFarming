@@ -11,7 +11,10 @@ open class Screen(val window: Window) {
 
     open fun render() {
         bgRenderer.render(0.0, 0.0, window.width.toDouble(), window.height.toDouble())
+        doRender()
     }
+
+    protected open fun doRender() {}
 
     open fun cleanup() {}
 }

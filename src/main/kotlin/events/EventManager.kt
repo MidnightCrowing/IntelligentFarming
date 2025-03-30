@@ -11,10 +11,14 @@ import kotlin.reflect.KClass
 // 事件管理器
 class EventManager(val window: Window) {
     // 使用 Set 来确保每个事件类型的监听器是唯一的
-    private val listeners = mutableMapOf<KClass<out Event>, MutableSet<EventListener<out Event>>>()
+    private val listeners = mutableMapOf<KClass<out Event>, MutableSet<BaseEventListener<out Event>>>()
 
     /* 设置GLFW事件回调 */
     fun initGLFWCallback() {
+        // 监听窗口大小变化
+        glfwSetFramebufferSizeCallback(window.handle) { _, width, height ->
+            triggerWindowResizeEvent(width, height)
+        }
         // 监听鼠标点击
         glfwSetMouseButtonCallback(window.handle) { _, button, action, mods ->
             triggerMouseButtonEvent(button, action, mods)
@@ -27,20 +31,25 @@ class EventManager(val window: Window) {
         glfwSetScrollCallback(window.handle) { _, offsetX, offsetY ->
             triggerScrollEvent(offsetX, offsetY)
         }
-        // 监听窗口大小变化
-        glfwSetFramebufferSizeCallback(window.handle) { _, width, height ->
-            triggerWindowResizeEvent(width, height)
-        }
         // 监听键盘按下
         glfwSetKeyCallback(window.handle) { _, key, scancode, action, mods ->
             triggerKeyEvent(key, action, mods)
         }
     }
 
+    fun triggerWindowResizeEvent(width: Int, height: Int) {
+        listeners[WindowResizeEvent::class]?.forEach { listener ->
+            @Suppress("UNCHECKED_CAST")
+            (listener as BaseEventListener<WindowResizeEvent>).eventFilter(
+                WindowResizeEvent(width, height)
+            )
+        }
+    }
+
     fun triggerMouseButtonEvent(button: Int, action: Int, mods: Int) {
         listeners[MouseButtonEvent::class]?.forEach { listener ->
             @Suppress("UNCHECKED_CAST") // 告诉编译器忽略类型转换的警告，因类型转换在此时是安全的
-            (listener as EventListener<MouseButtonEvent>).eventFilter(
+            (listener as BaseEventListener<MouseButtonEvent>).eventFilter(
                 MouseButtonEvent(button, action, mods)
             )
         }
@@ -49,7 +58,7 @@ class EventManager(val window: Window) {
     fun triggerCursorPosEvent(xPos: Double, yPos: Double) {
         listeners[CursorMoveEvent::class]?.forEach { listener ->
             @Suppress("UNCHECKED_CAST")
-            (listener as EventListener<CursorMoveEvent>).eventFilter(
+            (listener as BaseEventListener<CursorMoveEvent>).eventFilter(
                 CursorMoveEvent(xPos, yPos)
             )
         }
@@ -58,17 +67,8 @@ class EventManager(val window: Window) {
     fun triggerScrollEvent(offsetX: Double, offsetY: Double) {
         listeners[ScrollEvent::class]?.forEach { listener ->
             @Suppress("UNCHECKED_CAST")
-            (listener as EventListener<ScrollEvent>).eventFilter(
+            (listener as BaseEventListener<ScrollEvent>).eventFilter(
                 ScrollEvent(offsetX, offsetY)
-            )
-        }
-    }
-
-    fun triggerWindowResizeEvent(width: Int, height: Int) {
-        listeners[WindowResizeEvent::class]?.forEach { listener ->
-            @Suppress("UNCHECKED_CAST")
-            (listener as EventListener<WindowResizeEvent>).eventFilter(
-                WindowResizeEvent(width, height)
             )
         }
     }
@@ -76,7 +76,7 @@ class EventManager(val window: Window) {
     fun triggerKeyEvent(key: Int, action: Int, mods: Int) {
         listeners[KeyEvent::class]?.forEach { listener ->
             @Suppress("UNCHECKED_CAST")
-            (listener as EventListener<KeyEvent>).eventFilter(
+            (listener as BaseEventListener<KeyEvent>).eventFilter(
                 KeyEvent(key, action, mods)
             )
         }
@@ -91,11 +91,12 @@ class EventManager(val window: Window) {
         MouseReleasedListener(window, this)
         MouseScrollListener(window, this)
         KeyPressedListener(window, this)
+        KeyReleasedListener(window, this)
         WindowResizeEventListener(window, this)
     }
 
     // 注册监听器
-    fun <T : Event> registerListener(listener: EventListener<T>) {
+    fun <T : Event> registerListener(listener: BaseEventListener<T>) {
         // 获取接收事件类型的 class
         val eventType = listener.getReceiveEventType()
 

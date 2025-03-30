@@ -11,7 +11,7 @@ import kotlin.reflect.full.declaredFunctions
 class WindowResizeEventListener(
     val window: Window,
     eventManager: EventManager,
-) : EventListener<WindowResizeEvent>(eventManager) {
+) : BaseEventListener<WindowResizeEvent>(eventManager) {
     private val registerWidgets = mutableListOf<Widget>()
 
     override fun getReceiveEventType(): KClass<WindowResizeEvent> = WindowResizeEvent::class

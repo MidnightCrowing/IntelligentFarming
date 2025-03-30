@@ -11,9 +11,9 @@ import kotlin.reflect.full.declaredFunctions
 
 
 class MouseMoveListener(
-    val window: Window,
+    window: Window,
     eventManager: EventManager,
-) : EventListener<CursorMoveEvent>(eventManager) {
+) : BaseMouseListener<CursorMoveEvent>(window, eventManager) {
     private val enterListeners = mutableMapOf<Widget, Boolean>()
     private val leaveListeners = mutableMapOf<Widget, Boolean>()
     private val moveListeners = mutableListOf<Widget>()
@@ -26,18 +26,13 @@ class MouseMoveListener(
     override fun eventFilter(event: CursorMoveEvent) = triggerEvent(event)
 
     override fun triggerEvent(event: CursorMoveEvent) {
-        val mouseX = event.x
-        val mouseY = event.y
+        val (mouseX, mouseY) = event
 
         // 处理 MouseEnterEvent 和 MouseLeaveEvent
         handleMouseEnterAndLeave(mouseX, mouseY)
 
         // 处理 MouseMoveEvent
-        val widgetsCopy = moveListeners.toList()
-        val highestZWidget = widgetsCopy
-            .filter { it.isVisible }
-            .filter { it.containsPoint(mouseX, mouseY, event = MouseMoveEvent::class) }
-            .maxByOrNull { it.z }
+        val highestZWidget = getHighestZWidget(moveListeners, mouseX, mouseY, MouseMoveEvent::class)
 
         highestZWidget?.onMouseMove(MouseMoveEvent(mouseX, mouseY))
     }

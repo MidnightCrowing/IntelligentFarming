@@ -184,8 +184,7 @@ class FarmArea : Widget {
     /**
      * 渲染农田和作物。
      */
-    override fun render() {
-        super.render()
+    override fun doRender() {
         renderBorderline()
         controller.activeSeedCrop?.render()
         controller.cropsGrid.reversed().forEach { row -> row.reversed().forEach { it?.render() } }

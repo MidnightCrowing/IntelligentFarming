@@ -6,40 +6,31 @@ import com.midnightcrowing.events.Event.MouseButtonEvent
 import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.gui.base.Widget
 import com.midnightcrowing.gui.base.Window
-import org.lwjgl.glfw.GLFW.GLFW_PRESS
 import org.lwjgl.glfw.GLFW.GLFW_RELEASE
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredFunctions
 
 
 class MouseReleasedListener(
-    val window: Window,
+    window: Window,
     eventManager: EventManager,
-) : EventListener<MouseButtonEvent>(eventManager) {
+) : BaseMouseListener<MouseButtonEvent>(window, eventManager) {
     private val releaseableWidgets = mutableListOf<Widget>()
-    private var pressedWidget: Widget? = null
 
     override fun getReceiveEventType(): KClass<MouseButtonEvent> = MouseButtonEvent::class
 
     override fun getSendEventType(): Array<KClass<out Event>> = arrayOf(MouseReleasedEvent::class)
 
     override fun eventFilter(event: MouseButtonEvent) {
-        if (event.action == GLFW_PRESS) {
-            recordPressedWidget()
-        } else if (event.action == GLFW_RELEASE) {
+        if (event.action == GLFW_RELEASE) {
             triggerEvent(event)
         }
     }
 
-    private fun recordPressedWidget() {
-        val (x, y) = window.getCursorPos()
-        pressedWidget = releaseableWidgets.find { it.containsPoint(x, y, event = MouseReleasedEvent::class) }
-    }
-
     override fun triggerEvent(event: MouseButtonEvent) {
         val (x, y) = window.getCursorPos()
-        pressedWidget?.onMouseRelease(MouseReleasedEvent(x, y, event.button))
-        pressedWidget = null
+        val highestZWidget = getHighestZWidget(releaseableWidgets, x, y, MouseReleasedEvent::class)
+        highestZWidget?.onMouseRelease(MouseReleasedEvent(x, y, event.button))
     }
 
     override fun registerWidget(widget: Widget) {

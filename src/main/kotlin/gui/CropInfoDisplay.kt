@@ -29,7 +29,7 @@ class CropInfoDisplay(
         TextureResourcesEnum.TOAST.texture, textureBorder = 4f, vertexBorder = 10f
     ).apply { alpha = 0.6 }
 
-    internal var itemBounds = ScreenBounds.EMPTY
+    internal var itemBounds: ScreenBounds = ScreenBounds.EMPTY
 
     internal val titleText = TextRenderer(window.nvg).apply {
         textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
@@ -97,7 +97,10 @@ class CropInfoDisplay(
     }
 
     override fun render() {
-        if (!isVisible || controller.item.isEmpty()) return
+        if (!isVisible || controller.item.isEmpty()) {
+            return
+        }
+
         bgRenderer.render(widgetBounds)
         controller.itemWidget?.render()
         titleText.render()

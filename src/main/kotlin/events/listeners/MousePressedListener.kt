@@ -12,9 +12,9 @@ import kotlin.reflect.full.declaredFunctions
 
 
 class MousePressedListener(
-    val window: Window,
+    window: Window,
     eventManager: EventManager,
-) : EventListener<MouseButtonEvent>(eventManager) {
+) : BaseMouseListener<MouseButtonEvent>(window, eventManager) {
     private val pressableWidgets = mutableListOf<Widget>()
 
     override fun getReceiveEventType(): KClass<MouseButtonEvent> = MouseButtonEvent::class
@@ -29,13 +29,7 @@ class MousePressedListener(
 
     override fun triggerEvent(event: MouseButtonEvent) {
         val (x, y) = window.getCursorPos()
-
-        val widgetsCopy = pressableWidgets.toList()
-        val highestZWidget = widgetsCopy
-            .filter { it.isVisible }
-            .filter { it.containsPoint(x, y, event = MousePressedEvent::class) }
-            .maxByOrNull { it.z }
-
+        val highestZWidget = getHighestZWidget(pressableWidgets, x, y, MousePressedEvent::class)
         highestZWidget?.onMousePress(MousePressedEvent(x, y, event.button))
     }
 

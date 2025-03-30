@@ -8,8 +8,8 @@ import com.midnightcrowing.resource.TextureResourcesEnum
 class ItemCheckBox(parent: Widget) : Widget(parent) {
     override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.CHECK_BOX.texture)
 
-    private var boundsNow = ScreenBounds.EMPTY
-    private var boundsTarget = ScreenBounds.EMPTY
+    private var boundsNow: ScreenBounds = ScreenBounds.EMPTY
+    private var boundsTarget: ScreenBounds = ScreenBounds.EMPTY
 
     private var lastUpdateTime: Long = System.currentTimeMillis()
 

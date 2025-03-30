@@ -12,7 +12,7 @@ import kotlin.reflect.full.declaredFunctions
 class MouseScrollListener(
     val window: Window,
     eventManager: EventManager,
-) : EventListener<ScrollEvent>(eventManager) {
+) : BaseEventListener<ScrollEvent>(eventManager) {
     private val scrollWidgets = mutableListOf<Widget>()
 
     override fun getReceiveEventType(): KClass<ScrollEvent> = ScrollEvent::class

@@ -7,7 +7,7 @@ import com.midnightcrowing.gui.base.Window
 import kotlin.reflect.KClass
 
 // T 是接收事件类型
-abstract class EventListener<T : Event>(eventManager: EventManager) {
+abstract class BaseEventListener<T : Event>(eventManager: EventManager) {
     init {
         eventManager.registerListener(this)
     }

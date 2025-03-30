@@ -57,10 +57,25 @@ class Button : Widget {
             textRenderer.textSpacing = value
         }
 
+    /**
+     * 设置按钮的边界位置。
+     * @param x1 左上角 X 坐标
+     * @param y1 左上角 Y 坐标
+     * @param x2 右下角 X 坐标
+     * @param y2 右下角 Y 坐标
+     */
+    override fun place(x1: Double, y1: Double, x2: Double, y2: Double) = this.place(ScreenBounds(x1, y1, x2, y2))
+
+    /**
+     * 设置按钮的边界位置。
+     * @param bounds 按钮的边界
+     */
     override fun place(bounds: ScreenBounds) {
         super.place(bounds)
-        textRenderer.x = (widgetBounds.x1 + widgetBounds.x2) / 2
-        textRenderer.y = (widgetBounds.y1 + widgetBounds.y2) / 2
+
+        val betweenPoint = widgetBounds.between
+        textRenderer.x = betweenPoint.x
+        textRenderer.y = betweenPoint.y
 
         nineSliceRenderer?.let { it.vertexBorder = scaleValue(window.width, 10.0, 15.0).toFloat() }
     }
@@ -68,8 +83,7 @@ class Button : Widget {
     /**
      * 渲染按钮及其文字。
      */
-    override fun render() {
-        if (!isVisible) return
+    override fun doRender() {
         nineSliceRenderer?.render(widgetBounds)
         textRenderer.render()
     }

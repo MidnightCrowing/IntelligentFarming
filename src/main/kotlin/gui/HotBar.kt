@@ -50,7 +50,7 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
     internal val itemCheckBox: ItemCheckBox = ItemCheckBox(this)
 
     // 物品缓存，避免每次渲染时重复创建
-    internal val itemCache = mutableMapOf<String, FarmItems?>()
+    internal val itemCache: MutableMap<String, FarmItems?> = mutableMapOf<String, FarmItems?>()
 
     // 上次呈现文本的时间
     private var textRenderTime: Long = GameTick.tick
@@ -158,10 +158,7 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
         controller.selectedGridId = selectedGridId
     }
 
-    override fun render() {
-        super.render()
-        if (!isVisible) return
-
+    override fun doRender() {
         val timeDiff = GameTick.tick - textRenderTime
         if (timeDiff < 3200) {
             if (timeDiff >= 3000) {

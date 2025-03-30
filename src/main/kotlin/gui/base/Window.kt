@@ -62,9 +62,9 @@ class Window(
     init {
         createGLFW()
         createOpenGL()
-        initEventManager()
         initGLFW()
         initNanoVG()
+        initEventManager()
         createFont()
     }
 
@@ -91,6 +91,9 @@ class Window(
         // 初始化事件管理器
         eventManager.initGLFWCallback()
         eventManager.initListener()
+
+        val (windowWidth, windowHeight) = getWindowSize()
+        eventManager.triggerWindowResizeEvent(windowWidth, windowHeight)
     }
 
     private fun initGLFW() {
@@ -159,8 +162,6 @@ class Window(
 
     fun renderBegin() {
         // 开始 NanoVG 渲染
-        glEnable(GL_BLEND)  // 确保透明度正常
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         nvgBeginFrame(nvg, width.toFloat(), height.toFloat(), 1f)
         // 清除颜色和深度缓冲区
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
@@ -174,10 +175,7 @@ class Window(
         tickTextRenderer.render("Tick: ${GameTick.tick}")
     }
 
-    fun renderEnd() {
-        // 结束 NanoVG 渲染
-        nvgEndFrame(nvg)
-    }
+    fun renderEnd() {}
 
     /**
      * 交换帧缓冲区
@@ -200,6 +198,18 @@ class Window(
         glOrtho(0.0, width.toDouble(), height.toDouble(), 0.0, -1.0, 1.0)
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
+    }
+
+    /**
+     * 获取窗口的大小
+     *
+     * @return 一个包含窗口宽度和高度的 Pair
+     */
+    fun getWindowSize(): Pair<Int, Int> {
+        val width = IntArray(1)
+        val height = IntArray(1)
+        glfwGetWindowSize(handle, width, height)
+        return Pair(width[0], height[0])
     }
 
     /**
