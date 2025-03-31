@@ -1,7 +1,7 @@
 package com.midnightcrowing.model.item
 
 import com.midnightcrowing.farmings.FarmItems
-import com.midnightcrowing.gui.base.Widget
+import com.midnightcrowing.gui.bases.Widget
 
 object ItemRegistry {
     private val items = mutableMapOf<String, (Widget) -> FarmItems>()

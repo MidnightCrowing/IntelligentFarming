@@ -1,9 +1,9 @@
 package com.midnightcrowing.controllers
 
 import com.midnightcrowing.farmings.FarmItems
-import com.midnightcrowing.gui.base.Window
+import com.midnightcrowing.gui.bases.Window
+import com.midnightcrowing.gui.scenes.farmScene.FarmScene
 import com.midnightcrowing.model.item.ItemRegistry
-import com.midnightcrowing.scenes.FarmScene
 
 
 class MainMenuController(private val window: Window) {
@@ -35,7 +35,6 @@ class MainMenuController(private val window: Window) {
 
     fun openOptions() {
         println("打开设置界面")
-        // 切换到 SettingsScreen
     }
 
     fun exitGame() {

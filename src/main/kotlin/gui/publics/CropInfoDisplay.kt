@@ -1,21 +1,20 @@
-package com.midnightcrowing.gui
+package com.midnightcrowing.gui.publics
 
 import com.midnightcrowing.controllers.CropInfoDisplayControllers
-import com.midnightcrowing.gui.base.Widget
+import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.render.NineSliceRenderer
-import com.midnightcrowing.render.TextRenderer
+import com.midnightcrowing.renderer.NineSliceRenderer
+import com.midnightcrowing.renderer.TextRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
-import com.midnightcrowing.scenes.FarmScene
 import com.midnightcrowing.utils.LayoutScaler.scaleValue
 import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_LEFT
 import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_MIDDLE
 
 
 class CropInfoDisplay(
-    screen: FarmScene,
+    parent: Widget,
     private val controller: CropInfoDisplayControllers,
-) : Widget(screen.window, z = 1) {
+) : Widget(parent) {
     companion object {
         val COLOR_NORMAL = doubleArrayOf(1.0, 1.0, 1.0, 1.0)
         val COLOR_GREEN = doubleArrayOf(84 / 255.0, 252 / 255.0, 84 / 255.0, 1.0)

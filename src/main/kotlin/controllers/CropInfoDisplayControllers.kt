@@ -2,7 +2,7 @@ package com.midnightcrowing.controllers
 
 import com.midnightcrowing.farmings.FarmCropBase
 import com.midnightcrowing.farmings.FarmItems
-import com.midnightcrowing.gui.CropInfoDisplay
+import com.midnightcrowing.gui.publics.CropInfoDisplay
 import com.midnightcrowing.model.item.ItemRegistry
 import com.midnightcrowing.model.item.ItemStack
 

@@ -1,10 +1,10 @@
-package com.midnightcrowing.gui.base
+package com.midnightcrowing.gui.bases
 
 import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.WindowResizeEvent
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.render.TextureRenderer
+import com.midnightcrowing.renderer.TextureRenderer
 import kotlin.reflect.KClass
 
 open class Widget {
@@ -175,17 +175,17 @@ open class Widget {
     /**
      * 鼠标滚轮事件
      */
-    open fun onScroll(e: MouseScrollEvent) {}
+    open fun onMouseScroll(e: MouseScrollEvent) {}
 
     /**
      * 按键按下事件
      */
-    open fun onKeyPress(e: KeyPressedEvent) {}
+    open fun onKeyPress(e: KeyPressedEvent): Boolean = true
 
     /**
      * 按键释放事件
      */
-    open fun onKeyReleased(e: KeyReleasedEvent) {}
+    open fun onKeyReleased(e: KeyReleasedEvent): Boolean = true
 
     // endregion
 }

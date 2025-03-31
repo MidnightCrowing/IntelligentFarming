@@ -2,18 +2,18 @@ package com.midnightcrowing.controllers
 
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
-import com.midnightcrowing.gui.CropInfoDisplay
+import com.midnightcrowing.gui.publics.CropInfoDisplay
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.particles.ParticleSystem
 
-class FarmAreaController(gameController: GameController) {
+class FarmAreaController(farmController: FarmController) {
     // region controllers
     lateinit var farmArea: FarmArea
 
-    val cropInfoController: CropInfoDisplayControllers = gameController.cropInfo
+    val cropInfoController: CropInfoDisplayControllers = farmController.cropInfo
     val cropInfo: CropInfoDisplay by lazy { cropInfoController.cropInfoDisplay }
-    val hotController: HotBarController by lazy { gameController.hotBar }
-    val invController: InventoryController by lazy { gameController.inventory }
+    val hotController: HotBarController by lazy { farmController.hotBar }
+    val invController: InventoryController by lazy { farmController.inventory }
 
     // endregion
 

@@ -1,10 +1,10 @@
-package com.midnightcrowing.gui.base
+package com.midnightcrowing.gui.bases
 
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.model.Texture
-import com.midnightcrowing.render.NineSliceRenderer
-import com.midnightcrowing.render.TextRenderer
+import com.midnightcrowing.renderer.NineSliceRenderer
+import com.midnightcrowing.renderer.TextRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
 import com.midnightcrowing.utils.LayoutScaler.scaleValue
 
@@ -12,14 +12,11 @@ import com.midnightcrowing.utils.LayoutScaler.scaleValue
 /**
  * 按钮组件，实现基本的 UI 交互。
  */
-class Button : Widget {
+class Button(parent: Widget) : Widget(parent) {
     enum class ButtonTextures {
         // 按钮的不同状态
         DEFAULT, HOVER, DISABLED
     }
-
-    constructor(window: Window) : super(window)
-    constructor(parent: Widget) : super(parent)
 
     // 纹理映射，加载对应状态的按钮纹理
     private val textures: Map<ButtonTextures, Texture> = mapOf(

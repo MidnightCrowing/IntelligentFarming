@@ -3,11 +3,10 @@ package com.midnightcrowing.farmings
 import com.midnightcrowing.controllers.FarmAreaController
 import com.midnightcrowing.controllers.FarmAreaController.GridPosition
 import com.midnightcrowing.events.CustomEvent.*
-import com.midnightcrowing.gui.base.Widget
-import com.midnightcrowing.gui.base.Window
+import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.render.LineRenderer
+import com.midnightcrowing.renderer.LineRenderer
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT
 
@@ -44,10 +43,10 @@ class FarmArea : Widget {
      * @param farmlandBoard 农田布局数据
      */
     constructor(
-        window: Window,
+        parent: Widget,
         controller: FarmAreaController,
         farmlandBoard: List<Int>,
-    ) : super(window) {
+    ) : super(parent) {
         this.controller = controller
         this.rowCount = farmlandBoard.maxOf { Integer.SIZE - Integer.numberOfLeadingZeros(it) }
         this.columnCount = farmlandBoard.size

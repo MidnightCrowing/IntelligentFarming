@@ -1,22 +1,22 @@
-package com.midnightcrowing.gui
+package com.midnightcrowing.gui.scenes.farmScene
 
 import com.midnightcrowing.controllers.InventoryController
 import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.farmings.FarmItems
-import com.midnightcrowing.gui.base.Widget
+import com.midnightcrowing.gui.bases.Widget
+import com.midnightcrowing.gui.publics.DraggingItem
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.model.item.ItemRegistry
 import com.midnightcrowing.model.item.ItemStack
-import com.midnightcrowing.render.RectangleRenderer
-import com.midnightcrowing.render.TextureRenderer
+import com.midnightcrowing.renderer.RectangleRenderer
+import com.midnightcrowing.renderer.TextureRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
-import com.midnightcrowing.scenes.FarmScene
 import org.lwjgl.glfw.GLFW.*
 import kotlin.reflect.KClass
 
-class Inventory(val screen: FarmScene, private val controller: InventoryController) : Widget(screen.window, z = 2) {
+class Inventory(val screen: FarmScene, private val controller: InventoryController) : Widget(screen.window, z = 4) {
     companion object {
         private const val BASE_WIDTH = 352
         private const val BASE_HEIGHT = 198
@@ -116,6 +116,7 @@ class Inventory(val screen: FarmScene, private val controller: InventoryControll
 
     // 物品缓存，避免每次渲染时重复创建
     internal val itemCache: MutableMap<String, FarmItems?> = mutableMapOf<String, FarmItems?>()
+    private var mousePosition: Point = Point.EMPTY
     private var mouseIndex: Int? = null
     private var mouseLeftPressed: Boolean = false
     private var isShiftPressed: Boolean = false
@@ -218,6 +219,7 @@ class Inventory(val screen: FarmScene, private val controller: InventoryControll
 
     override fun onMouseMove(e: MouseMoveEvent) {
         val pos = Point(e.x, e.y)
+        mousePosition = pos
         mouseIndex = pos.index
 
         maskActiveBgBounds = pos.bagBarGridPosition
@@ -236,27 +238,40 @@ class Inventory(val screen: FarmScene, private val controller: InventoryControll
         maskActiveBgBounds = null
     }
 
-    override fun onKeyPress(e: KeyPressedEvent) {
-        if (e.key == GLFW_KEY_E) {
-            if (!isVisible) {
-                screen.hotBar.setHidden(true)
-            } else {
-                screen.hotBar.setHidden(false)
-            }
-            toggleVisible()
-            controller.hotBarController.update()
-
-            val (x, y) = window.getCursorPos()
-            this.onMouseMove(MouseMoveEvent(x, y))
-        } else if (e.key == GLFW_KEY_LEFT_SHIFT) {
-            isShiftPressed = true
-        }
+    override fun onMouseScroll(e: MouseScrollEvent) {
+        super.onMouseScroll(e)
     }
 
-    override fun onKeyReleased(e: KeyReleasedEvent) {
+    override fun onKeyPress(e: KeyPressedEvent): Boolean {
+        when (e.key) {
+            GLFW_KEY_E -> {
+                screen.hotBar.setHidden(!isVisible)
+                toggleVisible()
+                controller.hotBarController.update()
+
+                val (x, y) = window.getCursorPos()
+                this.onMouseMove(MouseMoveEvent(x, y))
+            }
+
+            GLFW_KEY_LEFT_SHIFT -> isShiftPressed = true
+            GLFW_KEY_ESCAPE -> {
+                if (isVisible) {
+                    toggleVisible()
+                    screen.hotBar.setHidden(false)
+                    controller.hotBarController.update()
+                    return false
+                }
+                return true
+            }
+        }
+        return true
+    }
+
+    override fun onKeyReleased(e: KeyReleasedEvent): Boolean {
         if (e.key == GLFW_KEY_LEFT_SHIFT) {
             isShiftPressed = false
         }
+        return true
     }
 
     override fun place(x1: Double, y1: Double, x2: Double, y2: Double) {
@@ -279,6 +294,8 @@ class Inventory(val screen: FarmScene, private val controller: InventoryControll
         if (maskActiveBgBounds != null) {
             maskActiveBgRender.render()
         }
+
+        renderHoverItemName()
 
         dragWidget.render()
     }
@@ -303,6 +320,23 @@ class Inventory(val screen: FarmScene, private val controller: InventoryControll
             item?.place(position)
             item?.render(stack.count)
         }
+    }
+
+    private fun renderHoverItemName() {
+        // 如果鼠标没有指向任何格子，直接返回
+        val index = mouseIndex ?: return
+
+        // 如果拖动物品不为空，直接返回
+        if (!dragWidget.item.isEmpty()) return
+
+        // 获取鼠标指向的物品
+        val item = controller.getItem(index)
+
+        // 如果物品为空，直接返回
+        if (item.isEmpty()) return
+
+        // 渲染物品名称
+        getItemCache(item.id)?.renderItemName(mousePosition.x + 30, mousePosition.y - 25)
     }
 
     override fun cleanup() {

@@ -1,8 +1,8 @@
-package com.midnightcrowing.gui
+package com.midnightcrowing.gui.publics
 
-import com.midnightcrowing.gui.base.Widget
+import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.render.TextureRenderer
+import com.midnightcrowing.renderer.TextureRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
 
 class ItemCheckBox(parent: Widget) : Widget(parent) {

@@ -1,4 +1,4 @@
-package com.midnightcrowing.render
+package com.midnightcrowing.renderer
 
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NanoVG.*
@@ -9,7 +9,7 @@ class TextRenderer(private val nvg: Long) {
     var x: Double = 0.0
     var y: Double = 0.0
     var text: String = ""
-    var fontName: String = "default"
+    var fontName: String = "unifont"
     var fontSize: Double = 16.0
     var fontBlur: Double = 0.0
     var textAlign: Int = NVG_ALIGN_CENTER or NVG_ALIGN_MIDDLE

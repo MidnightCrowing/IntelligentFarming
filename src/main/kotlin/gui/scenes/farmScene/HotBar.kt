@@ -1,17 +1,17 @@
-package com.midnightcrowing.gui
+package com.midnightcrowing.gui.scenes.farmScene
 
 import com.midnightcrowing.controllers.HotBarController
 import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.farmings.FarmItems
-import com.midnightcrowing.gui.base.Widget
+import com.midnightcrowing.gui.bases.Widget
+import com.midnightcrowing.gui.publics.ItemCheckBox
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.model.item.ItemRegistry
 import com.midnightcrowing.model.item.ItemStack
-import com.midnightcrowing.render.TextRenderer
-import com.midnightcrowing.render.TextureRenderer
+import com.midnightcrowing.renderer.TextRenderer
+import com.midnightcrowing.renderer.TextureRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
-import com.midnightcrowing.scenes.FarmScene
 import com.midnightcrowing.utils.GameTick
 import org.lwjgl.glfw.GLFW.*
 import kotlin.reflect.KClass
@@ -135,7 +135,7 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
         }
     }
 
-    override fun onScroll(e: MouseScrollEvent) {
+    override fun onMouseScroll(e: MouseScrollEvent) {
         if (e.offsetY < 0) {
             controller.selectedGridId = (controller.selectedGridId + 1) % 9
         } else if (e.offsetY > 0) {
@@ -143,7 +143,7 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
         }
     }
 
-    override fun onKeyPress(e: KeyPressedEvent) {
+    override fun onKeyPress(e: KeyPressedEvent): Boolean {
         var selectedGridId = controller.selectedGridId
         when (e.key) {
             in GLFW_KEY_1..GLFW_KEY_9 -> {
@@ -153,9 +153,10 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
 
             GLFW_KEY_LEFT -> selectedGridId = (selectedGridId + 8) % 9
             GLFW_KEY_RIGHT -> selectedGridId = (selectedGridId + 1) % 9
-            else -> return
+            else -> return true
         }
         controller.selectedGridId = selectedGridId
+        return true
     }
 
     override fun doRender() {

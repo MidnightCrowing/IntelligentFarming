@@ -1,14 +1,12 @@
-package com.midnightcrowing.scenes
+package com.midnightcrowing.gui.scenes.farmScene
 
-import com.midnightcrowing.controllers.GameController
+import com.midnightcrowing.controllers.FarmController
 import com.midnightcrowing.farmings.FarmArea
-import com.midnightcrowing.gui.CropInfoDisplay
-import com.midnightcrowing.gui.HotBar
-import com.midnightcrowing.gui.Inventory
-import com.midnightcrowing.gui.base.Screen
-import com.midnightcrowing.gui.base.Window
+import com.midnightcrowing.gui.bases.Screen
+import com.midnightcrowing.gui.bases.Window
+import com.midnightcrowing.gui.publics.CropInfoDisplay
 import com.midnightcrowing.model.Point
-import com.midnightcrowing.render.TextureRenderer
+import com.midnightcrowing.renderer.TextureRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
 
 class FarmScene(window: Window) : Screen(window) {
@@ -33,29 +31,33 @@ class FarmScene(window: Window) : Screen(window) {
     override val bgRenderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.FARM_BACKGROUND.texture)
 
     // controller
-    val gameController: GameController = GameController()
+    val controller: FarmController = FarmController(this)
 
     // UI
-    val cropInfoDisplay: CropInfoDisplay = CropInfoDisplay(this, gameController.cropInfo)
-    val farmArea: FarmArea = FarmArea(window, gameController.farmArea, farmlandBoard = FARMLAND_BOARD)
-    val inventory: Inventory = Inventory(this, gameController.inventory)
-    val hotBar: HotBar = HotBar(this, gameController.hotBar)
+    val cropInfoDisplay: CropInfoDisplay = CropInfoDisplay(this, controller.cropInfo)
+    val farmArea: FarmArea = FarmArea(this, controller.farmArea, farmlandBoard = FARMLAND_BOARD)
+    val inventory: Inventory = Inventory(this, controller.inventory)
+    val hotBar: HotBar = HotBar(this, controller.hotBar)
+    val escMenus: EscMenus = EscMenus(this, controller)
 
     init {
         inventory.setHidden(true)
+        escMenus.setHidden(true)
     }
 
     override fun place(w: Int, h: Int) {
         // hotBar
         hotBar.place(
-            (w - HotBar.SCALED_WIDTH) / 2, h - HotBar.SCALED_HEIGHT,
-            (w + HotBar.SCALED_WIDTH) / 2, h.toDouble()
+            (w - HotBar.Companion.SCALED_WIDTH) / 2, h - HotBar.Companion.SCALED_HEIGHT,
+            (w + HotBar.Companion.SCALED_WIDTH) / 2, h.toDouble()
         )
 
         // inventory
         inventory.place(
-            (w - Inventory.SCALED_WIDTH) / 2, (h - Inventory.SCALED_HEIGHT) / 2 + Inventory.OFFSET_Y,
-            (w + Inventory.SCALED_WIDTH) / 2, (h + Inventory.SCALED_HEIGHT) / 2 + Inventory.OFFSET_Y
+            (w - Inventory.Companion.SCALED_WIDTH) / 2,
+            (h - Inventory.Companion.SCALED_HEIGHT) / 2 + Inventory.Companion.OFFSET_Y,
+            (w + Inventory.Companion.SCALED_WIDTH) / 2,
+            (h + Inventory.Companion.SCALED_HEIGHT) / 2 + Inventory.Companion.OFFSET_Y
         )
 
         // cropInfoDisplay
@@ -71,10 +73,13 @@ class FarmScene(window: Window) : Screen(window) {
         val mPt = Point(BASE_MIDDLE_POINT.x / BASE_BG_WIDTH * w, BASE_MIDDLE_POINT.y / BASE_BG_HEIGHT * h)
         val rPt = Point(BASE_RIGHT_POINT.x / BASE_BG_WIDTH * w, BASE_RIGHT_POINT.y / BASE_BG_HEIGHT * h)
         farmArea.place(blkDeep, blkH, lPt, mPt, rPt)
+
+        // escMenus
+        escMenus.place(w, h)
     }
 
     override fun update() {
-        gameController.update()
+        controller.update()
         farmArea.update()
         inventory.update()
     }
@@ -84,15 +89,16 @@ class FarmScene(window: Window) : Screen(window) {
         cropInfoDisplay.render()
         hotBar.render()
         inventory.render()
+        escMenus.render()
     }
 
     override fun cleanup() {
         super.cleanup()
-        bgRenderer.texture?.cleanup()
         bgRenderer.cleanup()
         farmArea.cleanup()
         cropInfoDisplay.cleanup()
         hotBar.cleanup()
         inventory.cleanup()
+        escMenus.cleanup()
     }
 }

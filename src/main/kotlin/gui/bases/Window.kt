@@ -1,8 +1,8 @@
-package com.midnightcrowing.gui.base
+package com.midnightcrowing.gui.bases
 
 import com.midnightcrowing.config.AppConfig
 import com.midnightcrowing.events.EventManager
-import com.midnightcrowing.render.TextRenderer
+import com.midnightcrowing.renderer.TextRenderer
 import com.midnightcrowing.resource.ResourcesEnum
 import com.midnightcrowing.utils.FPSCounter
 import com.midnightcrowing.utils.GameTick
@@ -135,7 +135,7 @@ class Window(
             }
         }
 
-        val fontId = nvgCreateFont(nvg, "default", fontFile.absolutePath)
+        val fontId = nvgCreateFont(nvg, "unifont", fontFile.absolutePath)
         if (fontId == -1) {
             println("字体加载失败")
         }

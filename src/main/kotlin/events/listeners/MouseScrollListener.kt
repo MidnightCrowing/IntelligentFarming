@@ -4,8 +4,8 @@ import com.midnightcrowing.events.CustomEvent.MouseScrollEvent
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.ScrollEvent
 import com.midnightcrowing.events.EventManager
-import com.midnightcrowing.gui.base.Widget
-import com.midnightcrowing.gui.base.Window
+import com.midnightcrowing.gui.bases.Widget
+import com.midnightcrowing.gui.bases.Window
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredFunctions
 
@@ -30,12 +30,12 @@ class MouseScrollListener(
             .filter { it.containsPoint(x, y, event = MouseScrollEvent::class) }
             .maxByOrNull { it.z }
 
-        highestZWidget?.onScroll(MouseScrollEvent(event.offsetX, event.offsetY))
+        highestZWidget?.onMouseScroll(MouseScrollEvent(event.offsetX, event.offsetY))
     }
 
     override fun registerWidget(widget: Widget) {
-        // 使用反射检查 widget 是否覆盖了 onScroll 方法
-        val onScrollMethod = widget::class.declaredFunctions.find { it.name == "onScroll" }
+        // 使用反射检查 widget 是否覆盖了 onMouseScroll 方法
+        val onScrollMethod = widget::class.declaredFunctions.find { it.name == "onMouseScroll" }
 
         // 判断该方法是否被实现（覆盖了父类的实现）
         if (onScrollMethod != null && !onScrollMethod.isAbstract) {

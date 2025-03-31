@@ -4,8 +4,8 @@ import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.CursorMoveEvent
 import com.midnightcrowing.events.EventManager
-import com.midnightcrowing.gui.base.Widget
-import com.midnightcrowing.gui.base.Window
+import com.midnightcrowing.gui.bases.Widget
+import com.midnightcrowing.gui.bases.Window
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredFunctions
 

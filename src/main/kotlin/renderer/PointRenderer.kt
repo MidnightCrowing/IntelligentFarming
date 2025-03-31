@@ -1,4 +1,4 @@
-package com.midnightcrowing.render
+package com.midnightcrowing.renderer
 
 import com.midnightcrowing.model.Point
 import org.lwjgl.opengl.GL46.*

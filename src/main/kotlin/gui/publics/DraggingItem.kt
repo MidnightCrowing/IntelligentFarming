@@ -1,8 +1,8 @@
-package com.midnightcrowing.gui
+package com.midnightcrowing.gui.publics
 
 import com.midnightcrowing.events.CustomEvent.MouseMoveEvent
 import com.midnightcrowing.farmings.FarmItems
-import com.midnightcrowing.gui.base.Widget
+import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.model.item.ItemRegistry
 import com.midnightcrowing.model.item.ItemStack

@@ -1,14 +1,13 @@
-package com.midnightcrowing.render
+package com.midnightcrowing.renderer
 
 import com.midnightcrowing.model.ScreenBounds
 import org.lwjgl.opengl.GL46.*
 
-class LineRenderer {
+class RectangleRenderer {
     var x1: Double
     var y1: Double
     var x2: Double
     var y2: Double
-    var width: Double
     var color: FloatArray
 
     constructor(
@@ -16,32 +15,30 @@ class LineRenderer {
         y1: Double = 0.0,
         x2: Double = 0.0,
         y2: Double = 0.0,
-        width: Double = 1.0,
         color: FloatArray = floatArrayOf(1f, 1f, 1f, 1f), // 默认白色，不透明
     ) {
         this.x1 = x1
         this.y1 = y1
         this.x2 = x2
         this.y2 = y2
-        this.width = width
         this.color = color
     }
 
-    constructor(bounds: ScreenBounds, width: Double = 1.0, color: FloatArray = floatArrayOf(1f, 1f, 1f, 1f)) {
+    constructor(bounds: ScreenBounds, color: FloatArray = floatArrayOf(1f, 1f, 1f, 1f)) {
         this.x1 = bounds.x1
         this.y1 = bounds.y1
         this.x2 = bounds.x2
         this.y2 = bounds.y2
-        this.width = width
         this.color = color
     }
 
     fun render() {
-        glLineWidth(width.toFloat())
         glColor4f(color[0], color[1], color[2], color[3])
-        glBegin(GL_LINES)
+        glBegin(GL_QUADS)
         glVertex2f(x1.toFloat(), y1.toFloat())
+        glVertex2f(x2.toFloat(), y1.toFloat())
         glVertex2f(x2.toFloat(), y2.toFloat())
+        glVertex2f(x1.toFloat(), y2.toFloat())
         glEnd()
     }
 }

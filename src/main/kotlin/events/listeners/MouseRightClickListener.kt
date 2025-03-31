@@ -4,8 +4,8 @@ import com.midnightcrowing.events.CustomEvent.MouseRightClickEvent
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.MouseButtonEvent
 import com.midnightcrowing.events.EventManager
-import com.midnightcrowing.gui.base.Widget
-import com.midnightcrowing.gui.base.Window
+import com.midnightcrowing.gui.bases.Widget
+import com.midnightcrowing.gui.bases.Window
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT
 import org.lwjgl.glfw.GLFW.GLFW_PRESS
 import kotlin.reflect.KClass

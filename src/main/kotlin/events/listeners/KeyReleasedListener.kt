@@ -4,8 +4,8 @@ import com.midnightcrowing.events.CustomEvent.KeyReleasedEvent
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.KeyEvent
 import com.midnightcrowing.events.EventManager
-import com.midnightcrowing.gui.base.Widget
-import com.midnightcrowing.gui.base.Window
+import com.midnightcrowing.gui.bases.Widget
+import com.midnightcrowing.gui.bases.Window
 import org.lwjgl.glfw.GLFW.GLFW_RELEASE
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredFunctions
@@ -27,9 +27,13 @@ class KeyReleasedListener(
     }
 
     override fun triggerEvent(event: KeyEvent) {
-        releasedableWidgets.forEach { widget ->
-            widget.onKeyReleased(KeyReleasedEvent(event.key))
-        }
+        releasedableWidgets
+            .sortedByDescending { it.z }
+            .forEach { widget ->
+                if (!widget.onKeyReleased(KeyReleasedEvent(event.key))) {
+                    return
+                }
+            }
     }
 
     override fun registerWidget(widget: Widget) {

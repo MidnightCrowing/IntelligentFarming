@@ -1,13 +1,13 @@
 package com.midnightcrowing.controllers
 
-import com.midnightcrowing.gui.Inventory
+import com.midnightcrowing.gui.scenes.farmScene.Inventory
 import com.midnightcrowing.model.item.ItemList
 import com.midnightcrowing.model.item.ItemStack
 
 
-class InventoryController(gameController: GameController) {
+class InventoryController(farmController: FarmController) {
     private lateinit var inventory: Inventory
-    internal val hotBarController: HotBarController by lazy { gameController.hotBar }
+    internal val hotBarController: HotBarController by lazy { farmController.hotBar }
 
     internal val items: ItemList = ItemList(36) // 36格：27背包+9快捷栏
     val hotBarItems: List<ItemStack> get() = items.slice(0 until 9) // 快捷栏在索引0到8

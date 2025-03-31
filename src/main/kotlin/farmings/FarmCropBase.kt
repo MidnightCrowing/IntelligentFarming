@@ -1,6 +1,6 @@
 package com.midnightcrowing.farmings
 
-import com.midnightcrowing.gui.base.Widget
+import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.Texture
 import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.utils.GameTick

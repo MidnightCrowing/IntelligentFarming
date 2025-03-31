@@ -1,7 +1,7 @@
 package com.midnightcrowing
 
-import com.midnightcrowing.gui.base.Window
-import com.midnightcrowing.scenes.MainMenuScreen
+import com.midnightcrowing.gui.bases.Window
+import com.midnightcrowing.gui.scenes.MainMenuScreen
 
 
 fun main() {

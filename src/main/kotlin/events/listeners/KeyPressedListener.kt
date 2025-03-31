@@ -4,8 +4,8 @@ import com.midnightcrowing.events.CustomEvent.KeyPressedEvent
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.KeyEvent
 import com.midnightcrowing.events.EventManager
-import com.midnightcrowing.gui.base.Widget
-import com.midnightcrowing.gui.base.Window
+import com.midnightcrowing.gui.bases.Widget
+import com.midnightcrowing.gui.bases.Window
 import org.lwjgl.glfw.GLFW.GLFW_PRESS
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredFunctions
@@ -27,9 +27,13 @@ class KeyPressedListener(
     }
 
     override fun triggerEvent(event: KeyEvent) {
-        pressableWidgets.forEach { widget ->
-            widget.onKeyPress(KeyPressedEvent(event.key))
-        }
+        pressableWidgets
+            .sortedByDescending { it.z }
+            .forEach { widget ->
+                if (!widget.onKeyPress(KeyPressedEvent(event.key))) {
+                    return
+                }
+            }
     }
 
     override fun registerWidget(widget: Widget) {

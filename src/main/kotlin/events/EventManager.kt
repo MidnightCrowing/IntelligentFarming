@@ -2,8 +2,8 @@ package com.midnightcrowing.events
 
 import com.midnightcrowing.events.Event.*
 import com.midnightcrowing.events.listeners.*
-import com.midnightcrowing.gui.base.Widget
-import com.midnightcrowing.gui.base.Window
+import com.midnightcrowing.gui.bases.Widget
+import com.midnightcrowing.gui.bases.Window
 import org.lwjgl.glfw.GLFW.*
 import kotlin.reflect.KClass
 
