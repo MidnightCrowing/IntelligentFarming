@@ -7,9 +7,9 @@ import com.midnightcrowing.model.item.ItemStack
 
 class InventoryController(farmController: FarmController) {
     private lateinit var inventory: Inventory
-    internal val hotBarController: HotBarController by lazy { farmController.hotBar }
+    val hotBarController: HotBarController by lazy { farmController.hotBar }
 
-    internal val items: ItemList = ItemList(36) // 36格：27背包+9快捷栏
+    val items: ItemList = ItemList(36) // 36格：27背包+9快捷栏
     val hotBarItems: List<ItemStack> get() = items.slice(0 until 9) // 快捷栏在索引0到8
     val mainInvItems: List<ItemStack> get() = items.slice(9 until 36) // 背包在索引9到35
 
@@ -65,7 +65,7 @@ class InventoryController(farmController: FarmController) {
 
         // 再寻找空槽位
         for (i in minIndex until maxIndex) {
-            if (items[i].isEmpty()) {
+            if (isSlotEmpty(i)) {
                 items[i] = item
                 return true
             }

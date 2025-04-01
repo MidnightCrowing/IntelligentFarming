@@ -28,9 +28,9 @@ class CropInfoDisplay(
         TextureResourcesEnum.TOAST.texture, textureBorder = 4f, vertexBorder = 10f
     ).apply { alpha = 0.6 }
 
-    internal var itemBounds: ScreenBounds = ScreenBounds.EMPTY
+    var itemBounds: ScreenBounds = ScreenBounds.EMPTY
 
-    internal val titleText = TextRenderer(window.nvg).apply {
+    val titleText = TextRenderer(window.nvg).apply {
         textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
         textColor = doubleArrayOf(1.0, 1.0, 1.0, 1.0)
     }

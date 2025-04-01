@@ -17,7 +17,7 @@ import org.lwjgl.glfw.GLFW.*
 import kotlin.reflect.KClass
 
 
-class HotBar(val screen: FarmScene, private val controller: HotBarController) : Widget(screen.window, z = 1) {
+class HotBar(val screen: FarmScene, private val controller: HotBarController) : Widget(screen) {
     companion object {
         // 基础尺寸常量
         private const val BASE_WIDTH = 364
@@ -43,14 +43,14 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
     }
 
     // 渲染器
-    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.COMPONENTS_HOT_BAR.texture)
+    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.HOT_BAR.texture)
     private val itemLabelRenderer: TextRenderer = TextRenderer(window.nvg).apply { fontSize = 20.0 }
 
     // 物品选中框
-    internal val itemCheckBox: ItemCheckBox = ItemCheckBox(this)
+    val itemCheckBox: ItemCheckBox = ItemCheckBox(this)
 
     // 物品缓存，避免每次渲染时重复创建
-    internal val itemCache: MutableMap<String, FarmItems?> = mutableMapOf<String, FarmItems?>()
+    private val itemCache: MutableMap<String, FarmItems?> = mutableMapOf<String, FarmItems?>()
 
     // 上次呈现文本的时间
     private var textRenderTime: Long = GameTick.tick
@@ -64,9 +64,9 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
         controller.init(this)
     }
 
-    internal fun getItemCache(id: String): FarmItems? = itemCache.getOrPut(id) { ItemRegistry.createItem(id, this) }
+    fun getItemCache(id: String): FarmItems? = itemCache.getOrPut(id) { ItemRegistry.createItem(id, this) }
 
-    internal fun setItemLabelText(text: String?) {
+    fun setItemLabelText(text: String?) {
         if (text == null) {
             itemLabelRenderer.text = ""
             return
@@ -104,7 +104,7 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
     private fun getGridBounds(id: Int): ScreenBounds = calculateGridBounds(id)
 
     // 获取带选中框的网格位置
-    internal fun getGridBoundsWithCheckbox(id: Int): ScreenBounds {
+    fun getGridBoundsWithCheckbox(id: Int): ScreenBounds {
         val itemBounds = calculateGridBounds(id)
         return ScreenBounds(
             x1 = itemBounds.x1 - CHECKBOX_SIZE,

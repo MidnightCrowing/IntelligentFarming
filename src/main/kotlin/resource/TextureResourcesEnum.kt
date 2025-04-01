@@ -4,10 +4,22 @@ import com.midnightcrowing.model.Texture
 
 enum class TextureResourcesEnum(private val resource: ResourcesEnum) {
     /* region GUI */
-    COMPONENTS_HOT_BAR(ResourcesEnum.COMPONENTS_HOT_BAR),
     INVENTORY(ResourcesEnum.INVENTORY),
-    CHECK_BOX(ResourcesEnum.CHECK_BOX),
     TOAST(ResourcesEnum.TOAST),
+
+    // hot bar
+    HOT_BAR(ResourcesEnum.HOT_BAR),
+    CHECK_BOX(ResourcesEnum.CHECK_BOX),
+
+    // trade
+    TRADE(ResourcesEnum.TRADE),
+    TRADE_BUTTON_ABLE_TO_TRADE(ResourcesEnum.TRADE_BUTTON_ABLE_TO_TRADE),
+    TRADE_BUTTON_UNABLE_TO_TRADE(ResourcesEnum.TRADE_BUTTON_UNABLE_TO_TRADE),
+    TRADE_SCROLL_ACTIVE(ResourcesEnum.TRADE_SCROLL_ACTIVE),
+    TRADE_SCROLL_DISABLED(ResourcesEnum.TRADE_SCROLL_DISABLED),
+    TRADE_UNABLE_TO_TRADE(ResourcesEnum.TRADE_UNABLE_TO_TRADE),
+
+    // button
     BUTTON_DEFAULT(ResourcesEnum.BUTTON_DEFAULT),
     BUTTON_HOVER(ResourcesEnum.BUTTON_HOVER),
     BUTTON_DISABLED(ResourcesEnum.BUTTON_DISABLED),

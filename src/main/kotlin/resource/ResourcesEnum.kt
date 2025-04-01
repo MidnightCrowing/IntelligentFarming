@@ -4,13 +4,25 @@ import java.io.InputStream
 
 enum class ResourcesEnum(private val resourcePath: String) {
     /* region GUI */
-    COMPONENTS_HOT_BAR("/assets/gui/hot_bar.png"),
     INVENTORY("/assets/gui/inventory.png"),
-    CHECK_BOX("/assets/gui/check_box.png"),
     TOAST("/assets/gui/toast.png"),
-    BUTTON_DEFAULT("/assets/gui/button_default.png"),
-    BUTTON_HOVER("/assets/gui/button_hover.png"),
-    BUTTON_DISABLED("/assets/gui/button_disabled.png"),
+
+    // hot bar
+    HOT_BAR("/assets/gui/hot_bar/hot_bar.png"),
+    CHECK_BOX("/assets/gui/hot_bar/check_box.png"),
+
+    // trade
+    TRADE("/assets/gui/trade/trade.png"),
+    TRADE_BUTTON_ABLE_TO_TRADE("/assets/gui/trade/button_able_to_trade.png"),
+    TRADE_BUTTON_UNABLE_TO_TRADE("/assets/gui/trade/button_unable_to_trade.png"),
+    TRADE_SCROLL_ACTIVE("/assets/gui/trade/scroll_active.png"),
+    TRADE_SCROLL_DISABLED("/assets/gui/trade/scroll_disabled.png"),
+    TRADE_UNABLE_TO_TRADE("/assets/gui/trade/unable_to_trade.png"),
+
+    // button
+    BUTTON_DEFAULT("/assets/gui/button/button_default.png"),
+    BUTTON_HOVER("/assets/gui/button/button_hover.png"),
+    BUTTON_DISABLED("/assets/gui/button/button_disabled.png"),
     /* endregion */
 
     /* region Font */

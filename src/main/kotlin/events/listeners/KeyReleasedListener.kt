@@ -28,6 +28,7 @@ class KeyReleasedListener(
 
     override fun triggerEvent(event: KeyEvent) {
         releasedableWidgets
+            .filter { it.isVisible }
             .sortedByDescending { it.z }
             .forEach { widget ->
                 if (!widget.onKeyReleased(KeyReleasedEvent(event.key))) {

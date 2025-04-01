@@ -15,7 +15,7 @@ data class ItemStack(
         }
 
     companion object {
-        val EMPTY = ItemStack("", 0)
+        val EMPTY get() = ItemStack("", 0)
     }
 
     fun isEmpty(): Boolean = this == EMPTY

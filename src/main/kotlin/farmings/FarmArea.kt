@@ -14,10 +14,13 @@ import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT
  * 农场区域类，用于管理农田的布局和作物种植。
  * 继承自[Widget]，支持鼠标事件处理和渲染。
  */
-class FarmArea : Widget {
+class FarmArea(
+    parent: Widget,
+    private val controller: FarmAreaController,
+    farmlandBoard: List<Int>,
+    z: Int? = null,
+) : Widget(parent, z) {
     // region 配置参数
-    private val controller: FarmAreaController
-
     /* 布局参数 */
     private lateinit var leftPoint: Point    // 农田左侧基准点
     private lateinit var middlePoint: Point  // 农田中心基准点
@@ -25,8 +28,8 @@ class FarmArea : Widget {
     private val edgePadding = 20             // 农田区域边缘留白
     private var blockDeep = 0.0              // 耕地深度
     private var blockHeight = 0.0            // 地块高度
-    private var rowCount: Int = 0
-    private var columnCount: Int = 0
+    private val rowCount: Int = farmlandBoard.maxOf { Integer.SIZE - Integer.numberOfLeadingZeros(it) }
+    private val columnCount: Int = farmlandBoard.size
 
     /* 地块尺寸计算属性 */
     private val leftBlockWidth: Double get() = (middlePoint.x - leftPoint.x) / rowCount
@@ -36,31 +39,16 @@ class FarmArea : Widget {
 
     // endregion
 
-    // region 初始化
-    /**
-     * 构造函数，基于窗口和农田布局数据初始化。
-     * @param window 父窗口
-     * @param farmlandBoard 农田布局数据
-     */
-    constructor(
-        parent: Widget,
-        controller: FarmAreaController,
-        farmlandBoard: List<Int>,
-    ) : super(parent) {
-        this.controller = controller
-        this.rowCount = farmlandBoard.maxOf { Integer.SIZE - Integer.numberOfLeadingZeros(it) }
-        this.columnCount = farmlandBoard.size
-
+    init {
         controller.init(this, farmlandBoard, rowCount, columnCount)
     }
-    // endregion
 
     // region 位置计算 & 坐标转换
     /**
      * 获取指定位置的屏幕边界。
      * @return 如果位置可用，返回对应的[ScreenBounds]；否则返回[ScreenBounds.EMPTY]
      */
-    internal fun getBlockBounds(pos: GridPosition): ScreenBounds {
+    fun getBlockBounds(pos: GridPosition): ScreenBounds {
         if (!controller.isAvailable(pos)) return ScreenBounds.EMPTY
 
         val (x, y) = pos
@@ -79,17 +67,11 @@ class FarmArea : Widget {
      * @return 如果找到有效位置，返回对应的(列, 行)索引；否则返回null
      */
     private fun findMouseInField(mouseX: Double, mouseY: Double): GridPosition? {
-        val vx = Point(
-            (middlePoint.x - rightPoint.x) / columnCount,
-            (middlePoint.y - rightPoint.y) / columnCount
-        )
-        val vy = Point(
-            (middlePoint.x - leftPoint.x) / rowCount,
-            (middlePoint.y - leftPoint.y) / rowCount
-        )
+        val vx: Point = (middlePoint - rightPoint) / columnCount
+        val vy: Point = (middlePoint - leftPoint) / rowCount
 
-        val dx = middlePoint.x - mouseX
-        val dy = middlePoint.y - mouseY
+        val dx: Double = middlePoint.x - mouseX
+        val dy: Double = middlePoint.y - mouseY
 
         val determinant = vx.x * vy.y - vx.y * vy.x
         if (determinant == 0.0) return null

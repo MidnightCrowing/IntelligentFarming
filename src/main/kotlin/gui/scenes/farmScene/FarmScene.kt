@@ -1,24 +1,28 @@
 package com.midnightcrowing.gui.scenes.farmScene
 
 import com.midnightcrowing.controllers.FarmController
+import com.midnightcrowing.events.CustomEvent.KeyPressedEvent
+import com.midnightcrowing.events.CustomEvent.MouseMoveEvent
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.gui.bases.Screen
+import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
 import com.midnightcrowing.gui.publics.CropInfoDisplay
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.renderer.TextureRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
+import org.lwjgl.glfw.GLFW.*
 
 class FarmScene(window: Window) : Screen(window) {
     private companion object {
         // Farm area
-        const val BASE_BG_WIDTH: Double = 5397.0
-        const val BASE_BG_HEIGHT: Double = 3036.0
-        const val BASE_BLOCK_HEIGHT: Int = 285
-        const val BASE_FARMLAND_BLACK_DEEP: Int = 17
-        val BASE_LEFT_POINT: Point = Point(1364.0, (1564 - 37).toDouble())
-        val BASE_MIDDLE_POINT: Point = Point(3140.0, (2242 + 17).toDouble())
-        val BASE_RIGHT_POINT: Point = Point(4160.0, 1612.0)
+        const val FARM_BG_WIDTH: Double = 5397.0
+        const val FARM_BG_HEIGHT: Double = 3036.0
+        const val FARM_BLOCK_HEIGHT: Int = 285
+        const val FARM_FARMLAND_BLACK_DEEP: Int = 17
+        val FARM_LEFT_POINT: Point = Point(1364.0, (1564 - 37).toDouble())
+        val FARM_MIDDLE_POINT: Point = Point(3140.0, (2242 + 17).toDouble())
+        val FARM_RIGHT_POINT: Point = Point(4160.0, 1612.0)
         val FARMLAND_BOARD: List<Int> = listOf(
             0b1111111,
             0b1111111,
@@ -36,28 +40,40 @@ class FarmScene(window: Window) : Screen(window) {
     // UI
     val cropInfoDisplay: CropInfoDisplay = CropInfoDisplay(this, controller.cropInfo)
     val farmArea: FarmArea = FarmArea(this, controller.farmArea, farmlandBoard = FARMLAND_BOARD)
-    val inventory: Inventory = Inventory(this, controller.inventory)
+    val inventory: Inventory = Inventory(this, controller.inventory, z = 4)
     val hotBar: HotBar = HotBar(this, controller.hotBar)
-    val escMenus: EscMenus = EscMenus(this, controller)
+    val trade: Trade = Trade(this, controller.trade, z = 4)
+    val escMenus: EscMenus = EscMenus(this, controller, z = 3)
+
+    var activeWidget: Widget? = null
 
     init {
         inventory.setHidden(true)
+        trade.setHidden(true)
         escMenus.setHidden(true)
     }
 
     override fun place(w: Int, h: Int) {
         // hotBar
         hotBar.place(
-            (w - HotBar.Companion.SCALED_WIDTH) / 2, h - HotBar.Companion.SCALED_HEIGHT,
-            (w + HotBar.Companion.SCALED_WIDTH) / 2, h.toDouble()
+            (w - HotBar.SCALED_WIDTH) / 2, h - HotBar.SCALED_HEIGHT,
+            (w + HotBar.SCALED_WIDTH) / 2, h.toDouble()
         )
 
         // inventory
         inventory.place(
-            (w - Inventory.Companion.SCALED_WIDTH) / 2,
-            (h - Inventory.Companion.SCALED_HEIGHT) / 2 + Inventory.Companion.OFFSET_Y,
-            (w + Inventory.Companion.SCALED_WIDTH) / 2,
-            (h + Inventory.Companion.SCALED_HEIGHT) / 2 + Inventory.Companion.OFFSET_Y
+            (w - Inventory.SCALED_WIDTH) / 2,
+            (h - Inventory.SCALED_HEIGHT) / 2 + Inventory.OFFSET_Y,
+            (w + Inventory.SCALED_WIDTH) / 2,
+            (h + Inventory.SCALED_HEIGHT) / 2 + Inventory.OFFSET_Y
+        )
+
+        // trade
+        trade.place(
+            (w - Trade.SCALED_WIDTH) / 2,
+            (h - Trade.SCALED_HEIGHT) / 2 + Trade.OFFSET_Y,
+            (w + Trade.SCALED_WIDTH) / 2,
+            (h + Trade.SCALED_HEIGHT) / 2 + Trade.OFFSET_Y
         )
 
         // cropInfoDisplay
@@ -67,11 +83,11 @@ class FarmScene(window: Window) : Screen(window) {
         )
 
         // farmArea
-        val blkDeep = BASE_FARMLAND_BLACK_DEEP / BASE_BG_HEIGHT * h
-        val blkH = BASE_BLOCK_HEIGHT / BASE_BG_HEIGHT * h
-        val lPt = Point(BASE_LEFT_POINT.x / BASE_BG_WIDTH * w, BASE_LEFT_POINT.y / BASE_BG_HEIGHT * h)
-        val mPt = Point(BASE_MIDDLE_POINT.x / BASE_BG_WIDTH * w, BASE_MIDDLE_POINT.y / BASE_BG_HEIGHT * h)
-        val rPt = Point(BASE_RIGHT_POINT.x / BASE_BG_WIDTH * w, BASE_RIGHT_POINT.y / BASE_BG_HEIGHT * h)
+        val blkDeep = FARM_FARMLAND_BLACK_DEEP / FARM_BG_HEIGHT * h
+        val blkH = FARM_BLOCK_HEIGHT / FARM_BG_HEIGHT * h
+        val lPt = Point(FARM_LEFT_POINT.x / FARM_BG_WIDTH * w, FARM_LEFT_POINT.y / FARM_BG_HEIGHT * h)
+        val mPt = Point(FARM_MIDDLE_POINT.x / FARM_BG_WIDTH * w, FARM_MIDDLE_POINT.y / FARM_BG_HEIGHT * h)
+        val rPt = Point(FARM_RIGHT_POINT.x / FARM_BG_WIDTH * w, FARM_RIGHT_POINT.y / FARM_BG_HEIGHT * h)
         farmArea.place(blkDeep, blkH, lPt, mPt, rPt)
 
         // escMenus
@@ -84,11 +100,69 @@ class FarmScene(window: Window) : Screen(window) {
         inventory.update()
     }
 
+    override fun onKeyPress(e: KeyPressedEvent): Boolean {
+        // TODO
+        when (e.key) {
+            GLFW_KEY_ESCAPE -> {
+                if (activeWidget != null) {
+                    activeWidget!!.setHidden(true)
+                    hotBar.setVisible(true)
+                    controller.hotBar.update()
+                    activeWidget = null
+                } else {
+                    escMenus.toggleVisible()
+                }
+            }
+
+            GLFW_KEY_E -> {
+                if (!escMenus.isVisible) {
+
+                    if (activeWidget == null) {
+                        inventory.setVisible(true)
+                        hotBar.setHidden(true)
+                        controller.hotBar.update()
+                        activeWidget = inventory
+                    } else if (activeWidget == inventory) {
+                        inventory.setHidden(true)
+                        hotBar.setVisible(true)
+                        controller.hotBar.update()
+                        activeWidget = null
+                    }
+
+                    val (x, y) = window.getCursorPos()
+                    inventory.onMouseMove(MouseMoveEvent(x, y))
+                }
+            }
+
+            GLFW_KEY_A -> {
+                if (!escMenus.isVisible) {
+
+                    if (activeWidget == null) {
+                        trade.setVisible(true)
+                        hotBar.setHidden(true)
+                        controller.hotBar.update()
+                        activeWidget = trade
+                    } else if (activeWidget == trade) {
+                        trade.setHidden(true)
+                        hotBar.setVisible(true)
+                        controller.hotBar.update()
+                        activeWidget = null
+                    }
+
+                    val (x, y) = window.getCursorPos()
+                    trade.onMouseMove(MouseMoveEvent(x, y))
+                }
+            }
+        }
+        return true
+    }
+
     override fun doRender() {
         farmArea.render()
         cropInfoDisplay.render()
         hotBar.render()
         inventory.render()
+        trade.render()
         escMenus.render()
     }
 
@@ -99,6 +173,7 @@ class FarmScene(window: Window) : Screen(window) {
         cropInfoDisplay.cleanup()
         hotBar.cleanup()
         inventory.cleanup()
+        trade.cleanup()
         escMenus.cleanup()
     }
 }

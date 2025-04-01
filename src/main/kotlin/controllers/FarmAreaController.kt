@@ -28,8 +28,8 @@ class FarmAreaController(farmController: FarmController) {
     private var columnCount: Int = 0
 
     // 农田作物
-    internal lateinit var cropsGrid: Array<Array<FarmCropBase?>>
-    internal var activeSeedCrop: FarmCropBase? = null
+    lateinit var cropsGrid: Array<Array<FarmCropBase?>>
+    var activeSeedCrop: FarmCropBase? = null
         set(value) {
             field?.cleanup()
             field = value?.apply {
@@ -40,12 +40,12 @@ class FarmAreaController(farmController: FarmController) {
         }
 
     // 粒子系统，用于生成和管理粒子效果
-    internal val particleSystem: ParticleSystem = ParticleSystem()
+    val particleSystem: ParticleSystem = ParticleSystem()
 
     // 鼠标参数
-    internal var mousePosition: GridPosition? = null  // 当前鼠标悬停位置
-    internal var isLeftClick: Boolean = false
-    internal var isRightClick: Boolean = false
+    var mousePosition: GridPosition? = null  // 当前鼠标悬停位置
+    var isLeftClick: Boolean = false
+    var isRightClick: Boolean = false
 
     fun init(farmArea: FarmArea, farmlandBoard: List<Int>, rowCount: Int, columnCount: Int) {
         this.farmArea = farmArea
@@ -60,7 +60,7 @@ class FarmAreaController(farmController: FarmController) {
      * 判断指定位置是否可用。
      * @return 如果位置可用且未超出范围，返回true；否则返回false
      */
-    internal fun isAvailable(pos: GridPosition): Boolean {
+    fun isAvailable(pos: GridPosition): Boolean {
         if (pos.x !in 0 until columnCount || pos.y !in 0 until rowCount) return false
         return (farmlandBoard[pos.x] and (1 shl (rowCount - 1 - pos.y))) != 0
     }
@@ -69,7 +69,7 @@ class FarmAreaController(farmController: FarmController) {
      * 判断指定位置是否已存在作物。
      * @return 如果位置存在作物，返回true；否则返回false
      */
-    internal fun isExist(pos: GridPosition) = cropsGrid.getOrNull(pos.y)?.getOrNull(pos.x) != null
+    fun isExist(pos: GridPosition) = cropsGrid.getOrNull(pos.y)?.getOrNull(pos.x) != null
 
     // endregion
 

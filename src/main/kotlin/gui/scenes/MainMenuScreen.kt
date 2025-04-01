@@ -4,7 +4,7 @@ import com.midnightcrowing.controllers.MainMenuController
 import com.midnightcrowing.gui.bases.Button
 import com.midnightcrowing.gui.bases.Screen
 import com.midnightcrowing.gui.bases.Window
-import com.midnightcrowing.gui.publics.ButtonLayout
+import com.midnightcrowing.gui.layouts.ButtonLayout
 import com.midnightcrowing.renderer.TextureRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
 

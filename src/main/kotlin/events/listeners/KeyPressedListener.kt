@@ -28,6 +28,7 @@ class KeyPressedListener(
 
     override fun triggerEvent(event: KeyEvent) {
         pressableWidgets
+            .filter { it.isVisible }
             .sortedByDescending { it.z }
             .forEach { widget ->
                 if (!widget.onKeyPress(KeyPressedEvent(event.key))) {

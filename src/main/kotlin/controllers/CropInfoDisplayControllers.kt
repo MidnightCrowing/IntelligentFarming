@@ -9,12 +9,12 @@ import com.midnightcrowing.model.item.ItemStack
 class CropInfoDisplayControllers() {
     lateinit var cropInfoDisplay: CropInfoDisplay
 
-    internal var crop: FarmCropBase? = null
-    internal var item: ItemStack = ItemStack.EMPTY
-    internal var itemWidget: FarmItems? = null
+    var crop: FarmCropBase? = null
+    var item: ItemStack = ItemStack.EMPTY
+    var itemWidget: FarmItems? = null
 
     // 使用 LinkedHashMap 缓存物品，最多缓存 10 个物品
-    internal val itemCache: LinkedHashMap<String, FarmItems?> =
+    val itemCache: LinkedHashMap<String, FarmItems?> =
         object : LinkedHashMap<String, FarmItems?>(10, 0.75f, true) {
             override fun removeEldestEntry(eldest: Map.Entry<String, FarmItems?>) = size > 10
         }

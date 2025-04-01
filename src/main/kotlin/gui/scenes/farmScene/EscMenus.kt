@@ -5,15 +5,14 @@ import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.gui.bases.Button
 import com.midnightcrowing.gui.bases.Widget
-import com.midnightcrowing.gui.publics.ButtonLayout
+import com.midnightcrowing.gui.layouts.ButtonLayout
 import com.midnightcrowing.renderer.RectangleRenderer
 import com.midnightcrowing.renderer.TextRenderer
 import com.midnightcrowing.utils.LayoutScaler
-import org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE
 import kotlin.reflect.KClass
 
-class EscMenus(parent: Widget, val controller: FarmController) : Widget(parent, z = 3) {
-    internal val buttonLayout = ButtonLayout(this, offsetY = -0.25, btnHeight = 0.065, btnGapX = 0.013, btnGapY = 0.015)
+class EscMenus(parent: Widget, val controller: FarmController, z: Int? = null) : Widget(parent, z) {
+    private val buttonLayout = ButtonLayout(this, offsetY = -0.25, btnHeight = 0.065, btnGapX = 0.013, btnGapY = 0.015)
     private val menuButtons = listOf(
         Button(buttonLayout).apply {
             text = "回到游戏"; textSpacing = 2.0; onClickCallback = { controller.backToGame() }
@@ -61,13 +60,6 @@ class EscMenus(parent: Widget, val controller: FarmController) : Widget(parent, 
     override fun onMouseMove(e: MouseMoveEvent) = super.onMouseMove(e)
 
     override fun onMouseScroll(e: MouseScrollEvent) = super.onMouseScroll(e)
-
-    override fun onKeyPress(e: KeyPressedEvent): Boolean {
-        if (e.key == GLFW_KEY_ESCAPE) {
-            toggleVisible()
-        }
-        return !isVisible
-    }
 
     fun place(width: Int, height: Int) {
         backgroundRender.x2 = width.toDouble()

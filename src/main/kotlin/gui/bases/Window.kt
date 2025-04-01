@@ -148,6 +148,9 @@ class Window(
     private val tickTextRenderer: TextRenderer = TextRenderer(nvg).apply {
         x = 5.0; y = 40.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
     }
+    private val mousePosRenderer: TextRenderer = TextRenderer(nvg).apply {
+        x = 5.0; y = 65.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
+    }
 
     fun shouldClose(): Boolean = glfwWindowShouldClose(handle)
 
@@ -173,6 +176,8 @@ class Window(
         // 渲染 FPS 和 Tick 信息
         fpsTextRenderer.render("FPS: ${fpsCounter.fps}")
         tickTextRenderer.render("Tick: ${GameTick.tick}")
+        val (mousePosX, mousePosY) = getCursorPos()
+        mousePosRenderer.render("Mouse: X: $mousePosX, Y: $mousePosY")
     }
 
     fun renderEnd() {}

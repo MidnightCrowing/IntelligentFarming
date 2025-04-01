@@ -9,11 +9,11 @@ import kotlin.random.Random
 
 abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
     abstract val growDuringTextures: Map<Int, Texture>
-    val growInitTexture: Texture get() = growDuringTextures.values.first()
-    val growFullTexture: Texture get() = growDuringTextures.values.last()
+    protected val growInitTexture: Texture get() = growDuringTextures.values.first()
+    protected val growFullTexture: Texture get() = growDuringTextures.values.last()
 
     var nowTextures: Texture? = null
-        internal set(value) {
+        set(value) {
             field = value
             renderer.texture = value
         }
@@ -27,7 +27,7 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
         }
     val isFullyGrown: Boolean get() = GameTick.tick - plantedTick >= growthDuration
 
-    fun setGrowthProgressTexture(progress: Double) {
+    private fun setGrowthProgressTexture(progress: Double) {
         val maxIndex = growDuringTextures.size - 1
         val progressIndex = (progress * growDuringTextures.size).toInt()
             .let { if (it == maxIndex && !isFullyGrown) it - 1 else it }
@@ -62,7 +62,7 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
      * @param mode 中心概率最大的点
      * @return 一个介于 min 和 max 之间的随机值。
      */
-    fun triangularRandom(min: Double, max: Double, mode: Double): Double {
+    protected fun triangularRandom(min: Double, max: Double, mode: Double): Double {
         val u = Random.Default.nextDouble()
         return if (u < (mode - min) / (max - min)) {
             min + sqrt(u * (max - min) * (mode - min))
@@ -81,7 +81,7 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
      * @param p 单次掉落概率
      * @return 掉落物数量
      */
-    internal fun generateDropCount(n: Int, p: Double): Int {
+    protected fun generateDropCount(n: Int, p: Double): Int {
         var dropCount = 0
         repeat(n) {
             if (Random.nextDouble() < p) {

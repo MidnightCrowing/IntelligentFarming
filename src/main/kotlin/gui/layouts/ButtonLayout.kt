@@ -1,4 +1,4 @@
-package com.midnightcrowing.gui.publics
+package com.midnightcrowing.gui.layouts
 
 import com.midnightcrowing.gui.bases.Button
 import com.midnightcrowing.gui.bases.Widget

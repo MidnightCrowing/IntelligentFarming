@@ -12,6 +12,7 @@ class FarmController(private val farmScreen: FarmScene) {
     val cropInfo: CropInfoDisplayControllers = CropInfoDisplayControllers()
     val farmArea: FarmAreaController = FarmAreaController(this)
     val inventory: InventoryController = InventoryController(this)
+    val trade: TradeController = TradeController(this)
     val hotBar: HotBarController = HotBarController(this)
 
     fun update() {
