@@ -3,6 +3,8 @@ package com.midnightcrowing.gui.bases
 import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.WindowResizeEvent
+import com.midnightcrowing.events.annotations.*
+import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.renderer.TextureRenderer
 import kotlin.reflect.KClass
@@ -43,7 +45,7 @@ open class Widget {
      * @param event 事件类型，可用于需要对特定事件进行处理的情况
      */
     open fun containsPoint(x: Double, y: Double, event: KClass<out Event>? = null): Boolean {
-        return x in widgetBounds.x1..widgetBounds.x2 && y in widgetBounds.y1..widgetBounds.y2
+        return widgetBounds.contains(Point(x, y))
     }
 
     fun setHidden(value: Boolean) {
@@ -91,10 +93,16 @@ open class Widget {
     /**
      * 清理资源
      */
-    open fun cleanup() {
+    fun cleanup() {
         renderer.cleanup()
         unregisterListener()
+        doCleanup() // 子类自定义清理
     }
+
+    /**
+     * 提供钩子方法，供子类添加清理逻辑
+     */
+    protected open fun doCleanup() {}
 
     // region 事件处理
 
@@ -135,56 +143,76 @@ open class Widget {
     /**
      * 窗口大小改变事件
      */
-    open fun onWindowResize(e: WindowResizeEvent) {}
+    @WindowResizeEventHandler
+    open fun onWindowResize(e: WindowResizeEvent) {
+    }
 
     /**
      * 鼠标按下事件
      */
-    open fun onMousePress(e: MousePressedEvent) {}
+    @MousePressEventHandler
+    open fun onMousePress(e: MousePressedEvent) {
+    }
 
     /**
      * 鼠标释放事件
      */
-    open fun onMouseRelease(e: MouseReleasedEvent) {}
+    @MouseReleaseEventHandler
+    open fun onMouseRelease(e: MouseReleasedEvent) {
+    }
 
     /**
      * 鼠标点击事件
      */
-    open fun onClick(e: MouseClickEvent) {}
+    @MouseClickEventHandler
+    open fun onClick(e: MouseClickEvent) {
+    }
 
     /**
      * 鼠标右键点击事件
      */
-    open fun onRightClick(e: MouseRightClickEvent) {}
+    @MouseRightClickEventHandler
+    open fun onRightClick(e: MouseRightClickEvent) {
+    }
 
     /**
      * 鼠标移入事件
      */
-    open fun onMouseEnter() {}
+    @MouseEnterEventHandler
+    open fun onMouseEnter() {
+    }
 
     /**
      * 鼠标移出事件
      */
-    open fun onMouseLeave() {}
+    @MouseLeaveEventHandler
+    open fun onMouseLeave() {
+    }
 
     /**
      * 鼠标移动事件
      */
-    open fun onMouseMove(e: MouseMoveEvent) {}
+    @MouseMoveEventHandler
+    open fun onMouseMove(e: MouseMoveEvent) {
+    }
 
     /**
      * 鼠标滚轮事件
      */
-    open fun onMouseScroll(e: MouseScrollEvent) {}
+    @MouseScrollEventHandler
+    open fun onMouseScroll(e: MouseScrollEvent) {
+    }
 
     /**
      * 按键按下事件
      */
+    @KeyPressEventHandler
     open fun onKeyPress(e: KeyPressedEvent): Boolean = true
 
     /**
      * 按键释放事件
      */
+    @KeyReleaseEventHandler
     open fun onKeyReleased(e: KeyReleasedEvent): Boolean = true
 
     // endregion

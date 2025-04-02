@@ -3,10 +3,11 @@ package com.midnightcrowing.events.listeners
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.WindowResizeEvent
 import com.midnightcrowing.events.EventManager
+import com.midnightcrowing.events.annotations.WindowResizeEventHandler
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
 import kotlin.reflect.KClass
-import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.memberFunctions
 
 class WindowResizeEventListener(
     val window: Window,
@@ -32,17 +33,19 @@ class WindowResizeEventListener(
         }
     }
 
-    override fun registerWidget(widget: Widget) {
-        // 使用反射检查 widget 是否覆盖了 onWindowResize 方法
-        val onResizeMethod = widget::class.declaredFunctions.find { it.name == "onWindowResize" }
+    override fun registerWidget(widget: Widget, event: KClass<out Event>) {
+        // 查找 onWindowResize 方法并判断注解是否存在
+        val hasWindowResizeAnnotation = widget::class.memberFunctions
+            .find { it.name == "onWindowResize" }
+            ?.annotations
+            ?.any { it is WindowResizeEventHandler } != true
 
-        // 判断该方法是否被实现（覆盖了父类的实现）
-        if (onResizeMethod != null && !onResizeMethod.isAbstract) {
+        if (hasWindowResizeAnnotation) {
             registerWidgets.add(widget)
         }
     }
 
-    override fun unregisterWidget(widget: Widget) {
+    override fun unregisterWidget(widget: Widget, event: KClass<out Event>) {
         registerWidgets.remove(widget)
     }
 }

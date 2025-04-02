@@ -4,12 +4,13 @@ import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.MouseButtonEvent
 import com.midnightcrowing.events.EventManager
+import com.midnightcrowing.events.annotations.MouseClickEventHandler
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT
 import org.lwjgl.glfw.GLFW.GLFW_PRESS
 import kotlin.reflect.KClass
-import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.memberFunctions
 
 
 class MouseClickListener(
@@ -34,17 +35,19 @@ class MouseClickListener(
         highestZWidget?.onClick(MouseClickEvent(x, y))
     }
 
-    override fun registerWidget(widget: Widget) {
-        // 使用反射检查 widget 是否覆盖了 onClick 方法
-        val onClickMethod = widget::class.declaredFunctions.find { it.name == "onClick" }
+    override fun registerWidget(widget: Widget, event: KClass<out Event>) {
+        // 查找 onClick 方法并判断注解是否存在
+        val hasClickableAnnotation = widget::class.memberFunctions
+            .find { it.name == "onClick" }
+            ?.annotations
+            ?.any { it is MouseClickEventHandler } != true
 
-        // 判断该方法是否被实现（覆盖了父类的实现）
-        if (onClickMethod != null && !onClickMethod.isAbstract) {
+        if (hasClickableAnnotation) {
             clickableWidgets.add(widget)
         }
     }
 
-    override fun unregisterWidget(widget: Widget) {
+    override fun unregisterWidget(widget: Widget, event: KClass<out Event>) {
         clickableWidgets.remove(widget)
     }
 }

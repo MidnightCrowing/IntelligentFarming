@@ -2,18 +2,30 @@ package com.midnightcrowing.gui.layouts
 
 import com.midnightcrowing.controllers.InventoryController
 import com.midnightcrowing.events.CustomEvent.*
-import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.publics.DraggingItem
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.model.item.ItemRegistry
+import com.midnightcrowing.model.item.ItemCache
 import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.renderer.RectangleRenderer
 import org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT
 
-
+/**
+ * InventoryLayout 类用于管理和渲染背包和快捷栏的布局。
+ *
+ * 需要父组件转发 `update()`、`onMousePress(e)`、`onMouseRelease(e)`、`onMouseMove(e)` 方法与事件。
+ *
+ * @param parent 父级 Widget
+ * @param controller InventoryController 控制器
+ * @param dragWidget DraggingItem 拖动的物品
+ * @param bagBarBounds 背包栏的屏幕边界
+ * @param quickBarBounds 快捷栏的屏幕边界
+ * @param gridGap 网格间距
+ * @param bagBarColNum 背包栏的列数
+ * @param bagBarRowNum 背包栏的行数
+ */
 class InventoryLayout(
     parent: Widget,
     private val controller: InventoryController,
@@ -66,16 +78,13 @@ class InventoryLayout(
     private var maskActiveBgBounds: ScreenBounds? = null
 
     // 物品缓存，避免每次渲染时重复创建
-    private val itemCache: MutableMap<String, FarmItems?> = mutableMapOf<String, FarmItems?>()
+    private val itemCache: ItemCache = ItemCache(this)
 
     // 输入状态
     private var mousePosition: Point = Point.EMPTY
     private var mouseIndex: Int? = null
-    private var mouseLeftPressed: Boolean = false
-    private var isShiftPressed: Boolean = false
-
-    // 工具函数，获取物品缓存
-    private fun getItemCache(id: String): FarmItems? = itemCache.getOrPut(id) { ItemRegistry.createItem(id, this) }
+    var mouseLeftPressed: Boolean = false
+    var isShiftPressed: Boolean = false
 
     private fun calculateBagBarGridBounds(gridX: Int, gridY: Int): ScreenBounds {
         val x1 = widgetBounds.x1 + gridX * (gridWidth + gridGap)
@@ -93,52 +102,15 @@ class InventoryLayout(
         return ScreenBounds(x1, y1, x2, y2)
     }
 
-    private fun handleItemDragAndDrop(index: Int) {
-        when (dragWidget.item.isEmpty() to controller.getItem(index).isEmpty()) {
-            // 背包格子是空的，拖动物品也是空的，直接返回
-            true to true -> return
-            // 背包格子有物品，拖动物品是空的，直接取出物品
-            true to false -> {
-                dragWidget.item = controller.popItem(index)
-                dragWidget.onParentMouseMove(getCursorPos())
-            }
-            // 背包格子是空的，拖动物品不为空，直接放入物品
-            false to true -> {
-                controller.setItem(index, dragWidget.item)
-                dragWidget.item = ItemStack.EMPTY
-            }
-            // 背包格子有物品，拖动物品也不为空
-            else -> {
-                val invItem = controller.popItem(index)
-                val dragItem = dragWidget.item
-
-                if (dragItem.id == invItem.id) {
-                    // id相同，叠加物品
-                    val count = dragItem.count + invItem.count
-                    invItem.count = minOf(count, 64)
-                    dragItem.count = maxOf(0, count - 64)
-                    dragWidget.item = if (dragItem.count == 0) ItemStack.EMPTY else dragItem
-                    controller.setItem(index, invItem)
-                    dragWidget.onParentMouseMove(getCursorPos())
-                } else {
-                    // id不同，交换物品
-                    controller.setItem(index, dragWidget.item)
-                    dragWidget.item = invItem
-                    dragWidget.onParentMouseMove(getCursorPos())
-                }
-            }
-        }
-    }
-
     fun update() {
-        if (mouseLeftPressed) {
-            mouseIndex?.let { it ->
-                val item = controller.popItem(it)
-                val target = if (it > 8) "hotbar" else "main"
+        if (isShiftPressed && mouseLeftPressed) {
+            mouseIndex?.let { index ->
+                val item = controller.popItem(index)
+                val target = if (index > 8) "hotbar" else "main"
                 val result = if (isShiftPressed) controller.addItem(item, target) else false
 
                 if (!result) {
-                    controller.setItem(it, item)
+                    controller.setItem(index, item)
                 }
             }
         }
@@ -146,10 +118,19 @@ class InventoryLayout(
 
     // region 事件处理
     override fun onClick(e: MouseClickEvent) {
-        if (!isShiftPressed) {
-            Point(e.x, e.y).index?.let { it ->
-                handleItemDragAndDrop(it)
-            }
+        if (isShiftPressed) {
+            return
+        }
+
+        Point(e.x, e.y).index?.let { index ->
+            val invItem = controller.popItem(index)
+            val dragItem = dragWidget.item
+
+            val (newInvItem, newDragItem) = controller.exchangeAndMergeItems(invItem, dragItem)
+            dragWidget.item = newDragItem
+            controller.setItem(index, newInvItem)
+
+            dragWidget.onParentMouseMove(getCursorPos())
         }
     }
 
@@ -223,6 +204,9 @@ class InventoryLayout(
         renderHoverItemName()              // 渲染高亮物品名称
     }
 
+    /**
+     * 渲染物品
+     */
     private fun renderItems() {
         // 渲染快捷栏物品
         controller.hotBarItems.forEachIndexed { index, item ->
@@ -234,17 +218,24 @@ class InventoryLayout(
         }
 
         // 清理不在items里的物品
-        itemCache.keys.retainAll(controller.items.map { it.id })
+        itemCache.cache.keys.retainAll(controller.items.map { it.id })
     }
 
+    /**
+     * 渲染单个物品
+     * @param stack 物品堆叠
+     * @param position 物品位置
+     */
     private fun renderItem(stack: ItemStack, position: ScreenBounds) {
-        if (!stack.isEmpty()) {
-            val item = getItemCache(stack.id)
-            item?.place(position)
-            item?.render(stack.count)
+        itemCache.getItemCache(stack.id)?.apply {
+            place(position)
+            render(stack.count)
         }
     }
 
+    /**
+     * 渲染鼠标悬停的物品名称
+     */
     private fun renderHoverItemName() {
         // 如果鼠标没有指向任何格子，直接返回
         val index = mouseIndex ?: return
@@ -259,7 +250,7 @@ class InventoryLayout(
         if (item.isEmpty()) return
 
         // 渲染物品名称
-        getItemCache(item.id)?.renderItemName(mousePosition.x + 30, mousePosition.y - 25)
+        itemCache.getItemCache(item.id)?.renderItemName(mousePosition.x + 30, mousePosition.y - 25)
     }
 
     // endregion

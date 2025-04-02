@@ -24,6 +24,7 @@ class InventoryController(farmController: FarmController) {
         setItem(4, ItemStack("minecraft:onion", 63))
         setItem(12, ItemStack("minecraft:onion", 2))
         setItem(16, ItemStack("minecraft:onion", 2))
+        setItem(17, ItemStack("minecraft:emerald", 20))
         setItem(5, ItemStack("minecraft:potato", 2))
         setItem(6, ItemStack("minecraft:tomato_seed", 2))
         setItem(7, ItemStack("minecraft:wheat_seed", 2))
@@ -91,6 +92,37 @@ class InventoryController(farmController: FarmController) {
         val temp = items[slot1]
         items[slot1] = items[slot2]
         items[slot2] = temp
+    }
+
+    /**
+     * 处理物品交换和叠加
+     * @param invItem 背包中的物品
+     * @param dragItem 拖动中的物品
+     * @return 处理后的物品对, 第一个是背包物品，第二个是拖动物品
+     */
+    fun exchangeAndMergeItems(invItem: ItemStack, dragItem: ItemStack): Pair<ItemStack, ItemStack> {
+        return when {
+            // 两者都为空，直接返回空
+            invItem.isEmpty() && dragItem.isEmpty() -> ItemStack.EMPTY to ItemStack.EMPTY
+
+            // 背包有物品，拖动为空，取出物品
+            !invItem.isEmpty() && dragItem.isEmpty() -> ItemStack.EMPTY to invItem
+
+            // 背包为空，拖动有物品，放入物品
+            invItem.isEmpty() && !dragItem.isEmpty() -> dragItem to ItemStack.EMPTY
+
+            // 都有物品，且 id 相同，叠加物品
+            invItem.id == dragItem.id -> {
+                // 叠加物品
+                val totalCount = invItem.count + dragItem.count
+                invItem.count = totalCount.coerceAtMost(64)
+                dragItem.count = (totalCount - 64).coerceAtLeast(0)
+                invItem to if (dragItem.count == 0) ItemStack.EMPTY else dragItem
+            }
+
+            // 都有物品，且 id 不同，交换物品
+            else -> dragItem to invItem
+        }
     }
 
     fun displayInventory() {

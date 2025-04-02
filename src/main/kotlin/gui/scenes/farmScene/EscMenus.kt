@@ -78,8 +78,5 @@ class EscMenus(parent: Widget, val controller: FarmController, z: Int? = null) :
         buttonLayout.render()
     }
 
-    override fun cleanup() {
-        super.cleanup()
-        buttonLayout.cleanup()
-    }
+    override fun doCleanup() = buttonLayout.cleanup()
 }

@@ -107,8 +107,7 @@ class CropInfoDisplay(
         valueText.render()
     }
 
-    override fun cleanup() {
-        super.cleanup()
+    override fun doCleanup() {
         controller.itemWidget?.cleanup()
     }
 }

@@ -108,8 +108,13 @@ enum class TextureResourcesEnum(private val resource: ResourcesEnum) {
     WHEAT_GROW_5(ResourcesEnum.WHEAT_GROW_5),
     WHEAT_GROW_6(ResourcesEnum.WHEAT_GROW_6),
     WHEAT_GROW_7(ResourcesEnum.WHEAT_GROW_7),
-    ;
     /* endregion */
+
+    /* region Other item */
+    EMERALD(ResourcesEnum.EMERALD),
+    /* endregion */
+
+    ;
 
     /** 延迟加载纹理，避免初始化时占用太多资源 */
     val texture: Texture by lazy { Texture(resource.inputStream!!).apply { load() } }

@@ -4,12 +4,13 @@ import com.midnightcrowing.events.CustomEvent.MouseRightClickEvent
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.MouseButtonEvent
 import com.midnightcrowing.events.EventManager
+import com.midnightcrowing.events.annotations.MouseRightClickEventHandler
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT
 import org.lwjgl.glfw.GLFW.GLFW_PRESS
 import kotlin.reflect.KClass
-import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.memberFunctions
 
 class MouseRightClickListener(
     window: Window,
@@ -33,17 +34,19 @@ class MouseRightClickListener(
         highestZWidget?.onRightClick(MouseRightClickEvent(x, y))
     }
 
-    override fun registerWidget(widget: Widget) {
-        // 使用反射检查 widget 是否覆盖了 onRightClick 方法
-        val onRightClickMethod = widget::class.declaredFunctions.find { it.name == "onRightClick" }
+    override fun registerWidget(widget: Widget, event: KClass<out Event>) {
+        // 查找 onRightClick 方法并判断注解是否存在
+        val hasRightClickAnnotation = widget::class.memberFunctions
+            .find { it.name == "onRightClick" }
+            ?.annotations
+            ?.any { it is MouseRightClickEventHandler } != true
 
-        // 判断该方法是否被实现（覆盖了父类的实现）
-        if (onRightClickMethod != null && !onRightClickMethod.isAbstract) {
+        if (hasRightClickAnnotation) {
             clickableWidgets.add(widget)
         }
     }
 
-    override fun unregisterWidget(widget: Widget) {
+    override fun unregisterWidget(widget: Widget, event: KClass<out Event>) {
         clickableWidgets.remove(widget)
     }
 }

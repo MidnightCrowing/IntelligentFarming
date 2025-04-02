@@ -326,4 +326,12 @@ sealed class FarmItems(parent: Widget, textureEnum: TextureResourcesEnum) : Widg
         override fun toString(): String = "小麦种子"
         override fun getCrop(farmArea: FarmArea): FarmCropBase? = Wheat(farmArea)
     }
+
+    class Emerald(parent: Widget) : FarmItems(parent, TextureResourcesEnum.EMERALD) {
+        companion object {
+            const val id: String = "minecraft:emerald"
+        }
+
+        override fun toString(): String = "绿宝石"
+    }
 }

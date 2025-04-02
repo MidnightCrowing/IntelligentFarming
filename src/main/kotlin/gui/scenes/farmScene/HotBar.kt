@@ -3,11 +3,10 @@ package com.midnightcrowing.gui.scenes.farmScene
 import com.midnightcrowing.controllers.HotBarController
 import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event
-import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.publics.ItemCheckBox
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.model.item.ItemRegistry
+import com.midnightcrowing.model.item.ItemCache
 import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.renderer.TextRenderer
 import com.midnightcrowing.renderer.TextureRenderer
@@ -50,7 +49,7 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
     val itemCheckBox: ItemCheckBox = ItemCheckBox(this)
 
     // 物品缓存，避免每次渲染时重复创建
-    private val itemCache: MutableMap<String, FarmItems?> = mutableMapOf<String, FarmItems?>()
+    val itemCache: ItemCache = ItemCache(this)
 
     // 上次呈现文本的时间
     private var textRenderTime: Long = GameTick.tick
@@ -63,8 +62,6 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
     init {
         controller.init(this)
     }
-
-    fun getItemCache(id: String): FarmItems? = itemCache.getOrPut(id) { ItemRegistry.createItem(id, this) }
 
     fun setItemLabelText(text: String?) {
         if (text == null) {
@@ -177,19 +174,16 @@ class HotBar(val screen: FarmScene, private val controller: HotBarController) : 
         controller.itemsList.forEachIndexed { index, item -> renderItem(item, getGridBounds(index)) }
 
         // 清理不在stack.id里的物品
-        itemCache.keys.retainAll(controller.itemsList.map { it.id })
+        itemCache.cache.keys.retainAll(controller.itemsList.map { it.id })
     }
 
     private fun renderItem(stack: ItemStack, position: ScreenBounds) {
         if (!stack.isEmpty()) {
-            val item = getItemCache(stack.id)
+            val item = itemCache.getItemCache(stack.id)
             item?.place(position)
             item?.render(stack.count)
         }
     }
 
-    override fun cleanup() {
-        super.cleanup()
-        itemCheckBox.cleanup()
-    }
+    override fun doCleanup() = itemCheckBox.cleanup()
 }

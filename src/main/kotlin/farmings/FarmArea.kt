@@ -202,8 +202,7 @@ class FarmArea(
     /**
      * 清理农田和作物资源。
      */
-    override fun cleanup() {
-        super.cleanup()
+    override fun doCleanup() {
         controller.activeSeedCrop?.cleanup()
         controller.cropsGrid.forEach { row -> row.forEach { it?.cleanup() } }
     }

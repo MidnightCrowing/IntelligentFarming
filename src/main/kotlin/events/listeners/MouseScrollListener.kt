@@ -4,10 +4,11 @@ import com.midnightcrowing.events.CustomEvent.MouseScrollEvent
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.ScrollEvent
 import com.midnightcrowing.events.EventManager
+import com.midnightcrowing.events.annotations.MouseScrollEventHandler
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
 import kotlin.reflect.KClass
-import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.memberFunctions
 
 class MouseScrollListener(
     val window: Window,
@@ -33,17 +34,19 @@ class MouseScrollListener(
         highestZWidget?.onMouseScroll(MouseScrollEvent(event.offsetX, event.offsetY))
     }
 
-    override fun registerWidget(widget: Widget) {
-        // 使用反射检查 widget 是否覆盖了 onMouseScroll 方法
-        val onScrollMethod = widget::class.declaredFunctions.find { it.name == "onMouseScroll" }
+    override fun registerWidget(widget: Widget, event: KClass<out Event>) {
+        // 查找 onMouseScroll 方法并判断注解是否存在
+        val hasMouseScrollAnnotation = widget::class.memberFunctions
+            .find { it.name == "onMouseScroll" }
+            ?.annotations
+            ?.any { it is MouseScrollEventHandler } != true
 
-        // 判断该方法是否被实现（覆盖了父类的实现）
-        if (onScrollMethod != null && !onScrollMethod.isAbstract) {
+        if (hasMouseScrollAnnotation) {
             scrollWidgets.add(widget)
         }
     }
 
-    override fun unregisterWidget(widget: Widget) {
+    override fun unregisterWidget(widget: Widget, event: KClass<out Event>) {
         scrollWidgets.remove(widget)
     }
 }

@@ -35,7 +35,7 @@ class MainMenuScreen(window: Window) : Screen(window) {
 
     override fun doRender() = buttonLayout.render()
 
-    override fun cleanup() {
+    override fun doCleanup() {
         bgRenderer.cleanup()
         buttonLayout.cleanup()
     }

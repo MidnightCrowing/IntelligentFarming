@@ -115,7 +115,7 @@ class EventManager(val window: Window) {
             .firstOrNull { it.getSendEventType().contains(eventType) }
 
         // 如果找到了相应的监听器，则注册组件的事件回调
-        listener?.registerWidget(widget)
+        listener?.registerWidget(widget, event = eventType)
     }
 
     // 取消注册组件的事件回调
@@ -126,6 +126,6 @@ class EventManager(val window: Window) {
             .firstOrNull { it.getSendEventType().contains(eventType) }
 
         // 如果找到了相应的监听器，则取消注册组件的事件回调
-        listener?.unregisterWidget(widget)
+        listener?.unregisterWidget(widget, event = eventType)
     }
 }

@@ -12,7 +12,7 @@ import com.midnightcrowing.utils.LayoutScaler.scaleValue
 /**
  * 按钮组件，实现基本的 UI 交互。
  */
-class Button(parent: Widget) : Widget(parent) {
+open class Button(parent: Widget) : Widget(parent) {
     enum class ButtonTextures {
         // 按钮的不同状态
         DEFAULT, HOVER, DISABLED
@@ -88,16 +88,12 @@ class Button(parent: Widget) : Widget(parent) {
     /**
      * 处理鼠标进入事件，切换到“悬停”状态。
      */
-    override fun onMouseEnter() {
-        setTexture(ButtonTextures.HOVER)
-    }
+    override fun onMouseEnter() = setTexture(ButtonTextures.HOVER)
 
     /**
      * 处理鼠标离开事件，恢复为默认状态。
      */
-    override fun onMouseLeave() {
-        setTexture(ButtonTextures.DEFAULT)
-    }
+    override fun onMouseLeave() = setTexture(ButtonTextures.DEFAULT)
 
     var onClickCallback: ((e: MouseClickEvent) -> Unit)? = null
 

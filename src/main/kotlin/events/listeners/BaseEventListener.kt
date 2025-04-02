@@ -3,7 +3,6 @@ package com.midnightcrowing.events.listeners
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.gui.bases.Widget
-import com.midnightcrowing.gui.bases.Window
 import kotlin.reflect.KClass
 
 // T 是接收事件类型
@@ -25,10 +24,8 @@ abstract class BaseEventListener<T : Event>(eventManager: EventManager) {
     abstract fun triggerEvent(event: T)
 
     // 注册组件
-    abstract fun registerWidget(widget: Widget)
-
-    open fun registerWindow(window: Window) {}
+    abstract fun registerWidget(widget: Widget, event: KClass<out Event>)
 
     // 取消注册组件
-    abstract fun unregisterWidget(widget: Widget)
+    abstract fun unregisterWidget(widget: Widget, event: KClass<out Event>)
 }

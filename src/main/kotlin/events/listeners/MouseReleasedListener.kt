@@ -4,11 +4,12 @@ import com.midnightcrowing.events.CustomEvent.MouseReleasedEvent
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.MouseButtonEvent
 import com.midnightcrowing.events.EventManager
+import com.midnightcrowing.events.annotations.MouseReleaseEventHandler
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
 import org.lwjgl.glfw.GLFW.GLFW_RELEASE
 import kotlin.reflect.KClass
-import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.memberFunctions
 
 
 class MouseReleasedListener(
@@ -33,17 +34,19 @@ class MouseReleasedListener(
         highestZWidget?.onMouseRelease(MouseReleasedEvent(x, y, event.button))
     }
 
-    override fun registerWidget(widget: Widget) {
-        // 使用反射检查 widget 是否覆盖了 onMouseRelease 方法
-        val onMouseReleaseMethod = widget::class.declaredFunctions.find { it.name == "onMouseRelease" }
+    override fun registerWidget(widget: Widget, event: KClass<out Event>) {
+        // 查找 onMouseRelease 方法并判断注解是否存在
+        val hasMouseReleaseAnnotation = widget::class.memberFunctions
+            .find { it.name == "onMouseRelease" }
+            ?.annotations
+            ?.any { it is MouseReleaseEventHandler } != true
 
-        // 判断该方法是否被实现（覆盖了父类的实现）
-        if (onMouseReleaseMethod != null && !onMouseReleaseMethod.isAbstract) {
+        if (hasMouseReleaseAnnotation) {
             releaseableWidgets.add(widget)
         }
     }
 
-    override fun unregisterWidget(widget: Widget) {
+    override fun unregisterWidget(widget: Widget, event: KClass<out Event>) {
         releaseableWidgets.remove(widget)
     }
 }

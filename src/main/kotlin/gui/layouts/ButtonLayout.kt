@@ -49,5 +49,5 @@ class ButtonLayout(
 
     override fun render() = buttons.values.flatten().forEach { it.render() }
 
-    override fun cleanup() = buttons.values.flatten().forEach { it.cleanup() }
+    override fun doCleanup() = buttons.values.flatten().forEach { it.cleanup() }
 }

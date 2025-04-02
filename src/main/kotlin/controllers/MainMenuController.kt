@@ -27,6 +27,7 @@ class MainMenuController(private val window: Window) {
         ItemRegistry.register(FarmItems.TomatoSeedItem.id) { parent -> FarmItems.TomatoSeedItem(parent) }
         ItemRegistry.register(FarmItems.WheatItem.id) { parent -> FarmItems.WheatItem(parent) }
         ItemRegistry.register(FarmItems.WheatSeedItem.id) { parent -> FarmItems.WheatSeedItem(parent) }
+        ItemRegistry.register(FarmItems.Emerald.id) { parent -> FarmItems.Emerald(parent) }
     }
 
     fun startGame() {

@@ -111,8 +111,14 @@ enum class ResourcesEnum(private val resourcePath: String) {
     WHEAT_GROW_4("/assets/farming/wheat/wheat4.png"),
     WHEAT_GROW_5("/assets/farming/wheat/wheat5.png"),
     WHEAT_GROW_6("/assets/farming/wheat/wheat6.png"),
-    WHEAT_GROW_7("/assets/farming/wheat/wheat7.png");
+    WHEAT_GROW_7("/assets/farming/wheat/wheat7.png"),
     /* endregion */
+
+    /* region Other item */
+    EMERALD("/assets/item/emerald.png"),
+    /* endregion */
+
+    ;
 
     val inputStream: InputStream?
         get() = this::class.java.getResourceAsStream(resourcePath)

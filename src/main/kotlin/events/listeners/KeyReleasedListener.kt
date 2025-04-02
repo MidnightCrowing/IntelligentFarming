@@ -4,11 +4,12 @@ import com.midnightcrowing.events.CustomEvent.KeyReleasedEvent
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.KeyEvent
 import com.midnightcrowing.events.EventManager
+import com.midnightcrowing.events.annotations.KeyReleaseEventHandler
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
 import org.lwjgl.glfw.GLFW.GLFW_RELEASE
 import kotlin.reflect.KClass
-import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.memberFunctions
 
 class KeyReleasedListener(
     val window: Window,
@@ -37,17 +38,19 @@ class KeyReleasedListener(
             }
     }
 
-    override fun registerWidget(widget: Widget) {
-        // Use reflection to check if the widget overrides the onKeyReleased method
-        val onKeyReleasedMethod = widget::class.declaredFunctions.find { it.name == "onKeyReleased" }
+    override fun registerWidget(widget: Widget, event: KClass<out Event>) {
+        // 查找 onKeyReleased 方法并判断注解是否存在
+        val hasKeyReleasedAnnotation = widget::class.memberFunctions
+            .find { it.name == "onKeyReleased" }
+            ?.annotations
+            ?.any { it is KeyReleaseEventHandler } != true
 
-        // Only register if the Widget overrides the onKeyReleased method
-        if (onKeyReleasedMethod != null && !onKeyReleasedMethod.isAbstract) {
+        if (hasKeyReleasedAnnotation) {
             releasedableWidgets.add(widget)
         }
     }
 
-    override fun unregisterWidget(widget: Widget) {
+    override fun unregisterWidget(widget: Widget, event: KClass<out Event>) {
         releasedableWidgets.remove(widget)
     }
 }

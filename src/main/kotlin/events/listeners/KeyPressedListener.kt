@@ -4,11 +4,12 @@ import com.midnightcrowing.events.CustomEvent.KeyPressedEvent
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.KeyEvent
 import com.midnightcrowing.events.EventManager
+import com.midnightcrowing.events.annotations.KeyPressEventHandler
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
 import org.lwjgl.glfw.GLFW.GLFW_PRESS
 import kotlin.reflect.KClass
-import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.memberFunctions
 
 class KeyPressedListener(
     val window: Window,
@@ -37,17 +38,19 @@ class KeyPressedListener(
             }
     }
 
-    override fun registerWidget(widget: Widget) {
-        // Use reflection to check if the widget overrides the onKeyPress method
-        val onKeyPressMethod = widget::class.declaredFunctions.find { it.name == "onKeyPress" }
+    override fun registerWidget(widget: Widget, event: KClass<out Event>) {
+        // 查找 onKeyPress 方法并判断注解是否存在
+        val hasKeyPressAnnotation = widget::class.memberFunctions
+            .find { it.name == "onKeyPress" }
+            ?.annotations
+            ?.any { it is KeyPressEventHandler } != true
 
-        // Only register if the Widget overrides the onKeyPress method
-        if (onKeyPressMethod != null && !onKeyPressMethod.isAbstract) {
+        if (hasKeyPressAnnotation) {
             pressableWidgets.add(widget)
         }
     }
 
-    override fun unregisterWidget(widget: Widget) {
+    override fun unregisterWidget(widget: Widget, event: KClass<out Event>) {
         pressableWidgets.remove(widget)
     }
 }

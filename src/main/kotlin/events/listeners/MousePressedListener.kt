@@ -4,11 +4,12 @@ import com.midnightcrowing.events.CustomEvent.MousePressedEvent
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.MouseButtonEvent
 import com.midnightcrowing.events.EventManager
+import com.midnightcrowing.events.annotations.MousePressEventHandler
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
 import org.lwjgl.glfw.GLFW.GLFW_PRESS
 import kotlin.reflect.KClass
-import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.memberFunctions
 
 
 class MousePressedListener(
@@ -33,17 +34,19 @@ class MousePressedListener(
         highestZWidget?.onMousePress(MousePressedEvent(x, y, event.button))
     }
 
-    override fun registerWidget(widget: Widget) {
-        // Use reflection to check if the widget overrides the onMousePress method
-        val onMousePressMethod = widget::class.declaredFunctions.find { it.name == "onMousePress" }
+    override fun registerWidget(widget: Widget, event: KClass<out Event>) {
+        // 查找 onMousePress 方法并判断注解是否存在
+        val hasMousePressAnnotation = widget::class.memberFunctions
+            .find { it.name == "onMousePress" }
+            ?.annotations
+            ?.any { it is MousePressEventHandler } != true
 
-        // Only register if the Widget overrides the onMousePress method
-        if (onMousePressMethod != null && !onMousePressMethod.isAbstract) {
+        if (hasMousePressAnnotation) {
             pressableWidgets.add(widget)
         }
     }
 
-    override fun unregisterWidget(widget: Widget) {
+    override fun unregisterWidget(widget: Widget, event: KClass<out Event>) {
         pressableWidgets.remove(widget)
     }
 }

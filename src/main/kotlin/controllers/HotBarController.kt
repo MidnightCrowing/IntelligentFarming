@@ -23,7 +23,7 @@ class HotBarController(farmController: FarmController) {
                 hotBar.itemCheckBox.moveTo(hotBar.getGridBoundsWithCheckbox(value))
             }
 
-            val item = hotBar.getItemCache(itemsList[value].id)
+            val item = hotBar.itemCache.getItemCache(itemsList[value].id)
             hotBar.setItemLabelText(item?.toString())
             this@HotBarController.farmController.activeSeedCrop = item?.getCrop(farmArea)
 

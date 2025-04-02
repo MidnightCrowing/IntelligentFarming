@@ -23,8 +23,8 @@ class Inventory(
         private const val SCALE_BASE = 700.0
         const val OFFSET_Y = 40 // 向下偏移的距离
 
-        private val BASE_BAG_BAR_BOUNDS = ScreenBounds(16.0, 34.0, 335.0, 137.0)
-        private val BASE_QUICK_BAR_BOUNDS = ScreenBounds(16.0, 150.0, 335.0, 181.0)
+        private val BASE_BAG_BAR_BOUNDS = ScreenBounds(16.0, 34.0, 335.5, 137.5)
+        private val BASE_QUICK_BAR_BOUNDS = ScreenBounds(16.0, 150.0, 335.5, 181.5)
         private const val BASE_GRID_GAP = 4
         const val BAG_BAR_COL_NUM = 9 // 列数
         const val BAG_BAR_ROW_NUM = 3 // 行数
@@ -62,24 +62,16 @@ class Inventory(
 
     override fun containsPoint(x: Double, y: Double, event: KClass<out Event>?): Boolean = true
 
-    override fun onClick(e: MouseClickEvent) = super.onClick(e)
-
-    override fun onRightClick(e: MouseRightClickEvent) = super.onRightClick(e)
-
+    // region 事件处理
     override fun onMousePress(e: MousePressedEvent) = invLayout.onMousePress(e)
 
     override fun onMouseRelease(e: MouseReleasedEvent) = invLayout.onMouseRelease(e)
 
     override fun onMouseMove(e: MouseMoveEvent) = invLayout.onMouseMove(e)
 
-    override fun onMouseLeave() = super.onMouseLeave()
+    // endregion
 
-    override fun onMouseScroll(e: MouseScrollEvent) = super.onMouseScroll(e)
-
-    override fun onKeyPress(e: KeyPressedEvent): Boolean = true
-
-    override fun onKeyReleased(e: KeyReleasedEvent): Boolean = true
-
+    // region 位置 & 渲染 & 清理
     override fun place(x1: Double, y1: Double, x2: Double, y2: Double) {
         super.place(x1, y1, x2, y2)
         backgroundRender.x2 = window.width.toDouble()
@@ -97,8 +89,7 @@ class Inventory(
         dragWidget.render()        // 渲染拖动物品组件
     }
 
-    override fun cleanup() {
-        super.cleanup()
-        dragWidget.cleanup()
-    }
+    override fun doCleanup() = dragWidget.cleanup()
+
+    // endregion
 }

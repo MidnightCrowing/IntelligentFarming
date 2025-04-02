@@ -4,10 +4,13 @@ import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.events.Event.CursorMoveEvent
 import com.midnightcrowing.events.EventManager
+import com.midnightcrowing.events.annotations.MouseEnterEventHandler
+import com.midnightcrowing.events.annotations.MouseLeaveEventHandler
+import com.midnightcrowing.events.annotations.MouseMoveEventHandler
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
 import kotlin.reflect.KClass
-import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.memberFunctions
 
 
 class MouseMoveListener(
@@ -39,47 +42,82 @@ class MouseMoveListener(
 
     private fun handleMouseEnterAndLeave(mouseX: Double, mouseY: Double) {
         // 处理 MouseEnterEvent
-        enterListeners.forEach { (widget, hasEntered) ->
-            val isInside = widget.containsPoint(mouseX, mouseY, event = MouseEnterEvent::class)
-            if (isInside && !hasEntered) {
-                widget.onMouseEnter()
-                enterListeners[widget] = true
-            } else if (!isInside && hasEntered) {
-                enterListeners[widget] = false
+        enterListeners
+            .filter { it.key.isVisible }
+            .forEach { (widget, hasEntered) ->
+                val isInside = widget.containsPoint(mouseX, mouseY, event = MouseEnterEvent::class)
+                if (isInside && !hasEntered) {
+                    widget.onMouseEnter()
+                    enterListeners[widget] = true
+                } else if (!isInside && hasEntered) {
+                    enterListeners[widget] = false
+                }
             }
-        }
 
         // 处理 MouseLeaveEvent
-        leaveListeners.forEach { (widget, wasInside) ->
-            val isInside = widget.containsPoint(mouseX, mouseY, event = MouseLeaveEvent::class)
-            if (!isInside && wasInside) {
-                widget.onMouseLeave()
-                leaveListeners[widget] = false
-            } else if (isInside && !wasInside) {
-                leaveListeners[widget] = true
+        leaveListeners
+            .filter { it.key.isVisible }
+            .forEach { (widget, wasInside) ->
+                val isVisible = widget.isVisible
+                val isInside = widget.containsPoint(mouseX, mouseY, event = MouseLeaveEvent::class)
+                if (isVisible && !isInside && wasInside) {
+                    widget.onMouseLeave()
+                    leaveListeners[widget] = false
+                } else if (isInside && !wasInside) {
+                    leaveListeners[widget] = true
+                }
             }
+    }
+
+    override fun registerWidget(widget: Widget, event: KClass<out Event>) {
+        when (event) {
+            MouseEnterEvent::class -> registerEnterListener(widget)
+            MouseLeaveEvent::class -> registerLeaveListener(widget)
+            MouseMoveEvent::class -> registerMoveListener(widget)
         }
     }
 
-    override fun registerWidget(widget: Widget) {
-        // 使用一个辅助函数来减少反射操作
-        checkAndRegisterMethod(widget, "onMouseEnter")?.let { enterListeners[widget] = false }
-        checkAndRegisterMethod(widget, "onMouseLeave")?.let { leaveListeners[widget] = false }
-        checkAndRegisterMethod(widget, "onMouseMove")?.let { moveListeners.add(widget) }
-    }
+    private fun registerEnterListener(widget: Widget) {
+        // 查找 onMouseEnter 方法并判断注解是否存在
+        val hasMouseEnterAnnotation = widget::class.memberFunctions
+            .find { it.name == "onMouseEnter" }
+            ?.annotations
+            ?.any { it is MouseEnterEventHandler } != true
 
-    private fun checkAndRegisterMethod(widget: Widget, methodName: String): (() -> Unit)? {
-        val method = widget::class.declaredFunctions.find { it.name == methodName }
-        return if (method != null && !method.isAbstract) {
-            { method.call(widget) }
-        } else {
-            null
+        if (hasMouseEnterAnnotation) {
+            enterListeners[widget] = false
         }
     }
 
-    override fun unregisterWidget(widget: Widget) {
-        enterListeners.remove(widget)
-        leaveListeners.remove(widget)
-        moveListeners.remove(widget)
+    private fun registerLeaveListener(widget: Widget) {
+        // 查找 onMouseLeave 方法并判断注解是否存在
+        val hasMouseLeaveAnnotation = widget::class.memberFunctions
+            .find { it.name == "onMouseLeave" }
+            ?.annotations
+            ?.any { it is MouseLeaveEventHandler } != true
+
+        if (hasMouseLeaveAnnotation) {
+            leaveListeners[widget] = false
+        }
+    }
+
+    private fun registerMoveListener(widget: Widget) {
+        // 查找 onMouseMove 方法并判断注解是否存在
+        val hasMouseMoveAnnotation = widget::class.memberFunctions
+            .find { it.name == "onMouseMove" }
+            ?.annotations
+            ?.any { it is MouseMoveEventHandler } != true
+
+        if (hasMouseMoveAnnotation) {
+            moveListeners.add(widget)
+        }
+    }
+
+    override fun unregisterWidget(widget: Widget, event: KClass<out Event>) {
+        when (event) {
+            MouseEnterEvent::class -> enterListeners.remove(widget)
+            MouseLeaveEvent::class -> leaveListeners.remove(widget)
+            MouseMoveEvent::class -> moveListeners.remove(widget)
+        }
     }
 }

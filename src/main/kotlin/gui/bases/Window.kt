@@ -54,9 +54,9 @@ class Window(
     var screen: Screen = Screen(this)
         set(value) {
             val oldScreen = field
+            oldScreen.cleanup()
             field = value
             field.place(width, height)
-            oldScreen.cleanup()
         }
 
     init {

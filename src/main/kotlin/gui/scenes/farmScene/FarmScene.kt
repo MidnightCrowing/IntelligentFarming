@@ -98,6 +98,7 @@ class FarmScene(window: Window) : Screen(window) {
         controller.update()
         farmArea.update()
         inventory.update()
+        trade.update()
     }
 
     override fun onKeyPress(e: KeyPressedEvent): Boolean {
@@ -166,8 +167,7 @@ class FarmScene(window: Window) : Screen(window) {
         escMenus.render()
     }
 
-    override fun cleanup() {
-        super.cleanup()
+    override fun doCleanup() {
         bgRenderer.cleanup()
         farmArea.cleanup()
         cropInfoDisplay.cleanup()
