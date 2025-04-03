@@ -39,6 +39,11 @@ open class Widget {
     }
 
     /**
+     * 获取父组件的宽度
+     */
+    val parentWidth: Double get() = parent?.widgetBounds?.width ?: window.width.toDouble()
+
+    /**
      * 判断给定坐标是否在组件范围内
      * @param x X 坐标
      * @param y Y 坐标
@@ -74,6 +79,8 @@ open class Widget {
     open fun place(bounds: ScreenBounds) {
         widgetBounds = bounds
     }
+
+    open fun update() {}
 
     /**
      * 渲染组件

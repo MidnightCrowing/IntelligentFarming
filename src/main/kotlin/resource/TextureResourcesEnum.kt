@@ -111,7 +111,9 @@ enum class TextureResourcesEnum(private val resource: ResourcesEnum) {
     /* endregion */
 
     /* region Other item */
+    CHEST(ResourcesEnum.CHEST),
     EMERALD(ResourcesEnum.EMERALD),
+    VILLAGER_SPAWN_EGG(ResourcesEnum.VILLAGER_SPAWN_EGG),
     /* endregion */
 
     ;

@@ -16,6 +16,7 @@ import org.lwjgl.opengl.GL46.*
 import org.lwjgl.system.MemoryUtil
 import java.io.File
 import java.io.IOException
+import javax.swing.JOptionPane
 
 /**
  * 窗口管理类，负责初始化和管理 GLFW 窗口。
@@ -118,7 +119,7 @@ class Window(
 
     private fun createFont() {
         val fontPath = ResourcesEnum.FONT_DEFAULT.inputStream ?: run {
-            println("字体资源加载失败")
+            JOptionPane.showMessageDialog(null, "字体资源加载失败", "错误", JOptionPane.ERROR_MESSAGE)
             return
         }
 
@@ -130,14 +131,17 @@ class Window(
             try {
                 fontFile.writeBytes(byteArray)
             } catch (e: IOException) {
-                println("写入临时文件失败: ${e.message}")
+                JOptionPane.showMessageDialog(null, "写入临时文件失败: ${e.message}", "错误", JOptionPane.ERROR_MESSAGE)
                 return
             }
         }
 
-        val fontId = nvgCreateFont(nvg, "unifont", fontFile.absolutePath)
+        // 转换路径为 UTF-8（确保中文路径不出问题）
+        val fontPathUtf8 = fontFile.absolutePath.toByteArray(Charsets.UTF_8).toString(Charsets.UTF_8)
+
+        val fontId = nvgCreateFont(nvg, "unifont", fontPathUtf8)
         if (fontId == -1) {
-            println("字体加载失败")
+            JOptionPane.showMessageDialog(null, "字体加载失败 path: $fontPathUtf8", "错误", JOptionPane.ERROR_MESSAGE)
         }
     }
 

@@ -141,7 +141,7 @@ class FarmArea(
     /**
      * 更新农田和作物的位置。
      */
-    fun update() {
+    override fun update() {
         controller.cropsGrid.forEach { row -> row.forEach { it?.update() } }
     }
 

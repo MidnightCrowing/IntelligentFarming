@@ -93,8 +93,12 @@ sealed class FarmItems(parent: Widget, textureEnum: TextureResourcesEnum) : Widg
 
     fun render(num: Int) {
         super.render()
-        if (num > 1) {
+        if (num != 1) {
             numTextRenderer.render(num.toString())
+        }
+        if (num <= 0) {
+            System.err.println("$this 警告: num值: $num 不在预期范围内")
+            numTextRenderer.textColor = doubleArrayOf(1.0, 0.0, 0.0, 1.0)
         }
     }
 
@@ -333,5 +337,13 @@ sealed class FarmItems(parent: Widget, textureEnum: TextureResourcesEnum) : Widg
         }
 
         override fun toString(): String = "绿宝石"
+    }
+
+    class VillagerSpawnEgg(parent: Widget) : FarmItems(parent, TextureResourcesEnum.VILLAGER_SPAWN_EGG) {
+        companion object {
+            const val id: String = "minecraft:villager_spawn_egg"
+        }
+
+        override fun toString(): String = "村民刷怪蛋"
     }
 }

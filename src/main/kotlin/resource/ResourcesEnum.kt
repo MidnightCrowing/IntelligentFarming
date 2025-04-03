@@ -115,7 +115,9 @@ enum class ResourcesEnum(private val resourcePath: String) {
     /* endregion */
 
     /* region Other item */
+    CHEST("/assets/item/chest.png"),
     EMERALD("/assets/item/emerald.png"),
+    VILLAGER_SPAWN_EGG("/assets/item/villager_spawn_egg.png"),
     /* endregion */
 
     ;

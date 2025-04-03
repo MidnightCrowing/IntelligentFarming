@@ -31,6 +31,6 @@ class DraggingItem(parent: Widget) : Widget(parent) {
         if (!isVisible || item.isEmpty()) {
             return
         }
-        itemWidget!!.render(item.count)
+        itemWidget?.render(item.count)
     }
 }

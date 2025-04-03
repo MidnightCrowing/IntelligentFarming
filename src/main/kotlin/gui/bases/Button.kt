@@ -33,6 +33,12 @@ open class Button(parent: Widget) : Widget(parent) {
     // 文字渲染器
     private val textRenderer = TextRenderer(window.nvg)
 
+    // 是否悬停
+    var isHover: Boolean = false
+
+    // 是否被选中
+    var isSelect: Boolean = false
+
     var text: String = ""
         set(value) {
             field = value
@@ -74,7 +80,7 @@ open class Button(parent: Widget) : Widget(parent) {
         textRenderer.x = betweenPoint.x
         textRenderer.y = betweenPoint.y
 
-        nineSliceRenderer?.let { it.vertexBorder = scaleValue(window.width, 10.0, 15.0).toFloat() }
+        nineSliceRenderer?.let { it.vertexBorder = scaleValue(parentWidth, 10.0, 15.0).toFloat() }
     }
 
     /**
@@ -88,12 +94,20 @@ open class Button(parent: Widget) : Widget(parent) {
     /**
      * 处理鼠标进入事件，切换到“悬停”状态。
      */
-    override fun onMouseEnter() = setTexture(ButtonTextures.HOVER)
+    override fun onMouseEnter() {
+        isHover = true
+    }
 
     /**
      * 处理鼠标离开事件，恢复为默认状态。
      */
-    override fun onMouseLeave() = setTexture(ButtonTextures.DEFAULT)
+    override fun onMouseLeave() {
+        isHover = false
+    }
+
+    override fun update() {
+        setTexture(if (isHover || isSelect) ButtonTextures.HOVER else ButtonTextures.DEFAULT)
+    }
 
     var onClickCallback: ((e: MouseClickEvent) -> Unit)? = null
 

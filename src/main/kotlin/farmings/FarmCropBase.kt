@@ -46,7 +46,7 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Widget(farmArea) {
         plantedTick = GameTick.tick
     }
 
-    open fun update() {
+    override fun update() {
         if (isFullyGrown) {
             nowTextures = growFullTexture
         } else {

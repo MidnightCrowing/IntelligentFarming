@@ -58,7 +58,7 @@ class Inventory(
         bagBarRowNum = BAG_BAR_ROW_NUM,
     )
 
-    fun update() = invLayout.update()
+    override fun update() = invLayout.update()
 
     override fun containsPoint(x: Double, y: Double, event: KClass<out Event>?): Boolean = true
 

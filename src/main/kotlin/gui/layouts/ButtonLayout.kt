@@ -25,6 +25,8 @@ class ButtonLayout(
     }
 
     fun place(windowWidth: Int, windowHeight: Int) {
+        super.place(0.0, 0.0, windowWidth.toDouble(), windowHeight.toDouble())
+
         val btnWidth = windowWidth * width
         val btnHeight = windowHeight * btnHeight
         val btnStartX = (windowWidth - btnWidth) / 2
@@ -43,9 +45,11 @@ class ButtonLayout(
         }
 
         // 调整按钮字体大小
-        val fontSize: Double = LayoutScaler.scaleValue(windowWidth)
+        val fontSize: Double = LayoutScaler.scaleValue(parentWidth)
         buttons.values.flatten().forEach { it.fontSize = fontSize }
     }
+
+    override fun update() = buttons.values.flatten().forEach { it.update() }
 
     override fun render() = buttons.values.flatten().forEach { it.render() }
 

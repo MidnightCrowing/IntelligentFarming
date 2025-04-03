@@ -59,9 +59,9 @@ class CropInfoDisplay(
         controller.itemWidget?.place(itemBounds)
 
         // 计算字体大小和文本偏移
-        val titleSize = scaleValue(window.width, 21.0, 31.0)
-        val descSize = scaleValue(window.width, 20.0, 30.0)
-        val valueOffsetX = scaleValue(window.width, 100.0, 150.0)
+        val titleSize = scaleValue(parentWidth, 21.0, 31.0)
+        val descSize = scaleValue(parentWidth, 20.0, 30.0)
+        val valueOffsetX = scaleValue(parentWidth, 100.0, 150.0)
 
         // 设置标题文本
         titleText.apply {
@@ -85,7 +85,7 @@ class CropInfoDisplay(
         }
     }
 
-    fun update() {
+    override fun update() {
         controller.updateItem(controller.crop?.getItemStack())
         valueText.apply {
             text =

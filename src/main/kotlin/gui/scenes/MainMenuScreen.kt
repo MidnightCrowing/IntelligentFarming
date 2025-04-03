@@ -31,7 +31,12 @@ class MainMenuScreen(window: Window) : Screen(window) {
         buttonLayout.addButton(2, buttons[2])
     }
 
-    override fun place(width: Int, height: Int) = buttonLayout.place(width, height)
+    override fun place(width: Int, height: Int) {
+        super.place(width, height)
+        buttonLayout.place(width, height)
+    }
+
+    override fun update() = buttonLayout.update()
 
     override fun doRender() = buttonLayout.render()
 

@@ -62,15 +62,19 @@ class EscMenus(parent: Widget, val controller: FarmController, z: Int? = null) :
     override fun onMouseScroll(e: MouseScrollEvent) = super.onMouseScroll(e)
 
     fun place(width: Int, height: Int) {
+        super.place(0.0, 0.0, width.toDouble(), height.toDouble())
+
         backgroundRender.x2 = width.toDouble()
         backgroundRender.y2 = height.toDouble()
 
-        titleRenderer.fontSize = LayoutScaler.scaleValue(width)
+        titleRenderer.fontSize = LayoutScaler.scaleValue(parentWidth)
         titleRenderer.x = width / 2.0
         titleRenderer.y = height * 0.25
 
         buttonLayout.place(width, height)
     }
+
+    override fun update() = buttonLayout.update()
 
     override fun doRender() {
         backgroundRender.render()

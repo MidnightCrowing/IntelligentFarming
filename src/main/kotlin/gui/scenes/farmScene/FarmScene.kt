@@ -9,12 +9,15 @@ import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
 import com.midnightcrowing.gui.publics.CropInfoDisplay
 import com.midnightcrowing.model.Point
+import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.renderer.TextureRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
 import org.lwjgl.glfw.GLFW.*
 
+typealias FloatingWidget = List<Widget>
+
 class FarmScene(window: Window) : Screen(window) {
-    private companion object {
+    companion object {
         // Farm area
         const val FARM_BG_WIDTH: Double = 5397.0
         const val FARM_BG_HEIGHT: Double = 3036.0
@@ -35,17 +38,22 @@ class FarmScene(window: Window) : Screen(window) {
     override val bgRenderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.FARM_BACKGROUND.texture)
 
     // controller
-    val controller: FarmController = FarmController(this)
+    private val controller: FarmController = FarmController(this)
 
     // UI
-    val cropInfoDisplay: CropInfoDisplay = CropInfoDisplay(this, controller.cropInfo)
-    val farmArea: FarmArea = FarmArea(this, controller.farmArea, farmlandBoard = FARMLAND_BOARD)
-    val inventory: Inventory = Inventory(this, controller.inventory, z = 4)
-    val hotBar: HotBar = HotBar(this, controller.hotBar)
-    val trade: Trade = Trade(this, controller.trade, z = 4)
     val escMenus: EscMenus = EscMenus(this, controller, z = 3)
+    private val cropInfoDisplay: CropInfoDisplay = CropInfoDisplay(this, controller.cropInfo)
+    private val farmArea: FarmArea = FarmArea(this, controller.farmArea, farmlandBoard = FARMLAND_BOARD)
+    private val inventory: Inventory = Inventory(this, controller.inventory, z = 4)
+    private val hotBar: HotBar = HotBar(this, controller.hotBar)
+    private val trade: Trade = Trade(this, controller.trade, z = 4)
+    private val villagerButton: VillagerButton = VillagerButton(this)
 
-    var activeWidget: Widget? = null
+    private val floatingWidgets: FloatingWidget = listOf(hotBar, villagerButton)
+
+    private fun FloatingWidget.setHidden(hidden: Boolean) = forEach { it.setHidden(hidden) }
+
+    private var activeWidget: Widget? = null
 
     init {
         inventory.setHidden(true)
@@ -54,6 +62,8 @@ class FarmScene(window: Window) : Screen(window) {
     }
 
     override fun place(w: Int, h: Int) {
+        super.place(w, h)
+
         // hotBar
         hotBar.place(
             (w - HotBar.SCALED_WIDTH) / 2, h - HotBar.SCALED_HEIGHT,
@@ -90,6 +100,16 @@ class FarmScene(window: Window) : Screen(window) {
         val rPt = Point(FARM_RIGHT_POINT.x / FARM_BG_WIDTH * w, FARM_RIGHT_POINT.y / FARM_BG_HEIGHT * h)
         farmArea.place(blkDeep, blkH, lPt, mPt, rPt)
 
+        // villagerButton
+        val xHalf = hotBar.widgetBounds.x1 / 5 * 3
+        val yHalf = hotBar.widgetBounds.height / 2
+        villagerButton.place(
+            ScreenBounds(
+                x1 = xHalf - 37.5, y1 = h - yHalf - 37.5,
+                x2 = xHalf + 37.5, y2 = h - yHalf + 37.5
+            )
+        )
+
         // escMenus
         escMenus.place(w, h)
     }
@@ -99,6 +119,8 @@ class FarmScene(window: Window) : Screen(window) {
         farmArea.update()
         inventory.update()
         trade.update()
+        villagerButton.update()
+        escMenus.update()
     }
 
     override fun onKeyPress(e: KeyPressedEvent): Boolean {
@@ -120,12 +142,12 @@ class FarmScene(window: Window) : Screen(window) {
 
                     if (activeWidget == null) {
                         inventory.setVisible(true)
-                        hotBar.setHidden(true)
+                        floatingWidgets.setHidden(true)
                         controller.hotBar.update()
                         activeWidget = inventory
                     } else if (activeWidget == inventory) {
                         inventory.setHidden(true)
-                        hotBar.setVisible(true)
+                        floatingWidgets.setHidden(false)
                         controller.hotBar.update()
                         activeWidget = null
                     }
@@ -139,13 +161,14 @@ class FarmScene(window: Window) : Screen(window) {
                 if (!escMenus.isVisible) {
 
                     if (activeWidget == null) {
+                        trade.clear()
                         trade.setVisible(true)
-                        hotBar.setHidden(true)
+                        floatingWidgets.setHidden(true)
                         controller.hotBar.update()
                         activeWidget = trade
                     } else if (activeWidget == trade) {
                         trade.setHidden(true)
-                        hotBar.setVisible(true)
+                        floatingWidgets.setHidden(false)
                         controller.hotBar.update()
                         activeWidget = null
                     }
@@ -164,6 +187,7 @@ class FarmScene(window: Window) : Screen(window) {
         hotBar.render()
         inventory.render()
         trade.render()
+        villagerButton.render()
         escMenus.render()
     }
 
@@ -174,6 +198,7 @@ class FarmScene(window: Window) : Screen(window) {
         hotBar.cleanup()
         inventory.cleanup()
         trade.cleanup()
+        villagerButton.cleanup()
         escMenus.cleanup()
     }
 }

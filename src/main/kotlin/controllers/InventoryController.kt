@@ -17,17 +17,15 @@ class InventoryController(farmController: FarmController) {
         this.inventory = inventory
 
         // 示例物品
-        setItem(0, ItemStack("minecraft:cabbage_seed", 2))
+        setItem(0, ItemStack("minecraft:wheat_seed", 2))
         setItem(1, ItemStack("minecraft:carrot", 2))
-        setItem(2, ItemStack("minecraft:corn_seed", 2))
-        setItem(3, ItemStack("minecraft:cotton_seed", 2))
-        setItem(4, ItemStack("minecraft:onion", 63))
-        setItem(12, ItemStack("minecraft:onion", 2))
-        setItem(16, ItemStack("minecraft:onion", 2))
-        setItem(17, ItemStack("minecraft:emerald", 20))
-        setItem(5, ItemStack("minecraft:potato", 2))
+        setItem(2, ItemStack("minecraft:potato", 2))
+        setItem(3, ItemStack("minecraft:cabbage_seed", 2))
+        setItem(4, ItemStack("minecraft:corn_seed", 2))
+        setItem(5, ItemStack("minecraft:cotton_seed", 2))
         setItem(6, ItemStack("minecraft:tomato_seed", 2))
-        setItem(7, ItemStack("minecraft:wheat_seed", 2))
+        setItem(7, ItemStack("minecraft:onion", 2))
+        setItem(9, ItemStack("minecraft:emerald", 20))
     }
 
     fun getItem(slot: Int): ItemStack = items[slot]

@@ -102,7 +102,7 @@ class InventoryLayout(
         return ScreenBounds(x1, y1, x2, y2)
     }
 
-    fun update() {
+    override fun update() {
         if (isShiftPressed && mouseLeftPressed) {
             mouseIndex?.let { index ->
                 val item = controller.popItem(index)
@@ -129,6 +129,61 @@ class InventoryLayout(
             val (newInvItem, newDragItem) = controller.exchangeAndMergeItems(invItem, dragItem)
             dragWidget.item = newDragItem
             controller.setItem(index, newInvItem)
+
+            dragWidget.onParentMouseMove(getCursorPos())
+        }
+    }
+
+    override fun onRightClick(e: MouseRightClickEvent) {
+        // TODO: In Test
+        Point(e.x, e.y).index?.let { index ->
+            val invItem = controller.popItem(index)
+            val dragItem = dragWidget.item
+
+            when {
+                dragItem.isEmpty() && !invItem.isEmpty() -> {
+                    val halfCount = invItem.count / 2
+                    if (halfCount > 0) {
+                        val newDragItem = invItem.copy(count = halfCount)
+                        invItem.count -= halfCount
+                        dragWidget.item = newDragItem
+                        controller.setItem(index, invItem)
+                    } else {
+                        dragWidget.item = invItem
+                        controller.setItem(index, ItemStack.EMPTY)
+                    }
+                }
+
+                !dragItem.isEmpty() && invItem.isEmpty() -> {
+                    val newInvItem = dragItem.copy(count = 1)
+                    dragItem.count -= 1
+                    if (dragItem.count <= 0) {
+                        dragWidget.item = ItemStack.EMPTY
+                    } else {
+                        dragWidget.item = dragItem
+                    }
+                    controller.setItem(index, newInvItem)
+                }
+
+                invItem.id == dragItem.id -> {
+                    invItem.count += 1
+                    dragItem.count -= 1
+                    if (dragItem.count <= 0) {
+                        dragWidget.item = ItemStack.EMPTY
+                    } else {
+                        dragWidget.item = dragItem
+                    }
+                    if (invItem.count <= 0) {
+                        controller.setItem(index, ItemStack.EMPTY)
+                    } else {
+                        controller.setItem(index, invItem)
+                    }
+                }
+
+                else -> {
+                    controller.setItem(index, invItem)
+                }
+            }
 
             dragWidget.onParentMouseMove(getCursorPos())
         }

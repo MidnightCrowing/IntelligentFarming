@@ -6,6 +6,16 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryStack
 
 class TextRenderer(private val nvg: Long) {
+    companion object {
+        fun createTextRendererForGUI(nvg: Long): TextRenderer {
+            return TextRenderer(nvg).apply {
+                fontSize = 24.0
+                textColor = doubleArrayOf(63.0 / 255, 63.0 / 255, 63.0 / 255, 1.0)
+                shadow = false
+            }
+        }
+    }
+
     var x: Double = 0.0
     var y: Double = 0.0
     var text: String = ""
