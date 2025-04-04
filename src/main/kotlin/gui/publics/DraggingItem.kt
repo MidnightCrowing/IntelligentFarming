@@ -1,9 +1,9 @@
 package com.midnightcrowing.gui.publics
 
 import com.midnightcrowing.events.CustomEvent.MouseMoveEvent
-import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.model.item.Item
 import com.midnightcrowing.model.item.ItemRegistry
 import com.midnightcrowing.model.item.ItemStack
 
@@ -14,7 +14,7 @@ class DraggingItem(parent: Widget) : Widget(parent) {
             field = value
             itemWidget = ItemRegistry.createItem(value.id, this)
         }
-    private var itemWidget: FarmItems? = null
+    private var itemWidget: Item? = null
 
     var width: Double = 65.0
     var height: Double = 65.0

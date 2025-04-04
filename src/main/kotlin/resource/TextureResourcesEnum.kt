@@ -49,7 +49,6 @@ enum class TextureResourcesEnum(private val resource: ResourcesEnum) {
     CARROT_GROW_2(ResourcesEnum.CARROT_GROW_2),
     CARROT_GROW_4(ResourcesEnum.CARROT_GROW_4),
     CARROT_GROW_7(ResourcesEnum.CARROT_GROW_7),
-    GOLDEN_CARROT(ResourcesEnum.GOLDEN_CARROT),
 
     // Corn
     CORN(ResourcesEnum.CORN),
@@ -114,6 +113,7 @@ enum class TextureResourcesEnum(private val resource: ResourcesEnum) {
     CHEST(ResourcesEnum.CHEST),
     EMERALD(ResourcesEnum.EMERALD),
     VILLAGER_SPAWN_EGG(ResourcesEnum.VILLAGER_SPAWN_EGG),
+    GOLDEN_CARROT(ResourcesEnum.GOLDEN_CARROT),
     /* endregion */
 
     ;

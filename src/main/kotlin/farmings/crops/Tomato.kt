@@ -2,9 +2,9 @@ package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
-import com.midnightcrowing.farmings.FarmItems.TomatoItem
-import com.midnightcrowing.farmings.FarmItems.TomatoSeedItem
 import com.midnightcrowing.model.Texture
+import com.midnightcrowing.model.item.Item.TomatoItem
+import com.midnightcrowing.model.item.Item.TomatoSeedItem
 import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.resource.TextureResourcesEnum
 import com.midnightcrowing.utils.GameTick

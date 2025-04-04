@@ -53,7 +53,6 @@ enum class ResourcesEnum(private val resourcePath: String) {
     CARROT_GROW_2("/assets/farming/carrot/carrots2.png"),
     CARROT_GROW_4("/assets/farming/carrot/carrots4.png"),
     CARROT_GROW_7("/assets/farming/carrot/carrots7.png"),
-    GOLDEN_CARROT("/assets/farming/carrot/golden_carrot.png"),
 
     // Corn
     CORN("/assets/farming/corn/corn.png"),
@@ -118,6 +117,7 @@ enum class ResourcesEnum(private val resourcePath: String) {
     CHEST("/assets/item/chest.png"),
     EMERALD("/assets/item/emerald.png"),
     VILLAGER_SPAWN_EGG("/assets/item/villager_spawn_egg.png"),
+    GOLDEN_CARROT("/assets/farming/carrot/golden_carrot.png"),
     /* endregion */
 
     ;

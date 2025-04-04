@@ -305,7 +305,7 @@ class InventoryLayout(
         if (item.isEmpty()) return
 
         // 渲染物品名称
-        itemCache.getItemCache(item.id)?.renderItemName(mousePosition.x + 30, mousePosition.y - 25)
+        itemCache.getItemCache(item.id)?.renderTooltip(mousePosition.x, mousePosition.y, position = "after-top")
     }
 
     // endregion

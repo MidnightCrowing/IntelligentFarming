@@ -34,7 +34,7 @@ class FarmAreaController(farmController: FarmController) {
             field?.cleanup()
             field = value?.apply {
                 setShadow()
-                setVisible(field?.isVisible != false)
+                setHidden(field?.isVisible == false)
                 place(field?.widgetBounds ?: ScreenBounds.EMPTY)
             }
         }

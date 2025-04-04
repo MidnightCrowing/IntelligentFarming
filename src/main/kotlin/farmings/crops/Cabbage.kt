@@ -2,9 +2,9 @@ package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
-import com.midnightcrowing.farmings.FarmItems.CabbageItem
-import com.midnightcrowing.farmings.FarmItems.CabbageSeedItem
 import com.midnightcrowing.model.Texture
+import com.midnightcrowing.model.item.Item.CabbageItem
+import com.midnightcrowing.model.item.Item.CabbageSeedItem
 import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.resource.TextureResourcesEnum
 

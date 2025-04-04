@@ -2,9 +2,9 @@ package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
-import com.midnightcrowing.farmings.FarmItems.CottonItem
-import com.midnightcrowing.farmings.FarmItems.CottonSeedItem
 import com.midnightcrowing.model.Texture
+import com.midnightcrowing.model.item.Item.CottonItem
+import com.midnightcrowing.model.item.Item.CottonSeedItem
 import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.resource.TextureResourcesEnum
 

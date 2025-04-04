@@ -4,15 +4,16 @@ import com.midnightcrowing.controllers.FarmController
 import com.midnightcrowing.events.CustomEvent.KeyPressedEvent
 import com.midnightcrowing.events.CustomEvent.MouseMoveEvent
 import com.midnightcrowing.farmings.FarmArea
+import com.midnightcrowing.gui.bases.ItemButton
 import com.midnightcrowing.gui.bases.Screen
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
 import com.midnightcrowing.gui.publics.CropInfoDisplay
 import com.midnightcrowing.model.Point
-import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.renderer.TextureRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
-import org.lwjgl.glfw.GLFW.*
+import org.lwjgl.glfw.GLFW.GLFW_KEY_E
+import org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE
 
 typealias FloatingWidget = List<Widget>
 
@@ -47,9 +48,14 @@ class FarmScene(window: Window) : Screen(window) {
     private val inventory: Inventory = Inventory(this, controller.inventory, z = 4)
     private val hotBar: HotBar = HotBar(this, controller.hotBar)
     private val trade: Trade = Trade(this, controller.trade, z = 4)
-    private val villagerButton: VillagerButton = VillagerButton(this)
+    private val villagerButton: ItemButton = ItemButton(
+        this, "minecraft:villager_spawn_egg", "商店", tooltipPosition = "after-top"
+    )
+    private val chestButton: ItemButton = ItemButton(
+        this, "minecraft:chest", "背包", tooltipPosition = "before-top"
+    )
 
-    private val floatingWidgets: FloatingWidget = listOf(hotBar, villagerButton)
+    private val floatingWidgets: FloatingWidget = listOf(hotBar, villagerButton, chestButton)
 
     private fun FloatingWidget.setHidden(hidden: Boolean) = forEach { it.setHidden(hidden) }
 
@@ -59,6 +65,39 @@ class FarmScene(window: Window) : Screen(window) {
         inventory.setHidden(true)
         trade.setHidden(true)
         escMenus.setHidden(true)
+
+        villagerButton.onClickCallback = { showContainer(trade) }
+        chestButton.onClickCallback = { showContainer(inventory) }
+    }
+
+    private fun showContainer(widget: Widget) {
+        if (escMenus.isVisible) {
+            return
+        }
+
+        if (activeWidget == null) {
+            widget.setHidden(false)
+            floatingWidgets.setHidden(true)
+            controller.hotBar.update()
+            activeWidget = widget
+        } else if (activeWidget == widget) {
+            widget.setHidden(true)
+            floatingWidgets.setHidden(false)
+            controller.hotBar.update()
+            activeWidget = null
+        }
+
+        val (x, y) = window.getCursorPos()
+        widget.onMouseMove(MouseMoveEvent(x, y))
+    }
+
+    private fun closeActiveWidget() {
+        activeWidget?.let {
+            it.setHidden(true)
+            floatingWidgets.setHidden(false)
+            controller.hotBar.update()
+            activeWidget = null
+        }
     }
 
     override fun place(w: Int, h: Int) {
@@ -101,13 +140,15 @@ class FarmScene(window: Window) : Screen(window) {
         farmArea.place(blkDeep, blkH, lPt, mPt, rPt)
 
         // villagerButton
-        val xHalf = hotBar.widgetBounds.x1 / 5 * 3
-        val yHalf = hotBar.widgetBounds.height / 2
         villagerButton.place(
-            ScreenBounds(
-                x1 = xHalf - 37.5, y1 = h - yHalf - 37.5,
-                x2 = xHalf + 37.5, y2 = h - yHalf + 37.5
-            )
+            x1 = 0.0, y1 = h - 70.0,
+            x2 = 70.0, y2 = h.toDouble()
+        )
+
+        // chestButton
+        chestButton.place(
+            x1 = w - 70.0, y1 = h - 70.0,
+            x2 = w.toDouble(), y2 = h.toDouble()
         )
 
         // escMenus
@@ -120,63 +161,14 @@ class FarmScene(window: Window) : Screen(window) {
         inventory.update()
         trade.update()
         villagerButton.update()
+        chestButton.update()
         escMenus.update()
     }
 
     override fun onKeyPress(e: KeyPressedEvent): Boolean {
-        // TODO
         when (e.key) {
-            GLFW_KEY_ESCAPE -> {
-                if (activeWidget != null) {
-                    activeWidget!!.setHidden(true)
-                    hotBar.setVisible(true)
-                    controller.hotBar.update()
-                    activeWidget = null
-                } else {
-                    escMenus.toggleVisible()
-                }
-            }
-
-            GLFW_KEY_E -> {
-                if (!escMenus.isVisible) {
-
-                    if (activeWidget == null) {
-                        inventory.setVisible(true)
-                        floatingWidgets.setHidden(true)
-                        controller.hotBar.update()
-                        activeWidget = inventory
-                    } else if (activeWidget == inventory) {
-                        inventory.setHidden(true)
-                        floatingWidgets.setHidden(false)
-                        controller.hotBar.update()
-                        activeWidget = null
-                    }
-
-                    val (x, y) = window.getCursorPos()
-                    inventory.onMouseMove(MouseMoveEvent(x, y))
-                }
-            }
-
-            GLFW_KEY_A -> {
-                if (!escMenus.isVisible) {
-
-                    if (activeWidget == null) {
-                        trade.clear()
-                        trade.setVisible(true)
-                        floatingWidgets.setHidden(true)
-                        controller.hotBar.update()
-                        activeWidget = trade
-                    } else if (activeWidget == trade) {
-                        trade.setHidden(true)
-                        floatingWidgets.setHidden(false)
-                        controller.hotBar.update()
-                        activeWidget = null
-                    }
-
-                    val (x, y) = window.getCursorPos()
-                    trade.onMouseMove(MouseMoveEvent(x, y))
-                }
-            }
+            GLFW_KEY_ESCAPE -> if (activeWidget != null) closeActiveWidget() else escMenus.toggleVisible()
+            GLFW_KEY_E -> if (activeWidget != null) closeActiveWidget() else showContainer(inventory)
         }
         return true
     }
@@ -188,6 +180,9 @@ class FarmScene(window: Window) : Screen(window) {
         inventory.render()
         trade.render()
         villagerButton.render()
+        chestButton.render()
+        villagerButton.renderItemName()
+        chestButton.renderItemName()
         escMenus.render()
     }
 
@@ -199,6 +194,7 @@ class FarmScene(window: Window) : Screen(window) {
         inventory.cleanup()
         trade.cleanup()
         villagerButton.cleanup()
+        chestButton.cleanup()
         escMenus.cleanup()
     }
 }

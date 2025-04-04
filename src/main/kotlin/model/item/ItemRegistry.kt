@@ -1,16 +1,15 @@
 package com.midnightcrowing.model.item
 
-import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.gui.bases.Widget
 
 object ItemRegistry {
-    private val items = mutableMapOf<String, (Widget) -> FarmItems>()
+    private val items = mutableMapOf<String, (Widget) -> Item>()
 
-    fun register(id: String, creator: (Widget) -> FarmItems) {
+    fun register(id: String, creator: (Widget) -> Item) {
         items[id] = creator
     }
 
-    fun createItem(id: String, parent: Widget): FarmItems? {
+    fun createItem(id: String, parent: Widget): Item? {
         println("创建物品: $id")
         return items[id]?.invoke(parent)
     }

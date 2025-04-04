@@ -1,6 +1,5 @@
 package com.midnightcrowing.model.item
 
-import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.gui.bases.Widget
 
 /**
@@ -9,10 +8,10 @@ import com.midnightcrowing.gui.bases.Widget
  * 缓存物品，避免每次渲染时重复创建
  */
 class ItemCache(private val parent: Widget) {
-    val cache: MutableMap<String, FarmItems?> = mutableMapOf<String, FarmItems?>()
+    val cache: MutableMap<String, Item?> = mutableMapOf<String, Item?>()
 
     // 获取物品缓存
-    fun getItemCache(id: String): FarmItems? {
+    fun getItemCache(id: String): Item? {
         if (id.isEmpty()) return null
         return cache.getOrPut(id) { ItemRegistry.createItem(id, parent) }
     }

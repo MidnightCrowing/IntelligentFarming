@@ -1,11 +1,11 @@
 package com.midnightcrowing.gui.scenes.farmScene
 
 import com.midnightcrowing.events.CustomEvent.MouseMoveEvent
-import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.gui.bases.Button
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.model.item.Item
 import com.midnightcrowing.model.item.ItemRegistry
 import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.model.trade.TradeRecipe
@@ -27,17 +27,11 @@ class TradeButton(parent: Widget, val tradeRecipe: TradeRecipe) : Button(parent)
 
     // 鼠标位置
     private var mousePosition: Point = Point.EMPTY
-    private var mouseHoverItem: FarmItems? = null
+    private var mouseHoverItem: Item? = null
 
-    private var buy1Item: FarmItems? = null
-    private var buy2Item: FarmItems? = null
-    private var sellItem: FarmItems? = null
-
-    init {
-        setItem(tradeRecipe.buy, BASE_BUY_1_BOUNDS) { buy1Item = it }
-        setItem(tradeRecipe.buyB, BASE_BUY_2_BOUNDS) { buy2Item = it }
-        setItem(tradeRecipe.sell, BASE_SELL_BOUNDS) { sellItem = it }
-    }
+    private val buy1Item: Item? by lazy { setItem(tradeRecipe.buy, BASE_BUY_1_BOUNDS) }
+    private val buy2Item: Item? by lazy { setItem(tradeRecipe.buyB, BASE_BUY_2_BOUNDS) }
+    private val sellItem: Item? by lazy { setItem(tradeRecipe.sell, BASE_SELL_BOUNDS) }
 
     /**
      * 根据父容器大小计算实际位置
@@ -51,10 +45,10 @@ class TradeButton(parent: Widget, val tradeRecipe: TradeRecipe) : Button(parent)
     /**
      * 通用方法，用于设置物品位置
      */
-    private fun setItem(stack: ItemStack, bounds: ScreenBounds, setter: (FarmItems?) -> Unit) {
-        val item = ItemRegistry.createItem(stack.id, this)
-        setter(item)
-        item?.place(bounds.calculateRelativeBounds() + widgetBounds.startPoint)
+    private fun setItem(stack: ItemStack, bounds: ScreenBounds): Item? {
+        return ItemRegistry.createItem(stack.id, this)?.apply {
+            place(bounds.calculateRelativeBounds() + widgetBounds.startPoint)
+        }
     }
 
     fun onParentMouseMove(e: MouseMoveEvent) {
@@ -87,6 +81,6 @@ class TradeButton(parent: Widget, val tradeRecipe: TradeRecipe) : Button(parent)
         buy2Item?.render(tradeRecipe.buyB.count)
         sellItem?.render(tradeRecipe.sell.count)
 
-        mouseHoverItem?.renderItemName(mousePosition.x + 30, mousePosition.y - 25)
+        mouseHoverItem?.renderTooltip(mousePosition.x, mousePosition.y, position = "after-top")
     }
 }

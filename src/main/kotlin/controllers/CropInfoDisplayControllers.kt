@@ -1,8 +1,8 @@
 package com.midnightcrowing.controllers
 
 import com.midnightcrowing.farmings.FarmCropBase
-import com.midnightcrowing.farmings.FarmItems
 import com.midnightcrowing.gui.publics.CropInfoDisplay
+import com.midnightcrowing.model.item.Item
 import com.midnightcrowing.model.item.ItemRegistry
 import com.midnightcrowing.model.item.ItemStack
 
@@ -11,12 +11,12 @@ class CropInfoDisplayControllers() {
 
     var crop: FarmCropBase? = null
     var item: ItemStack = ItemStack.EMPTY
-    var itemWidget: FarmItems? = null
+    var itemWidget: Item? = null
 
     // 使用 LinkedHashMap 缓存物品，最多缓存 10 个物品
-    val itemCache: LinkedHashMap<String, FarmItems?> =
-        object : LinkedHashMap<String, FarmItems?>(10, 0.75f, true) {
-            override fun removeEldestEntry(eldest: Map.Entry<String, FarmItems?>) = size > 10
+    val itemCache: LinkedHashMap<String, Item?> =
+        object : LinkedHashMap<String, Item?>(10, 0.75f, true) {
+            override fun removeEldestEntry(eldest: Map.Entry<String, Item?>) = size > 10
         }
 
     // 初始化 cropInfoDisplay

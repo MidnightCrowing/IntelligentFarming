@@ -53,15 +53,11 @@ open class Widget {
         return widgetBounds.contains(Point(x, y))
     }
 
-    fun setHidden(value: Boolean) {
+    open fun setHidden(value: Boolean) {
         visible = !value
     }
 
-    fun setVisible(value: Boolean) {
-        visible = value
-    }
-
-    fun toggleVisible() {
+    open fun toggleVisible() {
         visible = !visible
     }
 
