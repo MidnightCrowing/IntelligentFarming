@@ -3,9 +3,9 @@ package com.midnightcrowing.farmings.crops
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
 import com.midnightcrowing.model.Texture
-import com.midnightcrowing.model.item.Item.CornItem
-import com.midnightcrowing.model.item.Item.CornSeedItem
 import com.midnightcrowing.model.item.ItemStack
+import com.midnightcrowing.model.item.Items.CORN
+import com.midnightcrowing.model.item.Items.CORN_SEED
 import com.midnightcrowing.resource.TextureResourcesEnum
 
 class Corn(farmArea: FarmArea) : FarmCropBase(farmArea) {
@@ -21,16 +21,16 @@ class Corn(farmArea: FarmArea) : FarmCropBase(farmArea) {
     )
 
     override fun getItemStack(): ItemStack =
-        if (isFullyGrown) ItemStack(CornItem.id, 1) else ItemStack(CornSeedItem.id, 1)
+        if (isFullyGrown) ItemStack(CORN.id, 1) else ItemStack(CORN_SEED.id, 1)
 
     override fun getDrops(): Array<ItemStack> {
         return if (isFullyGrown) {
             arrayOf(
-                ItemStack(CornSeedItem.id, 1 + generateDropCount(n = 4, p = 8.0 / 15)),
-                ItemStack(CornItem.id, 1),
+                ItemStack(CORN_SEED.id, 1 + generateDropCount(n = 4, p = 8.0 / 15)),
+                ItemStack(CORN.id, 1),
             )
         } else {
-            arrayOf(ItemStack(CornSeedItem.id, 1))
+            arrayOf(ItemStack(CORN_SEED.id, 1))
         }
     }
 

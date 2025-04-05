@@ -3,9 +3,9 @@ package com.midnightcrowing.farmings.crops
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
 import com.midnightcrowing.model.Texture
-import com.midnightcrowing.model.item.Item.CabbageItem
-import com.midnightcrowing.model.item.Item.CabbageSeedItem
 import com.midnightcrowing.model.item.ItemStack
+import com.midnightcrowing.model.item.Items.CABBAGE
+import com.midnightcrowing.model.item.Items.CABBAGE_SEED
 import com.midnightcrowing.resource.TextureResourcesEnum
 
 class Cabbage(farmArea: FarmArea) : FarmCropBase(farmArea) {
@@ -21,16 +21,16 @@ class Cabbage(farmArea: FarmArea) : FarmCropBase(farmArea) {
     )
 
     override fun getItemStack(): ItemStack =
-        if (isFullyGrown) ItemStack(CabbageItem.id, 1) else ItemStack(CabbageSeedItem.id, 1)
+        if (isFullyGrown) ItemStack(CABBAGE.id, 1) else ItemStack(CABBAGE_SEED.id, 1)
 
     override fun getDrops(): Array<ItemStack> {
         return if (isFullyGrown) {
             arrayOf(
-                ItemStack(CabbageSeedItem.id, 1 + generateDropCount(n = 3, p = 8.0 / 15)),
-                ItemStack(CabbageItem.id, 1),
+                ItemStack(CABBAGE_SEED.id, 1 + generateDropCount(n = 3, p = 8.0 / 15)),
+                ItemStack(CABBAGE.id, 1),
             )
         } else {
-            arrayOf(ItemStack(CabbageSeedItem.id, 1))
+            arrayOf(ItemStack(CABBAGE_SEED.id, 1))
         }
     }
 

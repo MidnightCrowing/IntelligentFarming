@@ -1,14 +1,16 @@
 package com.midnightcrowing.controllers
 
 import com.midnightcrowing.farmings.FarmArea
-import com.midnightcrowing.gui.scenes.farmScene.HotBar
+import com.midnightcrowing.gui.publics.HotBar
+import com.midnightcrowing.model.item.Item
+import com.midnightcrowing.model.item.ItemRegistry
 import com.midnightcrowing.model.item.ItemStack
 
 class HotBarController(farmController: FarmController) {
     private lateinit var hotBar: HotBar
     private val invController: InventoryController = farmController.inventory
-    private val farmController: FarmAreaController = farmController.farmArea
-    private val farmArea: FarmArea by lazy { this@HotBarController.farmController.farmArea }
+    private val areaController: FarmAreaController = farmController.farmArea
+    private val farmArea: FarmArea by lazy { areaController.farmArea }
 
     val defaultSelectId: Int = 0 // 默认选中项的ID
     val itemsList: List<ItemStack> get() = invController.hotBarItems
@@ -23,9 +25,9 @@ class HotBarController(farmController: FarmController) {
                 hotBar.itemCheckBox.moveTo(hotBar.getGridBoundsWithCheckbox(value))
             }
 
-            val item = hotBar.itemCache.getItemCache(itemsList[value].id)
-            hotBar.setItemLabelText(item?.toString())
-            this@HotBarController.farmController.activeSeedCrop = item?.getCrop(farmArea)
+            val item: Item? = ItemRegistry.getItem(itemsList[value].id)
+            hotBar.setItemLabelText(item?.name)
+            areaController.activeSeedCrop = item?.getBlock(farmArea)
 
             field = value
         }

@@ -3,9 +3,8 @@ package com.midnightcrowing.farmings.crops
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
 import com.midnightcrowing.model.Texture
-import com.midnightcrowing.model.item.Item.CarrotItem
-import com.midnightcrowing.model.item.Item.GoldenCarrot
 import com.midnightcrowing.model.item.ItemStack
+import com.midnightcrowing.model.item.Items.CARROT
 import com.midnightcrowing.resource.TextureResourcesEnum
 
 class Carrot(farmArea: FarmArea) : FarmCropBase(farmArea) {
@@ -20,11 +19,11 @@ class Carrot(farmArea: FarmArea) : FarmCropBase(farmArea) {
         7 to TextureResourcesEnum.CARROT_GROW_7.texture
     )
 
-    override fun getItemStack(): ItemStack = ItemStack(CarrotItem.id, 1)
+    override fun getItemStack(): ItemStack = ItemStack(CARROT.id, 1)
 
     override fun getDrops(): Array<ItemStack> = arrayOf(
-        ItemStack(CarrotItem.id, if (isFullyGrown) 1 + generateDropCount(n = 3, p = 8.0 / 15) else 1),
-        ItemStack(GoldenCarrot.id, if (isFullyGrown) generateDropCount(n = 1, p = 1.0 / 64) else 0)
+        ItemStack(CARROT.id, if (isFullyGrown) 1 + generateDropCount(n = 3, p = 8.0 / 15) else 1),
+        ItemStack(CARROT.id, if (isFullyGrown) generateDropCount(n = 1, p = 1.0 / 64) else 0)
     )
 
     override fun toString(): String = "胡萝卜"

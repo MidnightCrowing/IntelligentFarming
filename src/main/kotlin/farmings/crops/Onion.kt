@@ -3,8 +3,8 @@ package com.midnightcrowing.farmings.crops
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
 import com.midnightcrowing.model.Texture
-import com.midnightcrowing.model.item.Item.OnionItem
 import com.midnightcrowing.model.item.ItemStack
+import com.midnightcrowing.model.item.Items.ONION
 import com.midnightcrowing.resource.TextureResourcesEnum
 
 class Onion(farmArea: FarmArea) : FarmCropBase(farmArea) {
@@ -19,10 +19,10 @@ class Onion(farmArea: FarmArea) : FarmCropBase(farmArea) {
         7 to TextureResourcesEnum.ONION_GROW_7.texture
     )
 
-    override fun getItemStack(): ItemStack = ItemStack(OnionItem.id, 1)
+    override fun getItemStack(): ItemStack = ItemStack(ONION.id, 1)
 
     override fun getDrops(): Array<ItemStack> = arrayOf(
-        ItemStack(OnionItem.id, if (isFullyGrown) 1 + generateDropCount(n = 3, p = 8.0 / 15) else 1)
+        ItemStack(ONION.id, if (isFullyGrown) 1 + generateDropCount(n = 3, p = 8.0 / 15) else 1)
     )
 
     override fun toString(): String = "洋葱"

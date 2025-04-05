@@ -1,17 +1,17 @@
 package com.midnightcrowing.controllers
 
-import com.midnightcrowing.gui.scenes.farmScene.Trade
-import com.midnightcrowing.gui.scenes.farmScene.TradeButton
+import com.midnightcrowing.gui.publics.Trade
+import com.midnightcrowing.gui.publics.TradeButton
 import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.model.trade.TradeRecipe
 
 typealias TradeList = List<TradeRecipe>
 
-class TradeController(farmController: FarmController) {
+open class TradeController(farmController: FarmController) {
     private lateinit var trade: Trade
     val invController: InventoryController by lazy { farmController.inventory }
 
-    val tradeList: TradeList = listOf(
+    open val tradeList: TradeList = listOf(
         TradeRecipe(
             buy = ItemStack("minecraft:wheat", 16),
             sell = ItemStack("minecraft:emerald", 2)
@@ -95,17 +95,14 @@ class TradeController(farmController: FarmController) {
      * 更新交易槽位状态
      */
     fun updateTrade() {
-        val slotItems = listOf(trade.tradeSlot0Item, trade.tradeSlot1Item)
-        val selectedButton = trade.tradeButtonGroup.select as? TradeButton
-        val tradeRecipe = selectedButton?.tradeRecipe ?: tradeList.findFirstValidTrade(slotItems)
+        val inputs = listOf(trade.tradeSlot0Item, trade.tradeSlot1Item)
+        val recipe = (trade.tradeButtonGroup.select as? TradeButton)?.tradeRecipe
+            ?: tradeList.findFirstValidTrade(inputs)
 
-        // 校验任意顺序的交易条件
-        trade.tradeSlot2Item = if (tradeRecipe != null && tradeRecipe.canTrade(slotItems)) {
-            tradeRecipe.sell.copy()
-        } else {
-            ItemStack.EMPTY
-        }
+        trade.tradeSlot2Item = if (recipe?.canTrade(inputs) == true) recipe.sell.copy() else ItemStack.EMPTY
+        trade.showUnableArrow = recipe != null && !recipe.isTradeable
     }
+
 
     /**
      * 执行交易操作
@@ -125,18 +122,16 @@ class TradeController(farmController: FarmController) {
         if (!validationCallback(sellItem)) return
 
         // 执行交易
-        slotItems.forEach { slot ->
-            tradeRecipe.buy.takeIf { it.id == slot.id && it.count <= slot.count }?.let {
-                slot.count -= it.count
-            }
-            tradeRecipe.buyB.takeIf { it.id == slot.id && it.count <= slot.count }?.let {
-                slot.count -= it.count
-            }
-        }
+        tradeRecipe.executeTrade(slotItems)
 
         // 更新空槽
         trade.tradeSlot0Item = trade.tradeSlot0Item.takeIf { it.count > 0 } ?: ItemStack.EMPTY
         trade.tradeSlot1Item = trade.tradeSlot1Item.takeIf { it.count > 0 } ?: ItemStack.EMPTY
+
+        // 更新交易按钮状态
+        trade.tradeButtons.find { it.tradeRecipe == tradeRecipe }?.let {
+            it.isTradeable = tradeRecipe.isTradeable
+        }
 
         updateTrade() // 更新交易状态
     }

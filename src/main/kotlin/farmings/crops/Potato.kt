@@ -3,8 +3,8 @@ package com.midnightcrowing.farmings.crops
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
 import com.midnightcrowing.model.Texture
-import com.midnightcrowing.model.item.Item.PotatoItem
 import com.midnightcrowing.model.item.ItemStack
+import com.midnightcrowing.model.item.Items.POTATO
 import com.midnightcrowing.resource.TextureResourcesEnum
 
 class Potato(farmArea: FarmArea) : FarmCropBase(farmArea) {
@@ -19,10 +19,10 @@ class Potato(farmArea: FarmArea) : FarmCropBase(farmArea) {
         7 to TextureResourcesEnum.POTATO_GROW_7.texture
     )
 
-    override fun getItemStack(): ItemStack = ItemStack(PotatoItem.id, 1)
+    override fun getItemStack(): ItemStack = ItemStack(POTATO.id, 1)
 
     override fun getDrops(): Array<ItemStack> = arrayOf(
-        ItemStack(PotatoItem.id, if (isFullyGrown) 1 + generateDropCount(n = 3, p = 8.0 / 15) else 1)
+        ItemStack(POTATO.id, if (isFullyGrown) 1 + generateDropCount(n = 3, p = 8.0 / 15) else 1)
     )
 
     override fun toString(): String = "马铃薯"

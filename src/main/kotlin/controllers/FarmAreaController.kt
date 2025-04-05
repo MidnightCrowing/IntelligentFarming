@@ -10,7 +10,7 @@ class FarmAreaController(farmController: FarmController) {
     // region controllers
     lateinit var farmArea: FarmArea
 
-    val cropInfoController: CropInfoDisplayControllers = farmController.cropInfo
+    val cropInfoController: CropInfoDisplayController = farmController.cropInfo
     val cropInfo: CropInfoDisplay by lazy { cropInfoController.cropInfoDisplay }
     val hotController: HotBarController by lazy { farmController.hotBar }
     val invController: InventoryController by lazy { farmController.inventory }

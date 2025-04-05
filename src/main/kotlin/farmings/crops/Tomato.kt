@@ -3,9 +3,9 @@ package com.midnightcrowing.farmings.crops
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
 import com.midnightcrowing.model.Texture
-import com.midnightcrowing.model.item.Item.TomatoItem
-import com.midnightcrowing.model.item.Item.TomatoSeedItem
 import com.midnightcrowing.model.item.ItemStack
+import com.midnightcrowing.model.item.Items.TOMATO
+import com.midnightcrowing.model.item.Items.TOMATO_SEED
 import com.midnightcrowing.resource.TextureResourcesEnum
 import com.midnightcrowing.utils.GameTick
 
@@ -33,15 +33,15 @@ class Tomato(farmArea: FarmArea) : FarmCropBase(farmArea) {
     }
 
     override fun getItemStack(): ItemStack =
-        if (isFullyGrown) ItemStack(TomatoItem.id, 1) else ItemStack(TomatoSeedItem.id, 1)
+        if (isFullyGrown) ItemStack(TOMATO.id, 1) else ItemStack(TOMATO_SEED.id, 1)
 
     override fun getDrops(): Array<ItemStack> = if (isFullyGrown) {
         arrayOf(
-            ItemStack(TomatoSeedItem.id, 1),
-            ItemStack(TomatoItem.id, 1 + generateDropCount(n = 2, p = 8.0 / 15)),
+            ItemStack(TOMATO_SEED.id, 1),
+            ItemStack(TOMATO.id, 1 + generateDropCount(n = 2, p = 8.0 / 15)),
         )
     } else {
-        arrayOf(ItemStack(TomatoSeedItem.id, 1))
+        arrayOf(ItemStack(TOMATO_SEED.id, 1))
     }
 
     override fun toString(): String = "番茄"

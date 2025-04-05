@@ -3,18 +3,18 @@ package com.midnightcrowing.gui.publics
 import com.midnightcrowing.events.CustomEvent.MouseMoveEvent
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.model.item.Item
 import com.midnightcrowing.model.item.ItemRegistry
 import com.midnightcrowing.model.item.ItemStack
+import com.midnightcrowing.renderer.ItemRenderer
 
 class DraggingItem(parent: Widget) : Widget(parent) {
     // 物品
     var item: ItemStack = ItemStack.EMPTY
         set(value) {
             field = value
-            itemWidget = ItemRegistry.createItem(value.id, this)
+            itemRender = ItemRegistry.createItemRender(value.id, this)
         }
-    private var itemWidget: Item? = null
+    private var itemRender: ItemRenderer? = null
 
     var width: Double = 65.0
     var height: Double = 65.0
@@ -22,7 +22,7 @@ class DraggingItem(parent: Widget) : Widget(parent) {
     fun onParentMouseMove(e: MouseMoveEvent) {
         val bounds = ScreenBounds(e.x - width / 2, e.y - height / 2, e.x + width / 2, e.y + height / 2)
         this.place(bounds)
-        itemWidget?.place(bounds)
+        itemRender?.place(bounds)
     }
 
     fun onParentMouseMove(pos: Pair<Double, Double>) = onParentMouseMove(MouseMoveEvent(pos.first, pos.second))
@@ -31,6 +31,6 @@ class DraggingItem(parent: Widget) : Widget(parent) {
         if (!isVisible || item.isEmpty()) {
             return
         }
-        itemWidget?.render(item.count)
+        itemRender?.render(item.count)
     }
 }

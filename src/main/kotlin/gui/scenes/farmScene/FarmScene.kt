@@ -8,7 +8,7 @@ import com.midnightcrowing.gui.bases.ItemButton
 import com.midnightcrowing.gui.bases.Screen
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
-import com.midnightcrowing.gui.publics.CropInfoDisplay
+import com.midnightcrowing.gui.publics.*
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.renderer.TextureRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
@@ -47,15 +47,25 @@ class FarmScene(window: Window) : Screen(window) {
     private val farmArea: FarmArea = FarmArea(this, controller.farmArea, farmlandBoard = FARMLAND_BOARD)
     private val inventory: Inventory = Inventory(this, controller.inventory, z = 4)
     private val hotBar: HotBar = HotBar(this, controller.hotBar)
+    private val toolTrade: ToolTrade = ToolTrade(this, controller.toolTrade, z = 4)
     private val trade: Trade = Trade(this, controller.trade, z = 4)
+    private val compost: Compost = Compost(this, controller.compost, z = 4)
+    private val anvilButton: ItemButton = ItemButton(
+        this, "minecraft:anvil", "工具", tooltipPosition = "after-top"
+    )
     private val villagerButton: ItemButton = ItemButton(
         this, "minecraft:villager_spawn_egg", "商店", tooltipPosition = "after-top"
+    )
+    private val composterButton: ItemButton = ItemButton(
+        this, "minecraft:composter", "堆肥", tooltipPosition = "after-top"
     )
     private val chestButton: ItemButton = ItemButton(
         this, "minecraft:chest", "背包", tooltipPosition = "before-top"
     )
 
-    private val floatingWidgets: FloatingWidget = listOf(hotBar, villagerButton, chestButton)
+    private val floatingWidgets: FloatingWidget = listOf(
+        hotBar, anvilButton, villagerButton, composterButton, chestButton
+    )
 
     private fun FloatingWidget.setHidden(hidden: Boolean) = forEach { it.setHidden(hidden) }
 
@@ -63,10 +73,15 @@ class FarmScene(window: Window) : Screen(window) {
 
     init {
         inventory.setHidden(true)
+        toolTrade.setHidden(true)
         trade.setHidden(true)
+        compost.setHidden(true)
         escMenus.setHidden(true)
 
+        // Register button clock event callbacks
+        anvilButton.onClickCallback = { showContainer(toolTrade) }
         villagerButton.onClickCallback = { showContainer(trade) }
+        composterButton.onClickCallback = { showContainer(compost) }
         chestButton.onClickCallback = { showContainer(inventory) }
     }
 
@@ -117,12 +132,26 @@ class FarmScene(window: Window) : Screen(window) {
             (h + Inventory.SCALED_HEIGHT) / 2 + Inventory.OFFSET_Y
         )
 
-        // trade
+        // trades
+        toolTrade.place(
+            (w - Trade.SCALED_WIDTH) / 2,
+            (h - Trade.SCALED_HEIGHT) / 2 + Trade.OFFSET_Y,
+            (w + Trade.SCALED_WIDTH) / 2,
+            (h + Trade.SCALED_HEIGHT) / 2 + Trade.OFFSET_Y
+        )
         trade.place(
             (w - Trade.SCALED_WIDTH) / 2,
             (h - Trade.SCALED_HEIGHT) / 2 + Trade.OFFSET_Y,
             (w + Trade.SCALED_WIDTH) / 2,
             (h + Trade.SCALED_HEIGHT) / 2 + Trade.OFFSET_Y
+        )
+
+        // compost
+        compost.place(
+            (w - Compost.SCALED_WIDTH) / 2,
+            (h - Compost.SCALED_HEIGHT) / 2 + Compost.OFFSET_Y,
+            (w + Compost.SCALED_WIDTH) / 2,
+            (h + Compost.SCALED_HEIGHT) / 2 + Compost.OFFSET_Y
         )
 
         // cropInfoDisplay
@@ -139,13 +168,21 @@ class FarmScene(window: Window) : Screen(window) {
         val rPt = Point(FARM_RIGHT_POINT.x / FARM_BG_WIDTH * w, FARM_RIGHT_POINT.y / FARM_BG_HEIGHT * h)
         farmArea.place(blkDeep, blkH, lPt, mPt, rPt)
 
-        // villagerButton
-        villagerButton.place(
+        // Left Buttons
+        anvilButton.place(
             x1 = 0.0, y1 = h - 70.0,
             x2 = 70.0, y2 = h.toDouble()
         )
+        villagerButton.place(
+            x1 = 70.0, y1 = h - 70.0,
+            x2 = 140.0, y2 = h.toDouble()
+        )
+        composterButton.place(
+            x1 = 140.0, y1 = h - 70.0,
+            x2 = 210.0, y2 = h.toDouble()
+        )
 
-        // chestButton
+        // Right Buttons
         chestButton.place(
             x1 = w - 70.0, y1 = h - 70.0,
             x2 = w.toDouble(), y2 = h.toDouble()
@@ -159,8 +196,12 @@ class FarmScene(window: Window) : Screen(window) {
         controller.update()
         farmArea.update()
         inventory.update()
+        toolTrade.update()
         trade.update()
+        compost.update()
+        anvilButton.update()
         villagerButton.update()
+        composterButton.update()
         chestButton.update()
         escMenus.update()
     }
@@ -178,11 +219,20 @@ class FarmScene(window: Window) : Screen(window) {
         cropInfoDisplay.render()
         hotBar.render()
         inventory.render()
+        toolTrade.render()
         trade.render()
+        compost.render()
+
+        // Buttons
+        anvilButton.render()
         villagerButton.render()
+        composterButton.render()
         chestButton.render()
+        anvilButton.renderItemName()
         villagerButton.renderItemName()
+        composterButton.renderItemName()
         chestButton.renderItemName()
+
         escMenus.render()
     }
 
@@ -192,8 +242,12 @@ class FarmScene(window: Window) : Screen(window) {
         cropInfoDisplay.cleanup()
         hotBar.cleanup()
         inventory.cleanup()
+        toolTrade.cleanup()
         trade.cleanup()
+        compost.cleanup()
+        anvilButton.cleanup()
         villagerButton.cleanup()
+        composterButton.cleanup()
         chestButton.cleanup()
         escMenus.cleanup()
     }

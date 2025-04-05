@@ -1,6 +1,6 @@
 package com.midnightcrowing.gui.publics
 
-import com.midnightcrowing.controllers.CropInfoDisplayControllers
+import com.midnightcrowing.controllers.CropInfoDisplayController
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.renderer.NineSliceRenderer
@@ -13,7 +13,7 @@ import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_MIDDLE
 
 class CropInfoDisplay(
     parent: Widget,
-    private val controller: CropInfoDisplayControllers,
+    private val controller: CropInfoDisplayController,
 ) : Widget(parent) {
     companion object {
         val COLOR_NORMAL = doubleArrayOf(1.0, 1.0, 1.0, 1.0)
@@ -56,7 +56,7 @@ class CropInfoDisplay(
 
         // 计算物品区域
         itemBounds = ScreenBounds(itemX, itemY, itemX + itemSize, itemY + itemSize)
-        controller.itemWidget?.place(itemBounds)
+        controller.itemRender?.place(itemBounds)
 
         // 计算字体大小和文本偏移
         val titleSize = scaleValue(parentWidth, 21.0, 31.0)
@@ -101,13 +101,13 @@ class CropInfoDisplay(
         }
 
         bgRenderer.render(widgetBounds)
-        controller.itemWidget?.render()
+        controller.itemRender?.render()
         titleText.render()
         descText.render()
         valueText.render()
     }
 
     override fun doCleanup() {
-        controller.itemWidget?.cleanup()
+        controller.itemRender?.cleanup()
     }
 }

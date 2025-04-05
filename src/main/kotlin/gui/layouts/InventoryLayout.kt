@@ -6,14 +6,14 @@ import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.publics.DraggingItem
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.model.item.ItemCache
+import com.midnightcrowing.model.item.ItemRenderCache
 import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.renderer.RectangleRenderer
 import org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT
 
 /**
- * InventoryLayout 类用于管理和渲染背包和快捷栏的布局。
+ * 用于管理和渲染背包和快捷栏的布局。
  *
  * 需要父组件转发 `update()`、`onMousePress(e)`、`onMouseRelease(e)`、`onMouseMove(e)` 方法与事件。
  *
@@ -78,7 +78,7 @@ class InventoryLayout(
     private var maskActiveBgBounds: ScreenBounds? = null
 
     // 物品缓存，避免每次渲染时重复创建
-    private val itemCache: ItemCache = ItemCache(this)
+    private val itemRenderCache: ItemRenderCache = ItemRenderCache(this)
 
     // 输入状态
     private var mousePosition: Point = Point.EMPTY
@@ -117,16 +117,22 @@ class InventoryLayout(
     }
 
     // region 事件处理
-    override fun onClick(e: MouseClickEvent) {
-        if (isShiftPressed) {
-            return
-        }
-
-        Point(e.x, e.y).index?.let { index ->
+    /**
+     * 处理物品交互
+     * @param x 鼠标X坐标
+     * @param y 鼠标Y坐标
+     * @param exchangeFn 交换函数
+     */
+    private fun handleItemInteraction(
+        x: Double,
+        y: Double,
+        exchangeFn: (ItemStack, ItemStack) -> Pair<ItemStack, ItemStack>,
+    ) {
+        Point(x, y).index?.let { index ->
             val invItem = controller.popItem(index)
             val dragItem = dragWidget.item
 
-            val (newInvItem, newDragItem) = controller.exchangeAndMergeItems(invItem, dragItem)
+            val (newInvItem, newDragItem) = exchangeFn(invItem, dragItem)
             dragWidget.item = newDragItem
             controller.setItem(index, newInvItem)
 
@@ -134,59 +140,13 @@ class InventoryLayout(
         }
     }
 
+    override fun onClick(e: MouseClickEvent) {
+        if (isShiftPressed) return
+        handleItemInteraction(e.x, e.y, controller::exchangeAndMergeItems)
+    }
+
     override fun onRightClick(e: MouseRightClickEvent) {
-        // TODO: In Test
-        Point(e.x, e.y).index?.let { index ->
-            val invItem = controller.popItem(index)
-            val dragItem = dragWidget.item
-
-            when {
-                dragItem.isEmpty() && !invItem.isEmpty() -> {
-                    val halfCount = invItem.count / 2
-                    if (halfCount > 0) {
-                        val newDragItem = invItem.copy(count = halfCount)
-                        invItem.count -= halfCount
-                        dragWidget.item = newDragItem
-                        controller.setItem(index, invItem)
-                    } else {
-                        dragWidget.item = invItem
-                        controller.setItem(index, ItemStack.EMPTY)
-                    }
-                }
-
-                !dragItem.isEmpty() && invItem.isEmpty() -> {
-                    val newInvItem = dragItem.copy(count = 1)
-                    dragItem.count -= 1
-                    if (dragItem.count <= 0) {
-                        dragWidget.item = ItemStack.EMPTY
-                    } else {
-                        dragWidget.item = dragItem
-                    }
-                    controller.setItem(index, newInvItem)
-                }
-
-                invItem.id == dragItem.id -> {
-                    invItem.count += 1
-                    dragItem.count -= 1
-                    if (dragItem.count <= 0) {
-                        dragWidget.item = ItemStack.EMPTY
-                    } else {
-                        dragWidget.item = dragItem
-                    }
-                    if (invItem.count <= 0) {
-                        controller.setItem(index, ItemStack.EMPTY)
-                    } else {
-                        controller.setItem(index, invItem)
-                    }
-                }
-
-                else -> {
-                    controller.setItem(index, invItem)
-                }
-            }
-
-            dragWidget.onParentMouseMove(getCursorPos())
-        }
+        handleItemInteraction(e.x, e.y, controller::rightClickExchangeItems)
     }
 
     override fun onMousePress(e: MousePressedEvent) {
@@ -273,7 +233,7 @@ class InventoryLayout(
         }
 
         // 清理不在items里的物品
-        itemCache.cache.keys.retainAll(controller.items.map { it.id })
+        itemRenderCache.retainAll(controller.items.map { it.id })
     }
 
     /**
@@ -282,7 +242,7 @@ class InventoryLayout(
      * @param position 物品位置
      */
     private fun renderItem(stack: ItemStack, position: ScreenBounds) {
-        itemCache.getItemCache(stack.id)?.apply {
+        itemRenderCache.getItemCache(stack.id)?.apply {
             place(position)
             render(stack.count)
         }
@@ -305,7 +265,7 @@ class InventoryLayout(
         if (item.isEmpty()) return
 
         // 渲染物品名称
-        itemCache.getItemCache(item.id)?.renderTooltip(mousePosition.x, mousePosition.y, position = "after-top")
+        itemRenderCache.getItemCache(item.id)?.renderTooltip(mousePosition.x, mousePosition.y)
     }
 
     // endregion

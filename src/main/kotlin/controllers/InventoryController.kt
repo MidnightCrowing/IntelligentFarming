@@ -1,7 +1,8 @@
 package com.midnightcrowing.controllers
 
-import com.midnightcrowing.gui.scenes.farmScene.Inventory
+import com.midnightcrowing.gui.publics.Inventory
 import com.midnightcrowing.model.item.ItemList
+import com.midnightcrowing.model.item.ItemRegistry
 import com.midnightcrowing.model.item.ItemStack
 
 
@@ -25,7 +26,13 @@ class InventoryController(farmController: FarmController) {
         setItem(5, ItemStack("minecraft:cotton_seed", 2))
         setItem(6, ItemStack("minecraft:tomato_seed", 2))
         setItem(7, ItemStack("minecraft:onion", 2))
-        setItem(9, ItemStack("minecraft:emerald", 20))
+        setItem(9, ItemStack("minecraft:emerald", 64))
+        setItem(10, ItemStack("minecraft:emerald", 64))
+        setItem(11, ItemStack("minecraft:emerald", 64))
+        setItem(12, ItemStack("minecraft:emerald", 64))
+        setItem(13, ItemStack("minecraft:emerald", 64))
+        setItem(14, ItemStack("minecraft:emerald", 64))
+        setItem(15, ItemStack("minecraft:emerald", 64))
     }
 
     fun getItem(slot: Int): ItemStack = items[slot]
@@ -50,11 +57,12 @@ class InventoryController(farmController: FarmController) {
         // 先尝试叠加
         for (i in minIndex until maxIndex) {
             val currentItem = items[i]
-            if (currentItem.id == item.id && currentItem.count < 64) {
+            val maxCount: Int = ItemRegistry.getItemMaxCount(currentItem.id)
+            if (currentItem.id == item.id && currentItem.count < maxCount) {
                 val total = currentItem.count + item.count
-                if (total > 64) {
-                    currentItem.count = 64
-                    item.count = total - 64
+                if (total > maxCount) {
+                    currentItem.count = maxCount
+                    item.count = total - maxCount
                 } else {
                     currentItem.count = total
                     return true
@@ -113,8 +121,9 @@ class InventoryController(farmController: FarmController) {
             invItem.id == dragItem.id -> {
                 // 叠加物品
                 val totalCount = invItem.count + dragItem.count
-                invItem.count = totalCount.coerceAtMost(64)
-                dragItem.count = (totalCount - 64).coerceAtLeast(0)
+                val maxCount: Int = ItemRegistry.getItemMaxCount(dragItem.id)
+                invItem.count = totalCount.coerceAtMost(maxCount)
+                dragItem.count = (totalCount - maxCount).coerceAtLeast(0)
                 invItem to if (dragItem.count == 0) ItemStack.EMPTY else dragItem
             }
 
@@ -122,6 +131,52 @@ class InventoryController(farmController: FarmController) {
             else -> dragItem to invItem
         }
     }
+
+    /**
+     * 右键交换物品
+     * @param invItem 背包中的物品
+     * @param dragItem 拖动中的物品
+     * @return 处理后的物品对, 第一个是背包物品，第二个是拖动物品
+     */
+    fun rightClickExchangeItems(invItem: ItemStack, dragItem: ItemStack): Pair<ItemStack, ItemStack> {
+        return when {
+            // 拖拽空，背包不空 => 拿出一半或全部
+            dragItem.isEmpty() && !invItem.isEmpty() -> {
+                val halfCount = invItem.count / 2
+                if (halfCount > 0) {
+                    val newDragItem = invItem.copy(count = halfCount)
+                    invItem.count -= halfCount
+                    newDragItem to invItem
+                } else {
+                    invItem to ItemStack.EMPTY
+                }
+            }
+
+            // 拖拽有，背包空 => 放入一个
+            !dragItem.isEmpty() && invItem.isEmpty() -> {
+                val newInvItem = dragItem.copy(count = 1)
+                dragItem.count -= 1
+                if (dragItem.count <= 0) {
+                    newInvItem to ItemStack.EMPTY
+                } else {
+                    newInvItem to dragItem
+                }
+            }
+
+            // 两者相同 => 合并 1 个
+            invItem.id == dragItem.id -> {
+                invItem.count += 1
+                dragItem.count -= 1
+                val newDrag = if (dragItem.count <= 0) ItemStack.EMPTY else dragItem
+                val newInv = if (invItem.count <= 0) ItemStack.EMPTY else invItem
+                newInv to newDrag
+            }
+
+            // 其他情况 => 不交换，保持原样
+            else -> invItem to dragItem
+        }
+    }
+
 
     fun displayInventory() {
         println("玩家物品栏:")

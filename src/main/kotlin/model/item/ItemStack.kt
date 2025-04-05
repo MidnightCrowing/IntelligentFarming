@@ -5,7 +5,8 @@ data class ItemStack(
     var count: Int,
 ) {
     init {
-        require(count in 0..64) { "物品数量必须在 0 到 64 之间" }
+        val maxCount: Int = ItemRegistry.getItemMaxCount(id)
+        require(count in 0..maxCount) { "$id 的物品数量必须在 0 到 $maxCount 之间" }
     }
 
     companion object {
@@ -13,4 +14,6 @@ data class ItemStack(
     }
 
     fun isEmpty(): Boolean = this == EMPTY
+
+    override fun toString() = if (isEmpty()) "${this::class.qualifiedName}.EMPTY" else super.toString()
 }

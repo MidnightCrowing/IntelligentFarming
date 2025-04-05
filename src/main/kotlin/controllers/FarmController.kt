@@ -10,10 +10,12 @@ import javax.swing.JOptionPane
 class FarmController(private val farmScreen: FarmScene) {
     private val window: Window = farmScreen.window
 
-    val cropInfo: CropInfoDisplayControllers = CropInfoDisplayControllers()
+    val cropInfo: CropInfoDisplayController = CropInfoDisplayController(this)
     val farmArea: FarmAreaController = FarmAreaController(this)
     val inventory: InventoryController = InventoryController(this)
+    val toolTrade: ToolTradeController = ToolTradeController(this)
     val trade: TradeController = TradeController(this)
+    val compost: CompostController = CompostController(this)
     val hotBar: HotBarController = HotBarController(this)
 
     fun update() = farmArea.update()
