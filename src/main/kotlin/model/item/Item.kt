@@ -19,6 +19,9 @@ data class Item(
     val textureEnum: TextureResourcesEnum,
     private val block: (FarmArea) -> FarmCropBase? = { null },
     val maxCount: Int = 64,
+
+    // 附魔属性
+    var fortune: Int = 0,  // 时运
 ) {
     fun getBlock(farmArea: FarmArea): FarmCropBase? {
         return block(farmArea)

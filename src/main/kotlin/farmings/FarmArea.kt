@@ -6,6 +6,8 @@ import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.model.item.ItemRenderCache
+import com.midnightcrowing.renderer.ItemRenderer
 import com.midnightcrowing.renderer.LineRenderer
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT
@@ -43,6 +45,12 @@ class FarmArea(
         controller.init(this, farmlandBoard, rowCount, columnCount)
     }
 
+    var mousePosition: Point? = null
+
+    // 缓存物品，最多缓存 10 个物品
+    var itemRenderCache: ItemRenderCache = ItemRenderCache(this, maxSize = 10)
+    var handheldItemRenderer: ItemRenderer? = null
+
     // region 位置计算 & 坐标转换
     /**
      * 获取指定位置的屏幕边界。
@@ -62,16 +70,15 @@ class FarmArea(
 
     /**
      * 根据鼠标坐标查找对应的农田位置。
-     * @param mouseX 鼠标X坐标
-     * @param mouseY 鼠标Y坐标
+     * @param pos 鼠标坐标
      * @return 如果找到有效位置，返回对应的(列, 行)索引；否则返回null
      */
-    private fun findMouseInField(mouseX: Double, mouseY: Double): GridPosition? {
+    private fun findMouseInField(pos: Point): GridPosition? {
         val vx: Point = (middlePoint - rightPoint) / columnCount
         val vy: Point = (middlePoint - leftPoint) / rowCount
 
-        val dx: Double = middlePoint.x - mouseX
-        val dy: Double = middlePoint.y - mouseY
+        val dx: Double = middlePoint.x - pos.x
+        val dy: Double = middlePoint.y - pos.y
 
         val determinant = vx.x * vy.y - vx.y * vy.x
         if (determinant == 0.0) return null
@@ -89,8 +96,12 @@ class FarmArea(
 
     // region 鼠标事件处理
     /* 交互状态 */
+    override fun onRightClick(e: MouseRightClickEvent) = controller.handleRightClick()
+
     override fun onMouseMove(e: MouseMoveEvent) {
-        controller.mousePosition = findMouseInField(e.x, e.y)?.takeIf { controller.isAvailable(it) }
+        val pos = Point(e.x, e.y)
+        mousePosition = pos
+        controller.mouseGridPosition = findMouseInField(pos)?.takeIf { controller.isAvailable(it) }
     }
 
     override fun onMousePress(e: MousePressedEvent) {
@@ -170,6 +181,7 @@ class FarmArea(
         controller.activeSeedCrop?.render()
         controller.cropsGrid.reversed().forEach { row -> row.reversed().forEach { it?.render() } }
         controller.particleSystem.render()
+        renderHandheldItem()
     }
 
     /**
@@ -177,7 +189,7 @@ class FarmArea(
      * 如果鼠标坐标有效，则绘制边界线。
      */
     private fun renderBorderline() {
-        val mousePosition = controller.mousePosition
+        val mousePosition = controller.mouseGridPosition
         if (mousePosition == null) return
 
         val point1 = Point(
@@ -197,6 +209,25 @@ class FarmArea(
             borderRenderer.y2 = points[i + 1].y
             borderRenderer.render()
         }
+    }
+
+    /**
+     * 渲染手持物品。
+     *
+     * 如果鼠标坐标和手持物品渲染器有效，则绘制手持物品。
+     */
+    private fun renderHandheldItem() {
+        if (controller.mouseGridPosition == null || mousePosition == null || handheldItemRenderer == null) {
+            return
+        }
+
+        handheldItemRenderer?.place(
+            mousePosition!!.x + 7,
+            mousePosition!!.y + 3,
+            mousePosition!!.x + 47,
+            mousePosition!!.y + 43
+        )
+        handheldItemRenderer?.render()
     }
 
     /**

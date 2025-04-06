@@ -20,9 +20,9 @@ open class Button(parent: Widget) : Widget(parent) {
 
     // 纹理映射，加载对应状态的按钮纹理
     private val textures: Map<ButtonTextures, Texture> = mapOf(
-        ButtonTextures.DEFAULT to TextureResourcesEnum.BUTTON_DEFAULT.texture,
-        ButtonTextures.HOVER to TextureResourcesEnum.BUTTON_HOVER.texture,
-        ButtonTextures.DISABLED to TextureResourcesEnum.BUTTON_DISABLED.texture
+        ButtonTextures.DEFAULT to TextureResourcesEnum.GUI_BUTTON_DEFAULT.texture,
+        ButtonTextures.HOVER to TextureResourcesEnum.GUI_BUTTON_HOVER.texture,
+        ButtonTextures.DISABLED to TextureResourcesEnum.GUI_BUTTON_DISABLED.texture
     )
 
     // 渲染器，默认使用 DEFAULT 纹理

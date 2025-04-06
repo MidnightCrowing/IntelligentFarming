@@ -98,12 +98,12 @@ open class Trade(
     }
 
     // region 渲染器 & 组件
-    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.TRADE.texture)
+    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.GUI_TRADE.texture)
     private val backgroundRender: RectangleRenderer = RectangleRenderer(
         color = floatArrayOf(0f, 0f, 0f, 0.73f),
     )
     private val unableArrowRenderer: TextureRenderer = TextureRenderer(
-        TextureResourcesEnum.TRADE_UNABLE_TO_TRADE.texture
+        TextureResourcesEnum.GUI_TRADE_UNABLE_TO_TRADE.texture
     )
     private var unableArrowBounds: ScreenBounds = ScreenBounds.EMPTY
     var showUnableArrow: Boolean = false
@@ -152,9 +152,9 @@ open class Trade(
     // 交易列表滚动条
     private val scrollRender: TextureRenderer = TextureRenderer(
         if (controller.tradeList.size > BUTTON_NUM) {
-            TextureResourcesEnum.TRADE_SCROLL_ACTIVE.texture
+            TextureResourcesEnum.GUI_TRADE_SCROLL_ACTIVE.texture
         } else {
-            TextureResourcesEnum.TRADE_SCROLL_DISABLED.texture
+            TextureResourcesEnum.GUI_TRADE_SCROLL_DISABLED.texture
         }
     )
     private val scrollBounds: ScreenBounds = ScreenBounds.EMPTY
@@ -251,6 +251,7 @@ open class Trade(
     /**
      * 处理物品交互
      * @param index 交易槽位索引
+     * @param exchangeFn 交换函数
      */
     private fun handleItemInteraction(index: Int, exchangeFn: (ItemStack, ItemStack) -> Pair<ItemStack, ItemStack>) {
         val tradeSlotItem = getTradeSlotItem(index)

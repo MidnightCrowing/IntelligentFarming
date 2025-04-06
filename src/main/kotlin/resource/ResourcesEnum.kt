@@ -3,135 +3,145 @@ package com.midnightcrowing.resource
 import java.io.InputStream
 
 enum class ResourcesEnum(private val resourcePath: String) {
+    ICON("/assets/farmland.png"), // 窗口图标
+
     /* region GUI */
-    INVENTORY("/assets/textures/gui/inventory.png"),
-    TOAST("/assets/textures/gui/toast.png"),
+    GUI_INVENTORY("/assets/textures/gui/inventory.png"),
+    GUI_TOAST("/assets/textures/gui/toast.png"),
 
     // hot bar
-    HOT_BAR("/assets/textures/gui/hot_bar/hot_bar.png"),
-    CHECK_BOX("/assets/textures/gui/hot_bar/check_box.png"),
+    GUI_HOT_BAR("/assets/textures/gui/hot_bar/hot_bar.png"),
+    GUI_CHECK_BOX("/assets/textures/gui/hot_bar/check_box.png"),
 
     // trade
-    TRADE("/assets/textures/gui/trade/trade.png"),
-    TRADE_BUTTON_ABLE_TO_TRADE("/assets/textures/gui/trade/button_able_to_trade.png"),
-    TRADE_BUTTON_UNABLE_TO_TRADE("/assets/textures/gui/trade/button_unable_to_trade.png"),
-    TRADE_SCROLL_ACTIVE("/assets/textures/gui/trade/scroll_active.png"),
-    TRADE_SCROLL_DISABLED("/assets/textures/gui/trade/scroll_disabled.png"),
-    TRADE_UNABLE_TO_TRADE("/assets/textures/gui/trade/unable_to_trade.png"),
+    GUI_TRADE("/assets/textures/gui/trade/trade.png"),
+    GUI_TRADE_BUTTON_ABLE_TO_TRADE("/assets/textures/gui/trade/button_able_to_trade.png"),
+    GUI_TRADE_BUTTON_UNABLE_TO_TRADE("/assets/textures/gui/trade/button_unable_to_trade.png"),
+    GUI_TRADE_SCROLL_ACTIVE("/assets/textures/gui/trade/scroll_active.png"),
+    GUI_TRADE_SCROLL_DISABLED("/assets/textures/gui/trade/scroll_disabled.png"),
+    GUI_TRADE_UNABLE_TO_TRADE("/assets/textures/gui/trade/unable_to_trade.png"),
 
     // compost
-    COMPOST("/assets/textures/gui/compost/compost.png"),
-    COMPOST_ARROW("/assets/textures/gui/compost/arrow.png"),
+    GUI_COMPOST("/assets/textures/gui/compost/compost.png"),
+    GUI_COMPOST_ARROW("/assets/textures/gui/compost/arrow.png"),
 
     // button
-    BUTTON_DEFAULT("/assets/textures/gui/button/button_default.png"),
-    BUTTON_HOVER("/assets/textures/gui/button/button_hover.png"),
-    BUTTON_DISABLED("/assets/textures/gui/button/button_disabled.png"),
+    GUI_BUTTON_DEFAULT("/assets/textures/gui/button/button_default.png"),
+    GUI_BUTTON_HOVER("/assets/textures/gui/button/button_hover.png"),
+    GUI_BUTTON_DISABLED("/assets/textures/gui/button/button_disabled.png"),
     /* endregion */
 
     /* region Font */
-    FONT_DEFAULT("/assets/textures/font/unifont-16.0.02.otf"),
+    FONT_UNIFONT("/assets/textures/font/unifont-16.0.02.otf"),
     /* endregion */
 
     /* region Background */
-    MAIN_MENU_BACKGROUND("/assets/textures/background/main_menu.jpg"),
-    FARM_BACKGROUND("/assets/textures/background/farm.png"),
+    BG_MAIN_MENU_BACKGROUND("/assets/textures/background/main_menu.jpg"),
+    BG_FARM_BACKGROUND("/assets/textures/background/farm.png"),
     /* endregion */
 
-    /* region Farming */
+    /* region Block */
     // Cabbage
-    CABBAGE_GROW_0("/assets/textures/farming/cabbage/cabbages0.png"),
-    CABBAGE_GROW_1("/assets/textures/farming/cabbage/cabbages1.png"),
-    CABBAGE_GROW_2("/assets/textures/farming/cabbage/cabbages2.png"),
-    CABBAGE_GROW_3("/assets/textures/farming/cabbage/cabbages3.png"),
-    CABBAGE_GROW_4("/assets/textures/farming/cabbage/cabbages4.png"),
-    CABBAGE_GROW_5("/assets/textures/farming/cabbage/cabbages5.png"),
-    CABBAGE_GROW_6("/assets/textures/farming/cabbage/cabbages6.png"),
-    CABBAGE_GROW_7("/assets/textures/farming/cabbage/cabbages7.png"),
+    BLOCK_CABBAGE_GROW_0("/assets/textures/farming/cabbage/cabbages0.png"),
+    BLOCK_CABBAGE_GROW_1("/assets/textures/farming/cabbage/cabbages1.png"),
+    BLOCK_CABBAGE_GROW_2("/assets/textures/farming/cabbage/cabbages2.png"),
+    BLOCK_CABBAGE_GROW_3("/assets/textures/farming/cabbage/cabbages3.png"),
+    BLOCK_CABBAGE_GROW_4("/assets/textures/farming/cabbage/cabbages4.png"),
+    BLOCK_CABBAGE_GROW_5("/assets/textures/farming/cabbage/cabbages5.png"),
+    BLOCK_CABBAGE_GROW_6("/assets/textures/farming/cabbage/cabbages6.png"),
+    BLOCK_CABBAGE_GROW_7("/assets/textures/farming/cabbage/cabbages7.png"),
 
     // Carrot
-    CARROT_GROW_0("/assets/textures/farming/carrot/carrots0.png"),
-    CARROT_GROW_2("/assets/textures/farming/carrot/carrots2.png"),
-    CARROT_GROW_4("/assets/textures/farming/carrot/carrots4.png"),
-    CARROT_GROW_7("/assets/textures/farming/carrot/carrots7.png"),
+    BLOCK_CARROT_GROW_0("/assets/textures/farming/carrot/carrots0.png"),
+    BLOCK_CARROT_GROW_2("/assets/textures/farming/carrot/carrots2.png"),
+    BLOCK_CARROT_GROW_4("/assets/textures/farming/carrot/carrots4.png"),
+    BLOCK_CARROT_GROW_7("/assets/textures/farming/carrot/carrots7.png"),
 
     // Corn
-    CORN_GROW_0("/assets/textures/farming/corn/corns0.png"),
-    CORN_GROW_1("/assets/textures/farming/corn/corns1.png"),
-    CORN_GROW_2("/assets/textures/farming/corn/corns2.png"),
-    CORN_GROW_3("/assets/textures/farming/corn/corns3.png"),
-    CORN_GROW_4("/assets/textures/farming/corn/corns4.png"),
-    CORN_GROW_5("/assets/textures/farming/corn/corns5.png"),
-    CORN_GROW_6("/assets/textures/farming/corn/corns6.png"),
-    CORN_GROW_7("/assets/textures/farming/corn/corns7.png"),
+    BLOCK_CORN_GROW_0("/assets/textures/farming/corn/corns0.png"),
+    BLOCK_CORN_GROW_1("/assets/textures/farming/corn/corns1.png"),
+    BLOCK_CORN_GROW_2("/assets/textures/farming/corn/corns2.png"),
+    BLOCK_CORN_GROW_3("/assets/textures/farming/corn/corns3.png"),
+    BLOCK_CORN_GROW_4("/assets/textures/farming/corn/corns4.png"),
+    BLOCK_CORN_GROW_5("/assets/textures/farming/corn/corns5.png"),
+    BLOCK_CORN_GROW_6("/assets/textures/farming/corn/corns6.png"),
+    BLOCK_CORN_GROW_7("/assets/textures/farming/corn/corns7.png"),
 
     // Cotton
-    COTTON_GROW_0("/assets/textures/farming/cotton/cottons0.png"),
-    COTTON_GROW_4("/assets/textures/farming/cotton/cottons4.png"),
-    COTTON_GROW_7("/assets/textures/farming/cotton/cottons7.png"),
+    BLOCK_COTTON_GROW_0("/assets/textures/farming/cotton/cottons0.png"),
+    BLOCK_COTTON_GROW_4("/assets/textures/farming/cotton/cottons4.png"),
+    BLOCK_COTTON_GROW_7("/assets/textures/farming/cotton/cottons7.png"),
 
     // Onion
-    ONION_GROW_0("/assets/textures/farming/onion/onions0.png"),
-    ONION_GROW_2("/assets/textures/farming/onion/onions2.png"),
-    ONION_GROW_4("/assets/textures/farming/onion/onions4.png"),
-    ONION_GROW_7("/assets/textures/farming/onion/onions7.png"),
+    BLOCK_ONION_GROW_0("/assets/textures/farming/onion/onions0.png"),
+    BLOCK_ONION_GROW_2("/assets/textures/farming/onion/onions2.png"),
+    BLOCK_ONION_GROW_4("/assets/textures/farming/onion/onions4.png"),
+    BLOCK_ONION_GROW_7("/assets/textures/farming/onion/onions7.png"),
 
     // Potato
-    POTATO_GROW_0("/assets/textures/farming/potato/potatoes0.png"),
-    POTATO_GROW_2("/assets/textures/farming/potato/potatoes2.png"),
-    POTATO_GROW_4("/assets/textures/farming/potato/potatoes4.png"),
-    POTATO_GROW_7("/assets/textures/farming/potato/potatoes7.png"),
+    BLOCK_POTATO_GROW_0("/assets/textures/farming/potato/potatoes0.png"),
+    BLOCK_POTATO_GROW_2("/assets/textures/farming/potato/potatoes2.png"),
+    BLOCK_POTATO_GROW_4("/assets/textures/farming/potato/potatoes4.png"),
+    BLOCK_POTATO_GROW_7("/assets/textures/farming/potato/potatoes7.png"),
 
     // Tomato
-    BUDDING_TOMATO_GROW_0("/assets/textures/farming/tomato/budding_tomatoes0.png"),
-    BUDDING_TOMATO_GROW_1("/assets/textures/farming/tomato/budding_tomatoes1.png"),
-    BUDDING_TOMATO_GROW_2("/assets/textures/farming/tomato/budding_tomatoes2.png"),
-    BUDDING_TOMATO_GROW_3("/assets/textures/farming/tomato/budding_tomatoes3.png"),
-    BUDDING_TOMATO_GROW_4("/assets/textures/farming/tomato/budding_tomatoes4.png"),
-    TOMATO_GROW_0("/assets/textures/farming/tomato/tomatoes0.png"),
-    TOMATO_GROW_1("/assets/textures/farming/tomato/tomatoes1.png"),
-    TOMATO_GROW_2("/assets/textures/farming/tomato/tomatoes2.png"),
-    TOMATO_GROW_3("/assets/textures/farming/tomato/tomatoes3.png"),
+    BLOCK_BUDDING_TOMATO_GROW_0("/assets/textures/farming/tomato/budding_tomatoes0.png"),
+    BLOCK_BUDDING_TOMATO_GROW_1("/assets/textures/farming/tomato/budding_tomatoes1.png"),
+    BLOCK_BUDDING_TOMATO_GROW_2("/assets/textures/farming/tomato/budding_tomatoes2.png"),
+    BLOCK_BUDDING_TOMATO_GROW_3("/assets/textures/farming/tomato/budding_tomatoes3.png"),
+    BLOCK_BUDDING_TOMATO_GROW_4("/assets/textures/farming/tomato/budding_tomatoes4.png"),
+    BLOCK_TOMATO_GROW_0("/assets/textures/farming/tomato/tomatoes0.png"),
+    BLOCK_TOMATO_GROW_1("/assets/textures/farming/tomato/tomatoes1.png"),
+    BLOCK_TOMATO_GROW_2("/assets/textures/farming/tomato/tomatoes2.png"),
+    BLOCK_TOMATO_GROW_3("/assets/textures/farming/tomato/tomatoes3.png"),
 
     // Wheat
-    WHEAT_GROW_0("/assets/textures/farming/wheat/wheat0.png"),
-    WHEAT_GROW_1("/assets/textures/farming/wheat/wheat1.png"),
-    WHEAT_GROW_2("/assets/textures/farming/wheat/wheat2.png"),
-    WHEAT_GROW_3("/assets/textures/farming/wheat/wheat3.png"),
-    WHEAT_GROW_4("/assets/textures/farming/wheat/wheat4.png"),
-    WHEAT_GROW_5("/assets/textures/farming/wheat/wheat5.png"),
-    WHEAT_GROW_6("/assets/textures/farming/wheat/wheat6.png"),
-    WHEAT_GROW_7("/assets/textures/farming/wheat/wheat7.png"),
+    BLOCK_WHEAT_GROW_0("/assets/textures/farming/wheat/wheat0.png"),
+    BLOCK_WHEAT_GROW_1("/assets/textures/farming/wheat/wheat1.png"),
+    BLOCK_WHEAT_GROW_2("/assets/textures/farming/wheat/wheat2.png"),
+    BLOCK_WHEAT_GROW_3("/assets/textures/farming/wheat/wheat3.png"),
+    BLOCK_WHEAT_GROW_4("/assets/textures/farming/wheat/wheat4.png"),
+    BLOCK_WHEAT_GROW_5("/assets/textures/farming/wheat/wheat5.png"),
+    BLOCK_WHEAT_GROW_6("/assets/textures/farming/wheat/wheat6.png"),
+    BLOCK_WHEAT_GROW_7("/assets/textures/farming/wheat/wheat7.png"),
+
+    // Composter
+    BLOCK_COMPOSTER_0("/assets/textures/block/composter/composter0.png"),
+    BLOCK_COMPOSTER_4("/assets/textures/block/composter/composter4.png"),
+    BLOCK_COMPOSTER_5("/assets/textures/block/composter/composter5.png"),
+    BLOCK_COMPOSTER_6("/assets/textures/block/composter/composter6.png"),
+    BLOCK_COMPOSTER_7("/assets/textures/block/composter/composter7.png"),
+    BLOCK_COMPOSTER_8("/assets/textures/block/composter/composter8.png"),
     /* endregion */
 
     /* region Item */
-    ANVIL("/assets/textures/item/anvil.png"),
-    BONE_MEAL("/assets/textures/item/bone_meal.png"),
-    CABBAGE("/assets/textures/item/cabbage.png"),
-    CABBAGE_SEED("/assets/textures/item/cabbage_seed.png"),
-    CARROT("/assets/textures/item/carrot.png"),
-    CHEST("/assets/textures/item/chest.png"),
-    COMPOSTER("/assets/textures/item/composter.png"),
-    CORN("/assets/textures/item/corn.png"),
-    CORN_SEED("/assets/textures/item/corn_seed.png"),
-    COTTON("/assets/textures/item/cotton.png"),
-    COTTON_SEED("/assets/textures/item/cotton_seed.png"),
-    DIAMOND_HOE("/assets/textures/item/diamond_hoe.png"),
-    EMERALD("/assets/textures/item/emerald.png"),
-    EMPTY_SLOT_EMERALD("/assets/textures/item/empty_slot_emerald.png"),
-    EMPTY_SLOT_HOE("/assets/textures/item/empty_slot_hoe.png"),
-    GOLDEN_CARROT("/assets/textures/item/golden_carrot.png"),
-    GOLDEN_HOE("/assets/textures/item/golden_hoe.png"),
-    IRON_HOE("/assets/textures/item/iron_hoe.png"),
-    NETHERITE_HOE("/assets/textures/item/netherite_hoe.png"),
-    ONION("/assets/textures/item/onion.png"),
-    POTATO("/assets/textures/item/potato.png"),
-    TOMATO("/assets/textures/item/tomato.png"),
-    TOMATO_SEED("/assets/textures/item/tomato_seed.png"),
-    VILLAGER_SPAWN_EGG("/assets/textures/item/villager_spawn_egg.png"),
-    WHEAT("/assets/textures/item/wheat.png"),
-    WHEAT_SEED("/assets/textures/item/wheat_seed.png"),
-    WRITABLE_BOOK("/assets/textures/item/writable_book.png"),
+    ITEM_ANVIL("/assets/textures/item/anvil.png"),
+    ITEM_BONE_MEAL("/assets/textures/item/bone_meal.png"),
+    ITEM_CABBAGE("/assets/textures/item/cabbage.png"),
+    ITEM_CABBAGE_SEED("/assets/textures/item/cabbage_seed.png"),
+    ITEM_CARROT("/assets/textures/item/carrot.png"),
+    ITEM_CHEST("/assets/textures/item/chest.png"),
+    ITEM_COMPOSTER("/assets/textures/item/composter.png"),
+    ITEM_CORN("/assets/textures/item/corn.png"),
+    ITEM_CORN_SEED("/assets/textures/item/corn_seed.png"),
+    ITEM_COTTON("/assets/textures/item/cotton.png"),
+    ITEM_COTTON_SEED("/assets/textures/item/cotton_seed.png"),
+    ITEM_DIAMOND_HOE("/assets/textures/item/diamond_hoe.png"),
+    ITEM_EMERALD("/assets/textures/item/emerald.png"),
+    ITEM_EMPTY_SLOT_EMERALD("/assets/textures/item/empty_slot_emerald.png"),
+    ITEM_EMPTY_SLOT_HOE("/assets/textures/item/empty_slot_hoe.png"),
+    ITEM_GOLDEN_CARROT("/assets/textures/item/golden_carrot.png"),
+    ITEM_GOLDEN_HOE("/assets/textures/item/golden_hoe.png"),
+    ITEM_IRON_HOE("/assets/textures/item/iron_hoe.png"),
+    ITEM_NETHERITE_HOE("/assets/textures/item/netherite_hoe.png"),
+    ITEM_ONION("/assets/textures/item/onion.png"),
+    ITEM_POTATO("/assets/textures/item/potato.png"),
+    ITEM_TOMATO("/assets/textures/item/tomato.png"),
+    ITEM_TOMATO_SEED("/assets/textures/item/tomato_seed.png"),
+    ITEM_VILLAGER_SPAWN_EGG("/assets/textures/item/villager_spawn_egg.png"),
+    ITEM_WHEAT("/assets/textures/item/wheat.png"),
+    ITEM_WHEAT_SEED("/assets/textures/item/wheat_seed.png"),
+    ITEM_WRITABLE_BOOK("/assets/textures/item/writable_book.png"),
     /* endregion */
 
     ;

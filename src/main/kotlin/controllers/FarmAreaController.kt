@@ -4,6 +4,20 @@ import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
 import com.midnightcrowing.gui.publics.CropInfoDisplay
 import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.model.item.Item
+import com.midnightcrowing.model.item.Items.BONE_MEAL
+import com.midnightcrowing.model.item.Items.CABBAGE_SEED
+import com.midnightcrowing.model.item.Items.CARROT
+import com.midnightcrowing.model.item.Items.CORN_SEED
+import com.midnightcrowing.model.item.Items.COTTON_SEED
+import com.midnightcrowing.model.item.Items.DIAMOND_HOE
+import com.midnightcrowing.model.item.Items.GOLDEN_HOE
+import com.midnightcrowing.model.item.Items.IRON_HOE
+import com.midnightcrowing.model.item.Items.NETHERITE_HOE
+import com.midnightcrowing.model.item.Items.ONION
+import com.midnightcrowing.model.item.Items.POTATO
+import com.midnightcrowing.model.item.Items.TOMATO_SEED
+import com.midnightcrowing.model.item.Items.WHEAT_SEED
 import com.midnightcrowing.particles.ParticleSystem
 
 class FarmAreaController(farmController: FarmController) {
@@ -35,15 +49,31 @@ class FarmAreaController(farmController: FarmController) {
             field = value?.apply {
                 setShadow()
                 setHidden(field?.isVisible == false)
-                place(field?.widgetBounds ?: ScreenBounds.EMPTY)
+                place(field?.bounds ?: ScreenBounds.EMPTY)
             }
+        }
+
+    // 手持物品
+    // 可展示的物品列表
+    private val displayedItemIds: Set<String> = setOf(
+        CARROT.id, ONION.id, POTATO.id,                                                // 作物种子
+        CABBAGE_SEED.id, CORN_SEED.id, COTTON_SEED.id, TOMATO_SEED.id, WHEAT_SEED.id,  // 作物种子
+        IRON_HOE.id, GOLDEN_HOE.id, DIAMOND_HOE.id, NETHERITE_HOE.id,                  // 工具
+        BONE_MEAL.id                                                                   // 骨粉
+    )
+    var handheldItem: Item? = null
+        set(value) {
+            field = value
+            farmArea.handheldItemRenderer = value
+                ?.takeIf { it.id in displayedItemIds }
+                ?.let { farmArea.itemRenderCache.getItemCache(it.id) }
         }
 
     // 粒子系统，用于生成和管理粒子效果
     val particleSystem: ParticleSystem = ParticleSystem()
 
     // 鼠标参数
-    var mousePosition: GridPosition? = null  // 当前鼠标悬停位置
+    var mouseGridPosition: GridPosition? = null  // 当前鼠标悬停位置
     var isLeftClick: Boolean = false
     var isRightClick: Boolean = false
 
@@ -81,47 +111,67 @@ class FarmAreaController(farmController: FarmController) {
         cropInfo.update()
         particleSystem.update(0.016f) // Assuming 60 FPS, so deltaTime is approximately 1/60
 
-        if (mousePosition != null) {
-            if (!mousePosition!!.hasCrop()) {
+        if (mouseGridPosition != null) {
+            if (!mouseGridPosition!!.hasCrop()) {
                 activeSeedCrop?.setHidden(false)
-                activeSeedCrop?.place(farmArea.getBlockBounds(mousePosition!!))
+                activeSeedCrop?.place(farmArea.getBlockBounds(mouseGridPosition!!))
             } else {
                 activeSeedCrop?.setHidden(true)
             }
             when {
-                isLeftClick -> handleLeftClick()
-                isRightClick -> handleRightClick()
+                isLeftClick -> handleLeftKeepClick()
+                isRightClick -> handleRightKeepClick()
             }
         } else {
             activeSeedCrop?.setHidden(true)
         }
 
-        cropInfoController.update(mousePosition?.crop)
+        cropInfoController.update(mouseGridPosition?.crop)
     }
 
     /**
-     * 处理鼠标左键点击事件。
+     * 处理鼠标右键单次点击事件。
      */
-    private fun handleLeftClick() {
-        if (mousePosition!!.hasCrop()) {
-            // 如果有作物，尝试移除
-            generateParticles(mousePosition!!.crop!!, mousePosition!!)
-            removeCrop(mousePosition!!)
+    fun handleRightClick() {
+        if (mouseGridPosition!!.hasCrop()) {
+            // 检查手持物品是否是骨粉
+            handheldItem?.takeIf { it.id == BONE_MEAL.id }?.let {
+                // 使用骨粉
+                if (mouseGridPosition!!.crop!!.applyBoneMeal()) {
+                    hotController.onUseBoneMeal()
+                }
+            }
         }
     }
 
     /**
-     * 处理鼠标右键点击事件。
+     * 处理鼠标左键连续点击事件。
      */
-    private fun handleRightClick() {
-        if (!mousePosition!!.hasCrop()) {
+    private fun handleLeftKeepClick() {
+        if (mouseGridPosition!!.hasCrop()) {
+            // 如果有作物，尝试移除
+            generateParticles(mouseGridPosition!!.crop!!, mouseGridPosition!!)
+            removeCrop(mouseGridPosition!!)
+        }
+    }
+
+    /**
+     * 处理鼠标右键连续点击事件。
+     */
+    private fun handleRightKeepClick() {
+        if (!mouseGridPosition!!.hasCrop()) {
             // 如果没有作物，尝试种植
-            if (activeSeedCrop != null) {
-                plantCropAt(mousePosition!!)
-            }
+            activeSeedCrop?.let { plantCropAt(mouseGridPosition!!) }
         } else {
-            // 如果有作物，尝试执行作物的右键操作
-            mousePosition!!.crop!!.onFarmRightClick()
+            // 如果有作物，且不手持骨粉，尝试执行作物的右键操作
+            if (handheldItem?.id != BONE_MEAL.id) {
+                mouseGridPosition!!.crop!!.onFarmRightClick(getToolFortune())
+                    ?.filter { !it.isEmpty() && it.count > 0 }
+                    ?.forEach {
+                        invController.addItem(it)
+                        hotController.update()
+                    }
+            }
         }
     }
 
@@ -145,7 +195,7 @@ class FarmAreaController(farmController: FarmController) {
     private fun removeCrop(pos: GridPosition) {
         pos.crop?.let { crop ->
             // 获取掉落物
-            for (item in crop.getDrops()) {
+            for (item in crop.getDrops(getToolFortune())) {
                 if (item.isEmpty() || item.count <= 0) continue
                 invController.addItem(item)
                 hotController.update()
@@ -154,6 +204,14 @@ class FarmAreaController(farmController: FarmController) {
             crop.cleanup()
         }
         cropsGrid[pos.y][pos.x] = null
+    }
+
+    /**
+     * 获取当前手持工具的时运值。
+     * @return 当前工具的时运值
+     */
+    private fun getToolFortune(): Int {
+        return hotController.getSelectedItem()?.fortune ?: 0
     }
 
     /**

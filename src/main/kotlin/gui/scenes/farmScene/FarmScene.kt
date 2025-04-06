@@ -36,7 +36,7 @@ class FarmScene(window: Window) : Screen(window) {
         )
     }
 
-    override val bgRenderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.FARM_BACKGROUND.texture)
+    override val bgRenderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.BG_FARM_BACKGROUND.texture)
 
     // controller
     private val controller: FarmController = FarmController(this)

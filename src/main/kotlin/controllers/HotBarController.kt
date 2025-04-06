@@ -12,7 +12,6 @@ class HotBarController(farmController: FarmController) {
     private val areaController: FarmAreaController = farmController.farmArea
     private val farmArea: FarmArea by lazy { areaController.farmArea }
 
-    val defaultSelectId: Int = 0 // 默认选中项的ID
     val itemsList: List<ItemStack> get() = invController.hotBarItems
 
     // 当前选中网格 ID
@@ -27,6 +26,7 @@ class HotBarController(farmController: FarmController) {
 
             val item: Item? = ItemRegistry.getItem(itemsList[value].id)
             hotBar.setItemLabelText(item?.name)
+            areaController.handheldItem = item
             areaController.activeSeedCrop = item?.getBlock(farmArea)
 
             field = value
@@ -34,11 +34,28 @@ class HotBarController(farmController: FarmController) {
 
     fun init(hotBar: HotBar) {
         this.hotBar = hotBar
-        this.selectedGridId = defaultSelectId
+        this.selectedGridId = 0 // 默认选中项的ID
     }
 
+    /**
+     * 获取当前选中的物品数据
+     */
+    fun getSelectedItemStack(): ItemStack {
+        return itemsList[selectedGridId]
+    }
+
+    /**
+     * 获取当前选中的物品类
+     */
+    fun getSelectedItem(): Item? {
+        return ItemRegistry.getItem(itemsList[selectedGridId].id)
+    }
+
+    /**
+     * 处理种植作物的事件
+     */
     fun onPlantCrop() {
-        val item = itemsList[selectedGridId]
+        val item = getSelectedItemStack()
         if (!item.isEmpty()) {
             item.count -= 1
             if (item.count <= 0) {
@@ -49,6 +66,11 @@ class HotBarController(farmController: FarmController) {
             }
         }
     }
+
+    /**
+     * 处理使用骨粉的事件
+     */
+    fun onUseBoneMeal() = onPlantCrop()
 
     fun update() {
         this.selectedGridId = selectedGridId

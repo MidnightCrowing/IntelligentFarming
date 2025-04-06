@@ -103,7 +103,6 @@ open class TradeController(farmController: FarmController) {
         trade.showUnableArrow = recipe != null && !recipe.isTradeable
     }
 
-
     /**
      * 执行交易操作
      * @param validationCallback 验证交易是否能成功的回调

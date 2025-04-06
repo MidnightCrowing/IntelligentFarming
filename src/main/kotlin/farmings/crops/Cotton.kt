@@ -10,23 +10,23 @@ import com.midnightcrowing.resource.TextureResourcesEnum
 
 class Cotton(farmArea: FarmArea) : FarmCropBase(farmArea) {
     override val growDuringTextures: Map<Int, Texture> = mapOf(
-        0 to TextureResourcesEnum.COTTON_GROW_0.texture,
-        1 to TextureResourcesEnum.COTTON_GROW_0.texture,
-        2 to TextureResourcesEnum.COTTON_GROW_0.texture,
-        3 to TextureResourcesEnum.COTTON_GROW_0.texture,
-        4 to TextureResourcesEnum.COTTON_GROW_4.texture,
-        5 to TextureResourcesEnum.COTTON_GROW_4.texture,
-        6 to TextureResourcesEnum.COTTON_GROW_4.texture,
-        7 to TextureResourcesEnum.COTTON_GROW_7.texture
+        0 to TextureResourcesEnum.BLOCK_COTTON_GROW_0.texture,
+        1 to TextureResourcesEnum.BLOCK_COTTON_GROW_0.texture,
+        2 to TextureResourcesEnum.BLOCK_COTTON_GROW_0.texture,
+        3 to TextureResourcesEnum.BLOCK_COTTON_GROW_0.texture,
+        4 to TextureResourcesEnum.BLOCK_COTTON_GROW_4.texture,
+        5 to TextureResourcesEnum.BLOCK_COTTON_GROW_4.texture,
+        6 to TextureResourcesEnum.BLOCK_COTTON_GROW_4.texture,
+        7 to TextureResourcesEnum.BLOCK_COTTON_GROW_7.texture
     )
 
     override fun getItemStack(): ItemStack =
         if (isFullyGrown) ItemStack(COTTON.id, 1) else ItemStack(COTTON_SEED.id, 1)
 
-    override fun getDrops(): Array<ItemStack> {
+    override fun getDrops(l: Int): Array<ItemStack> {
         return if (isFullyGrown) {
             arrayOf(
-                ItemStack(COTTON_SEED.id, 1 + generateDropCount(n = 4, p = 4.0 / 7)),
+                ItemStack(COTTON_SEED.id, 1 + generateDropCount(n = 4, l = l, p = 4.0 / 7)),
                 ItemStack(COTTON.id, 1),
             )
         } else {
@@ -35,11 +35,4 @@ class Cotton(farmArea: FarmArea) : FarmCropBase(farmArea) {
     }
 
     override fun toString(): String = "棉花"
-
-    override fun copy(): Cotton {
-        val newCotton = Cotton(farmArea)
-        newCotton.place(this.widgetBounds)
-        newCotton.nowTextures = newCotton.nowTextures
-        return newCotton
-    }
 }

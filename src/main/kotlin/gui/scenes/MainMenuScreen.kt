@@ -9,7 +9,7 @@ import com.midnightcrowing.renderer.TextureRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
 
 class MainMenuScreen(window: Window) : Screen(window) {
-    override val bgRenderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.MAIN_MENU_BACKGROUND.texture)
+    override val bgRenderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.BG_MAIN_MENU_BACKGROUND.texture)
 
     private val controller = MainMenuController(window)
     private val buttonLayout = ButtonLayout(this, offsetY = 0.12)

@@ -6,7 +6,7 @@ import com.midnightcrowing.renderer.TextureRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
 
 class ItemCheckBox(parent: Widget) : Widget(parent) {
-    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.CHECK_BOX.texture)
+    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.GUI_CHECK_BOX.texture)
 
     private var boundsNow: ScreenBounds = ScreenBounds.EMPTY
     private var boundsTarget: ScreenBounds = ScreenBounds.EMPTY

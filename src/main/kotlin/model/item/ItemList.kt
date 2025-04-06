@@ -15,6 +15,8 @@ class ItemList(size: Int) {
 
     fun isEmpty(index: Int): Boolean = items[index].isEmpty()
 
+    fun isListEmpty(): Boolean = items.all { it.isEmpty() }
+
     fun slice(ints: IntRange): List<ItemStack> {
         require(ints.first >= 0 && ints.last < items.size) { "Index out of bounds: $ints" }
         return items.slice(ints)
@@ -22,5 +24,16 @@ class ItemList(size: Int) {
 
     fun <R> map(transform: (ItemStack) -> R): List<R> {
         return items.map(transform)
+    }
+
+    fun <R, C : MutableCollection<in R>> mapTo(destination: C, transform: (ItemStack) -> R): C {
+        for (i in 0 until this.size()) {
+            destination.add(transform(this[i]))
+        }
+        return destination
+    }
+
+    fun forEachIndexed(action: (index: Int, item: ItemStack) -> Unit) {
+        items.forEachIndexed(action)
     }
 }

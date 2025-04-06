@@ -119,16 +119,10 @@ class InventoryLayout(
     // region 事件处理
     /**
      * 处理物品交互
-     * @param x 鼠标X坐标
-     * @param y 鼠标Y坐标
      * @param exchangeFn 交换函数
      */
-    private fun handleItemInteraction(
-        x: Double,
-        y: Double,
-        exchangeFn: (ItemStack, ItemStack) -> Pair<ItemStack, ItemStack>,
-    ) {
-        Point(x, y).index?.let { index ->
+    private fun handleItemInteraction(exchangeFn: (ItemStack, ItemStack) -> Pair<ItemStack, ItemStack>) {
+        mouseIndex?.let { index ->
             val invItem = controller.popItem(index)
             val dragItem = dragWidget.item
 
@@ -142,11 +136,11 @@ class InventoryLayout(
 
     override fun onClick(e: MouseClickEvent) {
         if (isShiftPressed) return
-        handleItemInteraction(e.x, e.y, controller::exchangeAndMergeItems)
+        handleItemInteraction(controller::exchangeAndMergeItems)
     }
 
     override fun onRightClick(e: MouseRightClickEvent) {
-        handleItemInteraction(e.x, e.y, controller::rightClickExchangeItems)
+        handleItemInteraction(controller::rightClickExchangeItems)
     }
 
     override fun onMousePress(e: MousePressedEvent) {
@@ -166,11 +160,11 @@ class InventoryLayout(
         mousePosition = pos
         mouseIndex = pos.index
 
-        maskActiveBgBounds = pos.bagBarGridPosition
-            ?.let { calculateBagBarGridBounds(it.first, it.second) }
-            ?: pos.quickBarGridPosition
-                ?.let { calculateQuickBarGridBounds(it) }
-
+        maskActiveBgBounds = pos.bagBarGridPosition?.let {
+            calculateBagBarGridBounds(it.first, it.second)
+        } ?: pos.quickBarGridPosition?.let {
+            calculateQuickBarGridBounds(it)
+        }
         maskActiveBgBounds?.let {
             maskActiveBgRender.apply { x1 = it.x1; y1 = it.y1; x2 = it.x2 + 1; y2 = it.y2 + 1 }
         }
@@ -232,8 +226,8 @@ class InventoryLayout(
             renderItem(item, calculateBagBarGridBounds(index % bagBarColNum, index / bagBarColNum))
         }
 
-        // 清理不在items里的物品
-        itemRenderCache.retainAll(controller.items.map { it.id })
+        // 清理不在itemList里的物品
+        itemRenderCache.retainAll(controller.items)
     }
 
     /**

@@ -23,14 +23,14 @@ class TradeButton(parent: Widget, val tradeRecipe: TradeRecipe) : Button(parent)
         private val BASE_TRADE_ARROW_BOUNDS = ScreenBounds(x1 = 219.0, y1 = 20.0, x2 = 259.0, y2 = 56.0)
     }
 
-    private val tradeArrowRender = TextureRenderer(TextureResourcesEnum.TRADE_BUTTON_ABLE_TO_TRADE.texture)
+    private val tradeArrowRender = TextureRenderer(TextureResourcesEnum.GUI_TRADE_BUTTON_ABLE_TO_TRADE.texture)
 
     var isTradeable: Boolean = true
         set(value) {
             field = value
             tradeArrowRender.texture =
-                if (value) TextureResourcesEnum.TRADE_BUTTON_ABLE_TO_TRADE.texture
-                else TextureResourcesEnum.TRADE_BUTTON_UNABLE_TO_TRADE.texture
+                if (value) TextureResourcesEnum.GUI_TRADE_BUTTON_ABLE_TO_TRADE.texture
+                else TextureResourcesEnum.GUI_TRADE_BUTTON_UNABLE_TO_TRADE.texture
         }
 
     // 鼠标位置

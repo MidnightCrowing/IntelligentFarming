@@ -40,14 +40,14 @@ class HotBar(parent: Widget, private val controller: HotBarController) : Widget(
     }
 
     // 渲染器
-    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.HOT_BAR.texture)
+    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.GUI_HOT_BAR.texture)
     private val itemLabelRenderer: TextRenderer = TextRenderer(window.nvg).apply { fontSize = 20.0 }
 
     // 物品选中框
     val itemCheckBox: ItemCheckBox = ItemCheckBox(this)
 
     // 物品缓存，避免每次渲染时重复创建
-    val itemRenderCache: ItemRenderCache = ItemRenderCache(this)
+    private val itemRenderCache: ItemRenderCache = ItemRenderCache(this)
 
     // 上次呈现文本的时间
     private var textRenderTime: Long = GameTick.tick

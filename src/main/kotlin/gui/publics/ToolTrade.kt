@@ -14,8 +14,8 @@ class ToolTrade(
     override val titleTextRenderer: TextRenderer = TextRenderer.createTextRendererForGUI(window.nvg)
         .apply { text = "工具商" }
 
-    private var tradeEmptySlot0: TextureRenderer = TextureRenderer(TextureResourcesEnum.EMPTY_SLOT_HOE.texture)
-    private var tradeEmptySlot1: TextureRenderer = TextureRenderer(TextureResourcesEnum.EMPTY_SLOT_EMERALD.texture)
+    private var tradeEmptySlot0: TextureRenderer = TextureRenderer(TextureResourcesEnum.ITEM_EMPTY_SLOT_HOE.texture)
+    private var tradeEmptySlot1: TextureRenderer = TextureRenderer(TextureResourcesEnum.ITEM_EMPTY_SLOT_EMERALD.texture)
 
     override fun doRender() {
         if (tradeSlot0Item.isEmpty()) {

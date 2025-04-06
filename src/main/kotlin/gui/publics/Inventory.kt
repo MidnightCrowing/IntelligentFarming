@@ -41,7 +41,7 @@ class Inventory(
     }
 
     // 渲染器 & 组件
-    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.INVENTORY.texture)
+    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.GUI_INVENTORY.texture)
     private val backgroundRender: RectangleRenderer = RectangleRenderer(
         color = floatArrayOf(0f, 0f, 0f, 0.73f),
     )

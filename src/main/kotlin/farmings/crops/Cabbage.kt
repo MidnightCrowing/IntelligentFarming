@@ -10,23 +10,23 @@ import com.midnightcrowing.resource.TextureResourcesEnum
 
 class Cabbage(farmArea: FarmArea) : FarmCropBase(farmArea) {
     override val growDuringTextures: Map<Int, Texture> = mapOf(
-        0 to TextureResourcesEnum.CABBAGE_GROW_0.texture,
-        1 to TextureResourcesEnum.CABBAGE_GROW_1.texture,
-        2 to TextureResourcesEnum.CABBAGE_GROW_2.texture,
-        3 to TextureResourcesEnum.CABBAGE_GROW_3.texture,
-        4 to TextureResourcesEnum.CABBAGE_GROW_4.texture,
-        5 to TextureResourcesEnum.CABBAGE_GROW_5.texture,
-        6 to TextureResourcesEnum.CABBAGE_GROW_6.texture,
-        7 to TextureResourcesEnum.CABBAGE_GROW_7.texture
+        0 to TextureResourcesEnum.BLOCK_CABBAGE_GROW_0.texture,
+        1 to TextureResourcesEnum.BLOCK_CABBAGE_GROW_1.texture,
+        2 to TextureResourcesEnum.BLOCK_CABBAGE_GROW_2.texture,
+        3 to TextureResourcesEnum.BLOCK_CABBAGE_GROW_3.texture,
+        4 to TextureResourcesEnum.BLOCK_CABBAGE_GROW_4.texture,
+        5 to TextureResourcesEnum.BLOCK_CABBAGE_GROW_5.texture,
+        6 to TextureResourcesEnum.BLOCK_CABBAGE_GROW_6.texture,
+        7 to TextureResourcesEnum.BLOCK_CABBAGE_GROW_7.texture
     )
 
     override fun getItemStack(): ItemStack =
         if (isFullyGrown) ItemStack(CABBAGE.id, 1) else ItemStack(CABBAGE_SEED.id, 1)
 
-    override fun getDrops(): Array<ItemStack> {
+    override fun getDrops(l: Int): Array<ItemStack> {
         return if (isFullyGrown) {
             arrayOf(
-                ItemStack(CABBAGE_SEED.id, 1 + generateDropCount(n = 3, p = 8.0 / 15)),
+                ItemStack(CABBAGE_SEED.id, 1 + generateDropCount(n = 3, l = l, p = 8.0 / 15)),
                 ItemStack(CABBAGE.id, 1),
             )
         } else {
@@ -35,11 +35,4 @@ class Cabbage(farmArea: FarmArea) : FarmCropBase(farmArea) {
     }
 
     override fun toString(): String = "卷心菜"
-
-    override fun copy(): Cabbage {
-        val newCabbage = Cabbage(farmArea)
-        newCabbage.place(this.widgetBounds)
-        newCabbage.nowTextures = newCabbage.nowTextures
-        return newCabbage
-    }
 }

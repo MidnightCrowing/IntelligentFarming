@@ -18,7 +18,10 @@ class FarmController(private val farmScreen: FarmScene) {
     val compost: CompostController = CompostController(this)
     val hotBar: HotBarController = HotBarController(this)
 
-    fun update() = farmArea.update()
+    fun update() {
+        farmArea.update()
+        compost.update()
+    }
 
     private fun openUrl(url: String) {
         if (Desktop.isDesktopSupported()) {

@@ -10,23 +10,23 @@ import com.midnightcrowing.resource.TextureResourcesEnum
 
 class Wheat(farmArea: FarmArea) : FarmCropBase(farmArea) {
     override val growDuringTextures: Map<Int, Texture> = mapOf(
-        0 to TextureResourcesEnum.WHEAT_GROW_0.texture,
-        1 to TextureResourcesEnum.WHEAT_GROW_1.texture,
-        2 to TextureResourcesEnum.WHEAT_GROW_2.texture,
-        3 to TextureResourcesEnum.WHEAT_GROW_3.texture,
-        4 to TextureResourcesEnum.WHEAT_GROW_4.texture,
-        5 to TextureResourcesEnum.WHEAT_GROW_5.texture,
-        6 to TextureResourcesEnum.WHEAT_GROW_6.texture,
-        7 to TextureResourcesEnum.WHEAT_GROW_7.texture
+        0 to TextureResourcesEnum.BLOCK_WHEAT_GROW_0.texture,
+        1 to TextureResourcesEnum.BLOCK_WHEAT_GROW_1.texture,
+        2 to TextureResourcesEnum.BLOCK_WHEAT_GROW_2.texture,
+        3 to TextureResourcesEnum.BLOCK_WHEAT_GROW_3.texture,
+        4 to TextureResourcesEnum.BLOCK_WHEAT_GROW_4.texture,
+        5 to TextureResourcesEnum.BLOCK_WHEAT_GROW_5.texture,
+        6 to TextureResourcesEnum.BLOCK_WHEAT_GROW_6.texture,
+        7 to TextureResourcesEnum.BLOCK_WHEAT_GROW_7.texture
     )
 
     override fun getItemStack(): ItemStack =
         if (isFullyGrown) ItemStack(WHEAT.id, 1) else ItemStack(WHEAT_SEED.id, 1)
 
-    override fun getDrops(): Array<ItemStack> {
+    override fun getDrops(l: Int): Array<ItemStack> {
         return if (isFullyGrown) {
             arrayOf(
-                ItemStack(WHEAT_SEED.id, 1 + generateDropCount(n = 3, p = 4.0 / 7)),
+                ItemStack(WHEAT_SEED.id, 1 + generateDropCount(n = 3, l = l, p = 4.0 / 7)),
                 ItemStack(WHEAT.id, 1),
             )
         } else {
@@ -35,11 +35,4 @@ class Wheat(farmArea: FarmArea) : FarmCropBase(farmArea) {
     }
 
     override fun toString(): String = "小麦"
-
-    override fun copy(): Wheat {
-        val newWheat = Wheat(farmArea)
-        newWheat.place(this.widgetBounds)
-        newWheat.nowTextures = newWheat.nowTextures
-        return newWheat
-    }
 }

@@ -8,25 +8,25 @@ class ToolTradeController(farmController: FarmController) : TradeController(farm
         TradeRecipe(
             buy = ItemStack("minecraft:emerald", 8),
             sell = ItemStack("minecraft:iron_hoe", 1),
-            maxUses = 12,
+            maxUses = 1,
         ),
         TradeRecipe(
             buy = ItemStack("minecraft:iron_hoe", 1),
             buyB = ItemStack("minecraft:emerald", 16),
             sell = ItemStack("minecraft:golden_hoe", 1),
-            maxUses = 11,
+            maxUses = 1,
         ),
         TradeRecipe(
             buy = ItemStack("minecraft:golden_hoe", 1),
             buyB = ItemStack("minecraft:emerald", 32),
             sell = ItemStack("minecraft:diamond_hoe", 1),
-            maxUses = 11,
+            maxUses = 1,
         ),
         TradeRecipe(
             buy = ItemStack("minecraft:diamond_hoe", 1),
             buyB = ItemStack("minecraft:emerald", 64),
             sell = ItemStack("minecraft:netherite_hoe", 1),
-            maxUses = 11,
+            maxUses = 1,
         ),
     )
 }

@@ -3,6 +3,7 @@ package com.midnightcrowing.gui.publics
 import com.midnightcrowing.controllers.CropInfoDisplayController
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.ScreenBounds
+import com.midnightcrowing.model.item.ItemRenderCache
 import com.midnightcrowing.renderer.NineSliceRenderer
 import com.midnightcrowing.renderer.TextRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
@@ -25,7 +26,7 @@ class CropInfoDisplay(
     }
 
     private val bgRenderer = NineSliceRenderer(
-        TextureResourcesEnum.TOAST.texture, textureBorder = 4f, vertexBorder = 10f
+        TextureResourcesEnum.GUI_TOAST.texture, textureBorder = 4f, vertexBorder = 10f
     ).apply { alpha = 0.6 }
 
     var itemBounds: ScreenBounds = ScreenBounds.EMPTY
@@ -42,6 +43,9 @@ class CropInfoDisplay(
     private val valueText = TextRenderer(window.nvg).apply {
         textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
     }
+
+    // 缓存物品，最多缓存 10 个物品
+    var itemRenderCache: ItemRenderCache = ItemRenderCache(this, maxSize = 10)
 
     override fun place(x1: Double, y1: Double, x2: Double, y2: Double) {
         super.place(x1, y1, x2, y2)

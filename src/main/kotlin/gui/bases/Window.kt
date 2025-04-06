@@ -6,16 +6,21 @@ import com.midnightcrowing.renderer.TextRenderer
 import com.midnightcrowing.resource.ResourcesEnum
 import com.midnightcrowing.utils.FPSCounter
 import com.midnightcrowing.utils.GameTick
+import org.lwjgl.BufferUtils
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
+import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.nanovg.NanoVGGL2.*
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL46.*
+import org.lwjgl.stb.STBImage.*
+import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import javax.swing.JOptionPane
 
 /**
@@ -79,6 +84,9 @@ class Window(
         handle = glfwCreateWindow(width, height, title, MemoryUtil.NULL, MemoryUtil.NULL)
         if (handle == MemoryUtil.NULL) throw RuntimeException("创建 GLFW 窗口失败")
 
+        // 设置窗口图标
+        setWindowIcon(ResourcesEnum.ICON.inputStream)
+
         // 设置当前线程的 OpenGL 上下文为指定的窗口句柄
         glfwMakeContextCurrent(handle)
     }
@@ -117,8 +125,52 @@ class Window(
         }
     }
 
+    private fun setWindowIcon(inputStream: InputStream?) {
+        if (inputStream == null) {
+            JOptionPane.showMessageDialog(null, "图标资源加载失败", "错误", JOptionPane.ERROR_MESSAGE)
+            return
+        }
+
+        MemoryStack.stackPush().use { stack ->
+            val width = stack.mallocInt(1)
+            val height = stack.mallocInt(1)
+            val channels = stack.mallocInt(1)
+
+            // 读取输入流中的图标数据
+            val iconData = inputStream.readBytes()
+            val buffer = BufferUtils.createByteBuffer(iconData.size).apply {
+                put(iconData)
+                flip()
+            }
+
+            // 从内存中加载图标图像
+            val icon = stbi_load_from_memory(buffer, width, height, channels, 4)
+            if (icon == null) {
+                JOptionPane.showMessageDialog(
+                    null,
+                    "Failed to load icon image from InputStream\nSTBImage error: ${stbi_failure_reason()}",
+                    "错误",
+                    JOptionPane.ERROR_MESSAGE
+                )
+                return
+            }
+
+            // 创建 GLFW 图标
+            val iconBuffer = GLFWImage.malloc(1)
+            iconBuffer.width(width.get())
+            iconBuffer.height(height.get())
+            iconBuffer.pixels(icon)
+
+            // 设置窗口图标
+            glfwSetWindowIcon(handle, iconBuffer)
+
+            // 释放图标图像内存
+            stbi_image_free(icon)
+        }
+    }
+
     private fun createFont() {
-        val fontPath = ResourcesEnum.FONT_DEFAULT.inputStream ?: run {
+        val fontPath = ResourcesEnum.FONT_UNIFONT.inputStream ?: run {
             JOptionPane.showMessageDialog(null, "字体资源加载失败", "错误", JOptionPane.ERROR_MESSAGE)
             return
         }

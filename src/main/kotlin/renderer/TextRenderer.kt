@@ -2,7 +2,7 @@ package com.midnightcrowing.renderer
 
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NanoVG.*
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL46.*
 import org.lwjgl.system.MemoryStack
 
 class TextRenderer(private val nvg: Long) {

@@ -13,13 +13,12 @@ open class Widget {
     val window: Window
     val parent: Widget?
 
-    open val renderer: TextureRenderer = TextureRenderer()
+    protected open val renderer: TextureRenderer = TextureRenderer()
     val z: Int
     var widgetBounds: ScreenBounds = ScreenBounds.EMPTY
         private set
-    var visible: Boolean = true
-        private set
-    val parentVisible: Boolean get() = parent?.visible != false && parent?.parentVisible != false
+    private var visible: Boolean = true
+    private val parentVisible: Boolean get() = parent?.visible != false && parent?.parentVisible != false
     val isVisible: Boolean get() = visible && parentVisible
 
     constructor(window: Window, z: Int? = null) {
