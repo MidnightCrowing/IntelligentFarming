@@ -2,16 +2,16 @@ package com.midnightcrowing.gui.bases
 
 import com.midnightcrowing.config.AppConfig
 import com.midnightcrowing.events.EventManager
-import com.midnightcrowing.renderer.TextRenderer
+import com.midnightcrowing.gui.publics.Debugger
 import com.midnightcrowing.resource.ResourcesEnum
-import com.midnightcrowing.utils.FPSCounter
 import com.midnightcrowing.utils.GameTick
 import org.lwjgl.BufferUtils
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.glfw.GLFWImage
-import org.lwjgl.nanovg.NanoVG.*
+import org.lwjgl.nanovg.NanoVG.nvgBeginFrame
+import org.lwjgl.nanovg.NanoVG.nvgCreateFont
 import org.lwjgl.nanovg.NanoVGGL2.*
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL46.*
@@ -197,16 +197,8 @@ class Window(
         }
     }
 
-    private val fpsCounter = FPSCounter()
-    private val fpsTextRenderer: TextRenderer = TextRenderer(nvg).apply {
-        x = 5.0; y = 15.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
-    }
-    private val tickTextRenderer: TextRenderer = TextRenderer(nvg).apply {
-        x = 5.0; y = 40.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
-    }
-    private val mousePosRenderer: TextRenderer = TextRenderer(nvg).apply {
-        x = 5.0; y = 65.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
-    }
+    // 调试器, 用于显示 FPS 和 Tick 等信息
+    private val debugger = Debugger(this)
 
     fun shouldClose(): Boolean = glfwWindowShouldClose(handle)
 
@@ -215,8 +207,8 @@ class Window(
         GameTick.update()
         // 更新游戏内容
         screen.update()
-        // 更新 FPS 计数器
-        fpsCounter.update()
+        // 更新调试器
+        debugger.update()
     }
 
     fun renderBegin() {
@@ -229,11 +221,8 @@ class Window(
     fun render() {
         // 渲染窗口内容
         screen.render()
-        // 渲染 FPS 和 Tick 信息
-        fpsTextRenderer.render("FPS: ${fpsCounter.fps}")
-        tickTextRenderer.render("Tick: ${GameTick.tick}")
-        val (mousePosX, mousePosY) = getCursorPos()
-        mousePosRenderer.render("Mouse: X: $mousePosX, Y: $mousePosY")
+        // 渲染调试器
+        debugger.render()
     }
 
     fun renderEnd() {}
@@ -248,6 +237,12 @@ class Window(
      */
     fun pollEvents() = glfwPollEvents()
 
+    /**
+     * 处理窗口大小变化事件
+     *
+     * @param width 新的窗口宽度
+     * @param height 新的窗口高度
+     */
     fun handleResize(width: Int, height: Int) {
         this.width = width
         this.height = height
@@ -259,6 +254,18 @@ class Window(
         glOrtho(0.0, width.toDouble(), height.toDouble(), 0.0, -1.0, 1.0)
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
+    }
+
+    /**
+     * 处理键盘按下事件
+     *
+     * @param key 按下的键的 GLFW 键码
+     */
+    fun handleKeyPress(key: Int) {
+        if (key == GLFW_KEY_F3) {
+            // 切换调试信息的显示状态
+            debugger.toggleVisible()
+        }
     }
 
     /**

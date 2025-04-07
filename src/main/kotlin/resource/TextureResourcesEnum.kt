@@ -3,6 +3,8 @@ package com.midnightcrowing.resource
 import com.midnightcrowing.model.Texture
 
 enum class TextureResourcesEnum(private val resource: ResourcesEnum) {
+    TITLE_INTELLFARM(ResourcesEnum.TITLE_INTELLFARM),
+
     /* region GUI */
     GUI_INVENTORY(ResourcesEnum.GUI_INVENTORY),
     GUI_TOAST(ResourcesEnum.GUI_TOAST),
@@ -136,6 +138,10 @@ enum class TextureResourcesEnum(private val resource: ResourcesEnum) {
     ITEM_WHEAT(ResourcesEnum.ITEM_WHEAT),
     ITEM_WHEAT_SEED(ResourcesEnum.ITEM_WHEAT_SEED),
     ITEM_WRITABLE_BOOK(ResourcesEnum.ITEM_WRITABLE_BOOK),
+    /* endregion */
+
+    /* region Particle */
+    PE_GLINT(ResourcesEnum.PE_GLINT),
     /* endregion */
 
     ;

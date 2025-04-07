@@ -1,17 +1,15 @@
-package com.midnightcrowing.particles
+package com.midnightcrowing.particles.block
 
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.model.Texture
+import com.midnightcrowing.particles.ParticleSystemBase
 import kotlin.random.Random
 
-/**
- * 粒子系统管理类
- * 负责生成、更新和渲染粒子效果
- */
-class ParticleSystem {
-    private val particles = mutableListOf<Particle>()
-    private val renderer = ParticleRenderer() // 负责渲染粒子
+
+class BlockParticleSystem : ParticleSystemBase<BlockParticle>() {
+    override val particles = mutableListOf<BlockParticle>()
+    private val renderer = BlockParticleRenderer() // 负责渲染粒子
 
     // 位置随机性控制
     private var positionVariation: Point = Point(60.0, 55.0)
@@ -23,7 +21,7 @@ class ParticleSystem {
     private var particleSize: Int = 6
 
     /**
-     * 生成粒子效果
+     * 生成方块破坏粒子效果
      * @param origin 生成粒子的中心位置
      * @param texture 粒子贴图
      * @param count 生成粒子的数量
@@ -32,28 +30,19 @@ class ParticleSystem {
         val (imgWidth, imgHeight) = texture.image.run { width to height }
 
         repeat(count) {
-            val randomPosition = Point(
-                x = origin.x + Random.nextDouble(
-                    from = -positionVariation.x / 2,
-                    until = positionVariation.x / 2
-                ) + Random.nextDouble(-10.0, 10.0),
-                y = origin.y + Random.nextDouble(
-                    from = -positionVariation.y / 11 * 3,
-                    until = positionVariation.y / 11 * 8
-                ) + Random.nextDouble(-5.0, 5.0)
-            )
+            val randomPosition = generateRandomPositionForBlock(origin, positionVariation)
 
             val velocity = Point(
                 x = Random.nextDouble(-positionVariation.x / 3 * 4, positionVariation.x / 3 * 4),
                 y = Random.nextDouble(positionVariation.y / 3, positionVariation.y / 3 * 2)
             )
 
-            val lifetime = Random.nextFloat() * 0.5
+            val lifetime = Random.nextDouble() * 0.3 + Random.nextDouble() * 0.2
 
             val startX = Random.nextInt(imgWidth - textureSize).toDouble()
             val startY = Random.nextInt(imgHeight - textureSize).toDouble()
 
-            particles += Particle(
+            particles += BlockParticle(
                 texture = texture,
                 textureBounds = ScreenBounds(
                     startX / imgWidth,
@@ -63,19 +52,10 @@ class ParticleSystem {
                 ),
                 position = randomPosition,
                 velocity = velocity,
+                size = particleSize,
                 lifetime = lifetime,
-                size = particleSize
             )
         }
-    }
-
-    /**
-     * 更新所有粒子的状态
-     * @param deltaTime 时间步长
-     */
-    fun update(deltaTime: Float) {
-        particles.forEach { it.update(deltaTime) }
-        particles.removeIf { it.isDead() } // 移除生命周期结束的粒子
     }
 
     /**
@@ -92,7 +72,7 @@ class ParticleSystem {
     /**
      * 渲染所有粒子
      */
-    fun render() {
+    override fun render() {
         renderer.renderAll(particles)
     }
 }

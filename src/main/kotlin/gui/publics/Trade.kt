@@ -333,6 +333,7 @@ open class Trade(
 
         if (invLayout.mouseLeftPressed && pos.isInScrollSlot) {
             tradeButtonStartIndex = (pos.scrollPercent / buttonScrollStep).toInt()
+                .coerceIn(0, maxOf(0, tradeButtons.size - BUTTON_NUM))
         }
 
         renderTradeButtons
@@ -343,8 +344,7 @@ open class Trade(
     override fun onMouseScroll(e: MouseScrollEvent) {
         if (mousePosition.isInButtonSlot or mousePosition.isInScrollSlot) {
             tradeButtonStartIndex = (tradeButtonStartIndex - e.offsetY.toInt())
-                .coerceAtLeast(0)
-                .coerceAtMost(maxOf(0, tradeButtons.size - BUTTON_NUM))
+                .coerceIn(0, maxOf(0, tradeButtons.size - BUTTON_NUM))
         }
     }
 
@@ -391,6 +391,7 @@ open class Trade(
         renderTradeSlots()                 // 渲染交易槽位物品
         renderTradeScroll()                // 渲染交易列表滚动条
         renderTradeButtons()               // 渲染交易按钮
+        renderTradeButtonTooltip()         // 渲染交易按钮提示框
         if (maskActiveBgBounds != null) {
             maskActiveBgRender.render()    // 渲染物品格子高亮
         }
@@ -467,6 +468,13 @@ open class Trade(
             button.place(calculateButtonBounds(index))
             button.render()
         }
+    }
+
+    /**
+     * 渲染交易按钮提示框
+     */
+    private fun renderTradeButtonTooltip() {
+        renderTradeButtons.firstOrNull { it.isHover }?.renderTooltip()
     }
 
     /**

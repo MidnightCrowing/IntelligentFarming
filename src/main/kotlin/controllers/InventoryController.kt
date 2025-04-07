@@ -4,6 +4,7 @@ import com.midnightcrowing.gui.publics.Inventory
 import com.midnightcrowing.model.item.ItemList
 import com.midnightcrowing.model.item.ItemRegistry
 import com.midnightcrowing.model.item.ItemStack
+import com.midnightcrowing.model.item.Items
 
 
 class InventoryController(farmController: FarmController) {
@@ -18,22 +19,22 @@ class InventoryController(farmController: FarmController) {
         this.inventory = inventory
 
         // 示例物品
-        setItem(0, ItemStack("minecraft:wheat_seed", 64))
-        setItem(1, ItemStack("minecraft:carrot", 64))
-        setItem(2, ItemStack("minecraft:potato", 64))
-        setItem(3, ItemStack("minecraft:cabbage_seed", 64))
-        setItem(4, ItemStack("minecraft:corn_seed", 64))
-        setItem(5, ItemStack("minecraft:cotton_seed", 64))
-        setItem(6, ItemStack("minecraft:tomato_seed", 64))
-        setItem(7, ItemStack("minecraft:onion", 64))
-        setItem(8, ItemStack("minecraft:bone_meal", 64))
-        setItem(9, ItemStack("minecraft:emerald", 64))
-        setItem(10, ItemStack("minecraft:emerald", 64))
-        setItem(11, ItemStack("minecraft:emerald", 64))
-        setItem(12, ItemStack("minecraft:emerald", 64))
-        setItem(13, ItemStack("minecraft:emerald", 64))
-        setItem(14, ItemStack("minecraft:emerald", 64))
-        setItem(15, ItemStack("minecraft:emerald", 64))
+        setItem(0, ItemStack(Items.WHEAT_SEED.id, 64))
+        setItem(1, ItemStack(Items.CARROT.id, 64))
+        setItem(2, ItemStack(Items.POTATO.id, 64))
+        setItem(3, ItemStack(Items.CABBAGE_SEED.id, 64))
+        setItem(4, ItemStack(Items.CORN_SEED.id, 64))
+        setItem(5, ItemStack(Items.COTTON_SEED.id, 64))
+        setItem(6, ItemStack(Items.TOMATO_SEED.id, 64))
+        setItem(7, ItemStack(Items.ONION.id, 64))
+        setItem(8, ItemStack(Items.BONE_MEAL.id, 64))
+        setItem(9, ItemStack(Items.EMERALD.id, 64))
+        setItem(10, ItemStack(Items.EMERALD.id, 64))
+        setItem(11, ItemStack(Items.EMERALD.id, 64))
+        setItem(12, ItemStack(Items.EMERALD.id, 64))
+        setItem(13, ItemStack(Items.EMERALD.id, 64))
+        setItem(14, ItemStack(Items.EMERALD.id, 64))
+        setItem(15, ItemStack(Items.EMERALD.id, 64))
     }
 
     fun getItem(slot: Int): ItemStack = items[slot]

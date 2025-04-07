@@ -1,31 +1,29 @@
 package com.midnightcrowing.controllers
 
 import com.midnightcrowing.model.item.ItemStack
+import com.midnightcrowing.model.item.Items
 import com.midnightcrowing.model.trade.TradeRecipe
 
 class ToolTradeController(farmController: FarmController) : TradeController(farmController) {
     override val tradeList: TradeList = listOf(
         TradeRecipe(
-            buy = ItemStack("minecraft:emerald", 8),
-            sell = ItemStack("minecraft:iron_hoe", 1),
+            ItemStack(Items.EMERALD.id, 8),
+            sell = ItemStack(Items.IRON_HOE.id, 1),
             maxUses = 1,
         ),
         TradeRecipe(
-            buy = ItemStack("minecraft:iron_hoe", 1),
-            buyB = ItemStack("minecraft:emerald", 16),
-            sell = ItemStack("minecraft:golden_hoe", 1),
+            ItemStack(Items.IRON_HOE.id, 1), ItemStack(Items.EMERALD.id, 16),
+            sell = ItemStack(Items.GOLDEN_HOE.id, 1),
             maxUses = 1,
         ),
         TradeRecipe(
-            buy = ItemStack("minecraft:golden_hoe", 1),
-            buyB = ItemStack("minecraft:emerald", 32),
-            sell = ItemStack("minecraft:diamond_hoe", 1),
+            ItemStack(Items.GOLDEN_HOE.id, 1), ItemStack(Items.EMERALD.id, 32),
+            sell = ItemStack(Items.DIAMOND_HOE.id, 1),
             maxUses = 1,
         ),
         TradeRecipe(
-            buy = ItemStack("minecraft:diamond_hoe", 1),
-            buyB = ItemStack("minecraft:emerald", 64),
-            sell = ItemStack("minecraft:netherite_hoe", 1),
+            ItemStack(Items.DIAMOND_HOE.id, 1), ItemStack(Items.EMERALD.id, 64),
+            sell = ItemStack(Items.NETHERITE_HOE.id, 1),
             maxUses = 1,
         ),
     )

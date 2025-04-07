@@ -1,21 +1,22 @@
-package com.midnightcrowing.particles
+package com.midnightcrowing.particles.block
 
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.model.Texture
+import com.midnightcrowing.particles.ParticleBase
 
 /**
  * 单个粒子对象
  * 负责更新位置、应用重力
  */
-class Particle(
+class BlockParticle(
     val texture: Texture,            // 贴图
     val textureBounds: ScreenBounds, // 纹理坐标
     var position: Point,             // 当前位置
     var velocity: Point,             // 速度向量
-    var lifetime: Double,            // 剩余生命
-    var size: Int = 6,                // 粒子大小
-) {
+    var size: Int = 6,               // 粒子大小
+    lifetime: Double,                // 剩余生命
+) : ParticleBase(lifetime) {
     // 重力加速度
     private val gravity = 10.0
 
@@ -23,18 +24,14 @@ class Particle(
      * 更新粒子状态
      * @param deltaTime 时间步长
      */
-    fun update(deltaTime: Float) {
+    override fun update(deltaTime: Float) {
+        super.update(deltaTime)
+
         position.x += velocity.x * deltaTime
         position.y -= velocity.y * deltaTime
-        lifetime -= deltaTime
 
         velocity.y -= gravity // 模拟重力
     }
-
-    /**
-     * 检查粒子是否已死亡
-     */
-    fun isDead(): Boolean = lifetime <= 0
 
     /**
      * 更新粒子的大小

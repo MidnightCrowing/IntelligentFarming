@@ -28,6 +28,8 @@ class KeyPressedListener(
     }
 
     override fun triggerEvent(event: KeyEvent) {
+        window.handleKeyPress(event.key)
+
         pressableWidgets
             .filter { it.isVisible }
             .sortedByDescending { it.z }

@@ -1,15 +1,15 @@
-package com.midnightcrowing.particles
+package com.midnightcrowing.particles.block
 
 import org.lwjgl.opengl.GL46.*
 
 /**
  * 负责渲染粒子的类
  */
-class ParticleRenderer {
+class BlockParticleRenderer {
     /**
      * 渲染单个粒子
      */
-    fun render(particle: Particle) {
+    fun render(particle: BlockParticle) {
         if (particle.lifetime <= 0) return
 
         glEnable(GL_TEXTURE_2D)
@@ -40,7 +40,7 @@ class ParticleRenderer {
     /**
      * 渲染所有粒子
      */
-    fun renderAll(particles: List<Particle>) {
+    fun renderAll(particles: List<BlockParticle>) {
         particles.forEach { render(it) }
     }
 }

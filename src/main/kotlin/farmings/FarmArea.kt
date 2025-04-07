@@ -143,7 +143,11 @@ class FarmArea(
 
         updateCropsPosition()
 
-        controller.particleSystem.configure(
+        controller.blockParticleSystem.configure(
+            Point(blockHeight / 16 * 15, blockHeight / 64 * 55),
+            blockHeight.toInt() / 10
+        )
+        controller.cropGrowthParticleSystem.configure(
             Point(blockHeight / 16 * 15, blockHeight / 64 * 55),
             blockHeight.toInt() / 10
         )
@@ -180,7 +184,8 @@ class FarmArea(
         renderBorderline()
         controller.activeSeedCrop?.render()
         controller.cropsGrid.reversed().forEach { row -> row.reversed().forEach { it?.render() } }
-        controller.particleSystem.render()
+        controller.blockParticleSystem.render()
+        controller.cropGrowthParticleSystem.render()
         renderHandheldItem()
     }
 

@@ -17,6 +17,7 @@ import com.midnightcrowing.model.item.Items.TOMATO
 import com.midnightcrowing.model.item.Items.TOMATO_SEED
 import com.midnightcrowing.model.item.Items.WHEAT
 import com.midnightcrowing.model.item.Items.WHEAT_SEED
+import com.midnightcrowing.particles.composter.ComposterParticleSystem
 import com.midnightcrowing.utils.Timer
 
 class CompostController(farmController: FarmController) {
@@ -39,6 +40,9 @@ class CompostController(farmController: FarmController) {
         CABBAGE_SEED.id, CORN_SEED.id, COTTON_SEED.id, TOMATO_SEED.id, WHEAT_SEED.id
     )
 
+    // 粒子系统，用于生成和管理粒子效果
+    val particleSystem: ComposterParticleSystem = ComposterParticleSystem()
+
     // 判断是否为农作物
     private val ItemStack.isFarm: Boolean get() = this.id in farmItemIds
 
@@ -50,12 +54,14 @@ class CompostController(farmController: FarmController) {
     }
 
     fun update() {
-        if (!timer.shouldRun()) return
+        particleSystem.update(0.016f) // Assuming 60 FPS, so deltaTime is approximately 1/60
 
-        when (compost.composterBlock.compostLevel) {
-            7 -> simulateCompostingProgress()        // 模拟堆肥桶工作中
-            8 -> finishComposting()                  // 堆肥完成，生成骨粉
-            else -> processMaterialInput()           // 处理原料槽中的物品
+        if (timer.shouldRun()) {
+            when (compost.composterBlock.compostLevel) {
+                7 -> simulateCompostingProgress()        // 模拟堆肥桶工作中
+                8 -> finishComposting()                  // 堆肥完成，生成骨粉
+                else -> processMaterialInput()           // 处理原料槽中的物品
+            }
         }
     }
 
@@ -71,7 +77,7 @@ class CompostController(farmController: FarmController) {
      */
     private fun finishComposting() {
         if (productSlotItem.isEmpty()) {
-            productSlotItem = ItemStack("minecraft:bone_meal", 1)
+            productSlotItem = ItemStack(BONE_MEAL.id, 1)
         } else {
             productSlotItem.count += 1
         }
@@ -95,12 +101,14 @@ class CompostController(farmController: FarmController) {
                 item.isFarmSeed -> {
                     compost.composterBlock.compostLevel += 1
                     removeItemFromSlot(i)
+                    generateParticles()
                     break // 一次只处理一个物品
                 }
 
                 item.isFarm -> {
                     compost.composterBlock.compostLevel = minOf(level + 3, 7)
                     removeItemFromSlot(i)
+                    generateParticles()
                     break // 一次只处理一个物品
                 }
 
@@ -118,6 +126,14 @@ class CompostController(farmController: FarmController) {
         val item = materialSlotItems[index]
         item.count -= 1
         materialSlotItems[index] = if (item.count <= 0) ItemStack.EMPTY else item
+    }
+
+    /**
+     * 生成粒子效果
+     */
+    private fun generateParticles() {
+        if (!compost.isVisible) return // 如果界面隐藏，则不生成粒子，避免性能浪费
+        particleSystem.generateParticles(compost.composterBlock.bounds.between + Compost.COMPOSTER_ORIGIN_OFFSET)
     }
 
     fun getItem(slot: Int): ItemStack = materialSlotItems[slot]

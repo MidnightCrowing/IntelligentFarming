@@ -10,6 +10,7 @@ import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
 import com.midnightcrowing.gui.publics.*
 import com.midnightcrowing.model.Point
+import com.midnightcrowing.model.item.Items
 import com.midnightcrowing.renderer.TextureRenderer
 import com.midnightcrowing.resource.TextureResourcesEnum
 import org.lwjgl.glfw.GLFW.GLFW_KEY_E
@@ -51,16 +52,16 @@ class FarmScene(window: Window) : Screen(window) {
     private val trade: Trade = Trade(this, controller.trade, z = 4)
     private val compost: Compost = Compost(this, controller.compost, z = 4)
     private val anvilButton: ItemButton = ItemButton(
-        this, "minecraft:anvil", "工具", tooltipPosition = "after-top"
+        this, Items.ANVIL.id, "工具", tooltipPosition = "after-top"
     )
     private val villagerButton: ItemButton = ItemButton(
-        this, "minecraft:villager_spawn_egg", "商店", tooltipPosition = "after-top"
+        this, Items.VILLAGER_SPAWN_EGG.id, "商店", tooltipPosition = "after-top"
     )
     private val composterButton: ItemButton = ItemButton(
-        this, "minecraft:composter", "堆肥", tooltipPosition = "after-top"
+        this, Items.COMPOSTER.id, "堆肥", tooltipPosition = "after-top"
     )
     private val chestButton: ItemButton = ItemButton(
-        this, "minecraft:chest", "背包", tooltipPosition = "before-top"
+        this, Items.CHEST.id, "背包", tooltipPosition = "before-top"
     )
 
     private val floatingWidgets: FloatingWidget = listOf(

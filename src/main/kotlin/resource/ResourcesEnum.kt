@@ -5,6 +5,8 @@ import java.io.InputStream
 enum class ResourcesEnum(private val resourcePath: String) {
     ICON("/assets/farmland.png"), // 窗口图标
 
+    TITLE_INTELLFARM("/assets/textures/title/intellfarm.png"),
+
     /* region GUI */
     GUI_INVENTORY("/assets/textures/gui/inventory.png"),
     GUI_TOAST("/assets/textures/gui/toast.png"),
@@ -142,6 +144,10 @@ enum class ResourcesEnum(private val resourcePath: String) {
     ITEM_WHEAT("/assets/textures/item/wheat.png"),
     ITEM_WHEAT_SEED("/assets/textures/item/wheat_seed.png"),
     ITEM_WRITABLE_BOOK("/assets/textures/item/writable_book.png"),
+    /* endregion */
+
+    /* region Particle */
+    PE_GLINT("/assets/textures/particle/glint.png"),
     /* endregion */
 
     ;

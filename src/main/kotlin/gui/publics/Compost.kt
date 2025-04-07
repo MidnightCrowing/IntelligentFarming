@@ -71,6 +71,8 @@ class Compost(
         val MATERIAL_GRID_HEIGHT: Double by lazy {
             (MATERIAL_BOUNDS.height - GRID_GAP * (MATERIAL_ROW_NUM - 1)) / MATERIAL_ROW_NUM
         }
+
+        val COMPOSTER_ORIGIN_OFFSET: Point = Point(-12.0, -13.0) // 堆肥桶的原点距离区域中心点偏移量
     }
 
     private val Point.isInMaterial: Boolean
@@ -94,6 +96,11 @@ class Compost(
 
     init {
         controller.init(this)
+
+        controller.particleSystem.configure(
+            Point(386.0, 163.0) - Point(418.0, 192.0),
+            Point(468.0, 174.0) - Point(418.0, 192.0),
+        )
     }
 
     // region 渲染器 & 组件
@@ -302,6 +309,7 @@ class Compost(
         if (maskActiveBgBounds != null) {
             maskActiveBgRender.render()    // 渲染物品格子高亮
         }
+        controller.particleSystem.render() // 渲染粒子效果
         renderHoverCompostItemName()       // 渲染鼠标悬停物品名称
         dragWidget.render()                // 渲染拖动物品组件
     }

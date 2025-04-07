@@ -71,8 +71,8 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Block(farmArea) {
     open fun applyBoneMeal(): Boolean {
         if (isFullyGrown) return false
 
-        // 缩短生长时长，使生长进度提升 20% ~ 40%
-        val boostRatio = Random.nextDouble(0.2, 0.4)
+        // 缩短生长时长，使生长进度提升 40% ~ 70%
+        val boostRatio = Random.nextDouble(0.4, 0.7)
         plantedTick -= (growthDuration * boostRatio).toLong()
 
         // 避免过度回退（例如生长进度 > 1.0）
@@ -96,7 +96,7 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Block(farmArea) {
      * @return 一个介于 min 和 max 之间的随机值。
      */
     protected fun triangularRandom(min: Double, max: Double, mode: Double): Double {
-        val u = Random.Default.nextDouble()
+        val u = Random.nextDouble()
         return if (u < (mode - min) / (max - min)) {
             min + sqrt(u * (max - min) * (mode - min))
         } else {

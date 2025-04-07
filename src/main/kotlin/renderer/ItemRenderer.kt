@@ -5,6 +5,29 @@ import com.midnightcrowing.model.item.Item
 import org.lwjgl.nanovg.NanoVG
 
 class ItemRenderer(nvg: Long, item: Item) {
+    /**
+     * 将整数转换为罗马数字
+     *
+     * @return 罗马数字字符串
+     */
+    private fun Int.toRoman(): String {
+        val values = listOf(
+            1000 to "M", 900 to "CM", 500 to "D", 400 to "CD",
+            100 to "C", 90 to "XC", 50 to "L", 40 to "XL",
+            10 to "X", 9 to "IX", 5 to "V", 4 to "IV", 1 to "I"
+        )
+        var number = this
+        val result = StringBuilder()
+        for ((value, symbol) in values) {
+            while (number >= value) {
+                result.append(symbol)
+                number -= value
+            }
+        }
+        return result.toString()
+    }
+
+    // 渲染器
     private val textureRenderer: TextureRenderer = TextureRenderer(item.textureEnum.texture)
     private val numTextRenderer: TextRenderer = TextRenderer(nvg).apply {
         fontSize = 32.0
@@ -17,6 +40,32 @@ class ItemRenderer(nvg: Long, item: Item) {
 
     private var bounds: ScreenBounds = ScreenBounds.EMPTY
     private val itemPadding: Double = 3.0
+
+    init {
+        // 补充物品名称提示框的内容
+        val contentLines = buildTooltipContent(item)
+        if (contentLines.isNotEmpty()) {
+            tooltipRenderer.titleColor = doubleArrayOf(84 / 255.0, 252 / 255.0, 252 / 255.0, 1.0) // 亮青色
+            tooltipRenderer.contentLines = contentLines
+        }
+    }
+
+    /**
+     * 构建物品名称提示框的内容
+     *
+     * @param item 物品对象
+     * @return 提示框内容列表
+     */
+    private fun buildTooltipContent(item: Item): List<Pair<String, DoubleArray>> {
+        val content = mutableListOf<Pair<String, DoubleArray>>()
+        val contentColor = doubleArrayOf(168 / 255.0, 168 / 255.0, 168 / 255.0, 1.0)
+
+        if (item.fortune != 0) {
+            content.add("时运${item.fortune.toRoman()}" to contentColor)
+        }
+
+        return content
+    }
 
     fun place(bounds: ScreenBounds) = this.place(bounds.x1, bounds.y1, bounds.x2, bounds.y2)
 

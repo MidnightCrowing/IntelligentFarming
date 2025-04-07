@@ -88,7 +88,9 @@ class TradeButton(parent: Widget, val tradeRecipe: TradeRecipe) : Button(parent)
         buy1Item?.render(tradeRecipe.buy.count)
         buy2Item?.render(tradeRecipe.buyB.count)
         sellItem?.render(tradeRecipe.sell.count)
+    }
 
+    fun renderTooltip() {
         mouseHoverItem?.renderTooltip(mousePosition.x, mousePosition.y)
     }
 }

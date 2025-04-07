@@ -18,7 +18,8 @@ import com.midnightcrowing.model.item.Items.ONION
 import com.midnightcrowing.model.item.Items.POTATO
 import com.midnightcrowing.model.item.Items.TOMATO_SEED
 import com.midnightcrowing.model.item.Items.WHEAT_SEED
-import com.midnightcrowing.particles.ParticleSystem
+import com.midnightcrowing.particles.block.BlockParticleSystem
+import com.midnightcrowing.particles.cropGrowth.CropGrowthParticleSystem
 
 class FarmAreaController(farmController: FarmController) {
     // region controllers
@@ -70,7 +71,8 @@ class FarmAreaController(farmController: FarmController) {
         }
 
     // 粒子系统，用于生成和管理粒子效果
-    val particleSystem: ParticleSystem = ParticleSystem()
+    val blockParticleSystem: BlockParticleSystem = BlockParticleSystem()
+    val cropGrowthParticleSystem: CropGrowthParticleSystem = CropGrowthParticleSystem()
 
     // 鼠标参数
     var mouseGridPosition: GridPosition? = null  // 当前鼠标悬停位置
@@ -109,22 +111,19 @@ class FarmAreaController(farmController: FarmController) {
     fun update() {
         cropsGrid.forEach { row -> row.forEach { it?.update() } }
         cropInfo.update()
-        particleSystem.update(0.016f) // Assuming 60 FPS, so deltaTime is approximately 1/60
+        blockParticleSystem.update(0.016f) // Assuming 60 FPS, so deltaTime is approximately 1/60
+        cropGrowthParticleSystem.update(0.016f)
 
-        if (mouseGridPosition != null) {
-            if (!mouseGridPosition!!.hasCrop()) {
-                activeSeedCrop?.setHidden(false)
-                activeSeedCrop?.place(farmArea.getBlockBounds(mouseGridPosition!!))
-            } else {
-                activeSeedCrop?.setHidden(true)
+        mouseGridPosition?.let { pos ->
+            activeSeedCrop?.setHidden(pos.hasCrop())
+            if (!pos.hasCrop()) {
+                activeSeedCrop?.place(farmArea.getBlockBounds(pos))
             }
             when {
                 isLeftClick -> handleLeftKeepClick()
                 isRightClick -> handleRightKeepClick()
             }
-        } else {
-            activeSeedCrop?.setHidden(true)
-        }
+        } ?: activeSeedCrop?.setHidden(true)
 
         cropInfoController.update(mouseGridPosition?.crop)
     }
@@ -133,11 +132,12 @@ class FarmAreaController(farmController: FarmController) {
      * 处理鼠标右键单次点击事件。
      */
     fun handleRightClick() {
-        if (mouseGridPosition!!.hasCrop()) {
+        if (mouseGridPosition != null && mouseGridPosition!!.hasCrop()) {
             // 检查手持物品是否是骨粉
             handheldItem?.takeIf { it.id == BONE_MEAL.id }?.let {
                 // 使用骨粉
                 if (mouseGridPosition!!.crop!!.applyBoneMeal()) {
+                    generateCropGrowthParticles(mouseGridPosition!!)
                     hotController.onUseBoneMeal()
                 }
             }
@@ -150,7 +150,7 @@ class FarmAreaController(farmController: FarmController) {
     private fun handleLeftKeepClick() {
         if (mouseGridPosition!!.hasCrop()) {
             // 如果有作物，尝试移除
-            generateParticles(mouseGridPosition!!.crop!!, mouseGridPosition!!)
+            generateBlockBreakParticles(mouseGridPosition!!.crop!!, mouseGridPosition!!)
             removeCrop(mouseGridPosition!!)
         }
     }
@@ -215,13 +215,23 @@ class FarmAreaController(farmController: FarmController) {
     }
 
     /**
-     * 生成粒子效果。
+     * 生成作物破碎粒子效果。
      * @param crop 作物对象
      * @param pos 作物位置
      */
-    private fun generateParticles(crop: FarmCropBase, pos: GridPosition) {
+    private fun generateBlockBreakParticles(crop: FarmCropBase, pos: GridPosition) {
         crop.nowTextures?.let {
-            particleSystem.generateParticles(farmArea.getBlockBounds(pos).between, it, 40)
+            blockParticleSystem.generateParticles(farmArea.getBlockBounds(pos).between, it, 40)
         }
+    }
+
+    /**
+     * 生成使用骨粉时作物生长粒子效果。
+     * @param pos 作物位置
+     */
+    private fun generateCropGrowthParticles(pos: GridPosition) {
+        cropGrowthParticleSystem.generateParticles(
+            farmArea.getBlockBounds(pos).between, 5
+        )
     }
 }

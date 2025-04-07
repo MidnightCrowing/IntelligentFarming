@@ -19,9 +19,12 @@ import org.lwjgl.system.MemoryStack
  */
 class TooltipRenderer(
     private val nvg: Long,
-    var text: String,
+    var text: String, // 作为标题使用
+    var contentLines: List<Pair<String, DoubleArray>> = listOf(), // 多行内容
+    var titleColor: DoubleArray = doubleArrayOf(1.0, 1.0, 1.0, 1.0), // 标题颜色
     var position: String = "after-top",
     var fontSize: Double = 25.0,
+    var lineSpacing: Double = 8.0,
     var padding: Int = 6,
     var borderWidth: Double = 4.0,
     var opacity: Double = 0.95,
@@ -73,14 +76,28 @@ class TooltipRenderer(
 
     fun render(mouseX: Double, mouseY: Double) {
         MemoryStack.stackPush().use { stack ->
-            // 1. 计算文本边界
-            val textBounds = stack.mallocFloat(4)
-            NanoVG.nvgFontSize(nvg, fontSize.toFloat())
-            NanoVG.nvgTextBounds(nvg, 0f, 0f, text, textBounds)
+            val allLines = buildList {
+                if (text.isNotEmpty()) add(text to titleColor)
+                addAll(contentLines)
+            }
 
-            // 2. 计算基础尺寸
-            val textWidth = textBounds[2] - textBounds[0]
-            val textHeight = textBounds[3] - textBounds[1]
+            NanoVG.nvgFontSize(nvg, fontSize.toFloat())
+            val textBounds = stack.mallocFloat(4)
+            var maxWidth = 0f
+            var textHeight = 0f
+            var totalHeight = 0.0
+
+            for ((line, _) in allLines) {
+                NanoVG.nvgTextBounds(nvg, 0f, 0f, line, textBounds)
+                val lineWidth = textBounds[2] - textBounds[0]
+                val lineHeight = textBounds[3] - textBounds[1]
+                maxWidth = maxOf(maxWidth, lineWidth)
+                textHeight = maxOf(textHeight, lineHeight)
+                totalHeight += lineHeight + lineSpacing
+            }
+            totalHeight -= lineSpacing // 去掉最后一行的空隙
+
+            val textWidth = maxWidth
 
             // 3. 计算起始坐标
             val (startX, startY) = when (position) {
@@ -103,7 +120,7 @@ class TooltipRenderer(
             val bgLeft = startX - padding
             val bgRight = startX + textWidth + padding
             val bgTop = startY - (textHeight / 2) - padding
-            val bgBottom = startY + (textHeight / 2) + padding
+            val bgBottom = startY + totalHeight - (textHeight / 2) + padding
 
             // 5. 渲染背景
             rectangleRenderer.apply {
@@ -175,13 +192,19 @@ class TooltipRenderer(
                 }
             }
 
-            // 8. 渲染文本
-            nameTextRenderer.apply {
-                this.x = startX
-                this.y = startY
-                this.fontSize = this@TooltipRenderer.fontSize
-                this.text = this@TooltipRenderer.text
-            }.render()
+            // 渲染每一行文本
+            var drawY = startY
+            for ((line, color) in allLines) {
+                nameTextRenderer.apply {
+                    this.x = startX
+                    this.y = drawY
+                    this.fontSize = this@TooltipRenderer.fontSize
+                    this.text = line
+                    this.textColor = color
+                }.render()
+
+                drawY += fontSize + lineSpacing
+            }
         }
     }
 }

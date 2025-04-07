@@ -8,7 +8,7 @@ import com.midnightcrowing.renderer.ItemRenderer
 class ItemButton(
     parent: Widget,
     itemId: String,
-    private val itemName: String? = null,
+    itemName: String? = null,
     private val tooltipPosition: String = "above",
 ) : Button(parent) {
     private val padding: Double = 6.0

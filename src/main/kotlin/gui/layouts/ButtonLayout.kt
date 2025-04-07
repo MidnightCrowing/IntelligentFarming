@@ -8,7 +8,7 @@ class ButtonLayout(
     parent: Widget,
     z: Int? = null,
     var width: Double = 0.375,     // 整体宽度(相对于窗口宽度)
-    var offsetY: Double = 0.0,    // 整体Y轴偏移量(向下偏移)
+    var offsetY: Double = 0.0,     // 整体Y轴偏移量(向下偏移)
     var btnHeight: Double = 0.06,
     var btnGapX: Double = 0.02,
     var btnGapY: Double = 0.035,

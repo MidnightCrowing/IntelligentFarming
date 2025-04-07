@@ -3,6 +3,7 @@ package com.midnightcrowing.controllers
 import com.midnightcrowing.gui.publics.Trade
 import com.midnightcrowing.gui.publics.TradeButton
 import com.midnightcrowing.model.item.ItemStack
+import com.midnightcrowing.model.item.Items
 import com.midnightcrowing.model.trade.TradeRecipe
 
 typealias TradeList = List<TradeRecipe>
@@ -12,75 +13,26 @@ open class TradeController(farmController: FarmController) {
     val invController: InventoryController by lazy { farmController.inventory }
 
     open val tradeList: TradeList = listOf(
+        TradeRecipe(ItemStack(Items.WHEAT.id, 16), sell = ItemStack(Items.EMERALD.id, 2)),
+        TradeRecipe(ItemStack(Items.CARROT.id, 32), sell = ItemStack(Items.EMERALD.id, 3)),
+        TradeRecipe(ItemStack(Items.POTATO.id, 32), sell = ItemStack(Items.EMERALD.id, 3)),
+        TradeRecipe(ItemStack(Items.CABBAGE.id, 20), sell = ItemStack(Items.EMERALD.id, 2)),
+        TradeRecipe(ItemStack(Items.CORN.id, 21), sell = ItemStack(Items.EMERALD.id, 4)),
+        TradeRecipe(ItemStack(Items.TOMATO.id, 19), sell = ItemStack(Items.EMERALD.id, 3)),
+        TradeRecipe(ItemStack(Items.ONION.id, 14), sell = ItemStack(Items.EMERALD.id, 2)),
+        TradeRecipe(ItemStack(Items.COTTON.id, 5), sell = ItemStack(Items.EMERALD.id, 1)),
         TradeRecipe(
-            buy = ItemStack("minecraft:wheat", 16),
-            sell = ItemStack("minecraft:emerald", 2)
+            ItemStack(Items.GOLDEN_CARROT.id, 1), ItemStack(Items.CARROT.id, 6),
+            sell = ItemStack(Items.EMERALD.id, 64)
         ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:carrot", 32),
-            sell = ItemStack("minecraft:emerald", 3)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:potato", 32),
-            sell = ItemStack("minecraft:emerald", 3)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:cabbage", 20),
-            sell = ItemStack("minecraft:emerald", 2)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:corn", 21),
-            sell = ItemStack("minecraft:emerald", 4)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:tomato", 19),
-            sell = ItemStack("minecraft:emerald", 3)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:onion", 14),
-            sell = ItemStack("minecraft:emerald", 2)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:cotton", 5),
-            sell = ItemStack("minecraft:emerald", 1)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:golden_carrot", 1),
-            buyB = ItemStack("minecraft:carrot", 6),
-            sell = ItemStack("minecraft:emerald", 64)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:emerald", 1),
-            sell = ItemStack("minecraft:wheat_seed", 1)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:emerald", 11),
-            sell = ItemStack("minecraft:carrot", 1)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:emerald", 11),
-            sell = ItemStack("minecraft:potato", 1)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:emerald", 16),
-            sell = ItemStack("minecraft:cabbage_seed", 1)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:emerald", 16),
-            sell = ItemStack("minecraft:corn_seed", 1)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:emerald", 18),
-            sell = ItemStack("minecraft:tomato_seed", 1)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:emerald", 20),
-            sell = ItemStack("minecraft:onion", 1)
-        ),
-        TradeRecipe(
-            buy = ItemStack("minecraft:emerald", 22),
-            sell = ItemStack("minecraft:cotton_seed", 1)
-        ),
+        TradeRecipe(ItemStack(Items.EMERALD.id, 1), sell = ItemStack(Items.WHEAT_SEED.id, 1)),
+        TradeRecipe(ItemStack(Items.EMERALD.id, 11), sell = ItemStack(Items.CARROT.id, 1)),
+        TradeRecipe(ItemStack(Items.EMERALD.id, 11), sell = ItemStack(Items.POTATO.id, 1)),
+        TradeRecipe(ItemStack(Items.EMERALD.id, 16), sell = ItemStack(Items.CABBAGE_SEED.id, 1)),
+        TradeRecipe(ItemStack(Items.EMERALD.id, 16), sell = ItemStack(Items.CORN_SEED.id, 1)),
+        TradeRecipe(ItemStack(Items.EMERALD.id, 18), sell = ItemStack(Items.TOMATO_SEED.id, 1)),
+        TradeRecipe(ItemStack(Items.EMERALD.id, 20), sell = ItemStack(Items.ONION.id, 1)),
+        TradeRecipe(ItemStack(Items.EMERALD.id, 22), sell = ItemStack(Items.COTTON_SEED.id, 1)),
     )
 
     private fun TradeList.findFirstValidTrade(slotItems: List<ItemStack>): TradeRecipe? {
