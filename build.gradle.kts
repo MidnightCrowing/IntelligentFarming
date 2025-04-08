@@ -37,7 +37,35 @@ dependencies {
     runtimeOnly("org.lwjgl", "lwjgl-par", classifier = "natives-windows")
     runtimeOnly("org.lwjgl", "lwjgl-stb", classifier = "natives-windows")
 
+    implementation("com.googlecode.soundlibs:vorbisspi:1.0.3.3")
+    implementation("com.googlecode.soundlibs:tritonus-share:0.3.7.4")
+
     testImplementation(kotlin("test"))
+}
+
+val generateVersionFile by tasks.registering {
+    val outputDir = layout.buildDirectory.dir("generated/resources/version").get().asFile
+    val versionFile = outputDir.resolve("version.properties")
+
+    inputs.property("version", project.version)
+    outputs.file(versionFile)
+
+    doLast {
+        outputDir.mkdirs()
+        versionFile.writeText("version=${project.version}")
+    }
+}
+
+sourceSets.main {
+    resources.srcDir("build/generated/resources/version")
+}
+
+tasks.processResources {
+    dependsOn(generateVersionFile)
+
+    from("LICENSE") {
+        into(".") // 表示拷贝到资源根目录
+    }
 }
 
 tasks.jar {

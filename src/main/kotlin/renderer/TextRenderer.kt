@@ -26,6 +26,7 @@ class TextRenderer(private val nvg: Long) {
     var textColor: DoubleArray = doubleArrayOf(1.0, 1.0, 1.0, 1.0)
     var textOpacity: Double = 1.0
     var textSpacing: Double = 1.0
+    var rotation: Double = 0.0
 
     var shadow: Boolean = true
     var shadowColor: DoubleArray = doubleArrayOf(62.0 / 255, 62.0 / 255, 62.0 / 255)
@@ -63,6 +64,11 @@ class TextRenderer(private val nvg: Long) {
      */
     fun render(text: String = this.text) {
         MemoryStack.stackPush().use { stack ->
+            nvgSave(nvg) // 保存当前状态
+            nvgTranslate(nvg, x.toFloat(), y.toFloat())      // 平移到指定位置
+            nvgRotate(nvg, Math.toRadians(rotation).toFloat()) // 旋转文本
+            nvgTranslate(nvg, -x.toFloat(), -y.toFloat())    // 平移回原位置
+
             nvgFontBlur(nvg, fontBlur.toFloat())             // 设置字体模糊
             nvgTextLetterSpacing(nvg, textSpacing.toFloat()) // 设置字母间距
             nvgFontSize(nvg, fontSize.toFloat())             // 设置字体大小
@@ -70,6 +76,8 @@ class TextRenderer(private val nvg: Long) {
             nvgTextAlign(nvg, textAlign)                     // 设置文本对齐
 
             renderTextWithOffset(stack, text)                // 绘制带阴影的文本
+
+            nvgRestore(nvg) // 恢复之前保存的状态
         }
 
         nvgEndFrame(nvg)

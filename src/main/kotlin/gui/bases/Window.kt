@@ -3,7 +3,6 @@ package com.midnightcrowing.gui.bases
 import com.midnightcrowing.config.AppConfig
 import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.gui.publics.Debugger
-import com.midnightcrowing.resource.ResourcesEnum
 import com.midnightcrowing.utils.GameTick
 import org.lwjgl.BufferUtils
 import org.lwjgl.glfw.Callbacks
@@ -20,7 +19,6 @@ import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.io.File
 import java.io.IOException
-import java.io.InputStream
 import javax.swing.JOptionPane
 
 /**
@@ -85,7 +83,7 @@ class Window(
         if (handle == MemoryUtil.NULL) throw RuntimeException("创建 GLFW 窗口失败")
 
         // 设置窗口图标
-        setWindowIcon(ResourcesEnum.ICON.inputStream)
+        setWindowIcon()
 
         // 设置当前线程的 OpenGL 上下文为指定的窗口句柄
         glfwMakeContextCurrent(handle)
@@ -125,7 +123,10 @@ class Window(
         }
     }
 
-    private fun setWindowIcon(inputStream: InputStream?) {
+    private fun setWindowIcon() {
+        val iconPath = "/assets/farmland.png"
+        val inputStream = this::class.java.getResourceAsStream(iconPath)
+
         if (inputStream == null) {
             JOptionPane.showMessageDialog(null, "图标资源加载失败", "错误", JOptionPane.ERROR_MESSAGE)
             return
@@ -170,30 +171,47 @@ class Window(
     }
 
     private fun createFont() {
-        val fontPath = ResourcesEnum.FONT_UNIFONT.inputStream ?: run {
+        val fontPath = "/assets/font/unifont-16.0.02.otf"
+        val fontStream = this::class.java.getResourceAsStream(fontPath) ?: run {
             JOptionPane.showMessageDialog(null, "字体资源加载失败", "错误", JOptionPane.ERROR_MESSAGE)
             return
         }
 
-        val byteArray = fontPath.readBytes()
-        val tempDir = System.getProperty("java.io.tmpdir")
-        val fontFile = File(tempDir, "${name}_temp_font.otf")
+        val byteArray = fontStream.readBytes()
 
+        // 获取临时目录路径
+        val tempDirPath = System.getProperty("java.io.tmpdir")
+        val tempDir = File(tempDirPath)
+        val containsChinese = tempDir.absolutePath.any { it.code > 127 }
+
+        // 如果包含中文，则 fallback 到程序当前路径下的 .IntelligentFarming 目录
+        val fallbackDir = if (containsChinese) {
+            val altDir = File(".IntelligentFarming")
+            if (!altDir.exists()) altDir.mkdirs()
+            altDir
+        } else {
+            tempDir
+        }
+
+        val fontFile = File(fallbackDir, "${name}_temp_font.otf")
         if (!fontFile.exists()) {
             try {
                 fontFile.writeBytes(byteArray)
             } catch (e: IOException) {
-                JOptionPane.showMessageDialog(null, "写入临时文件失败: ${e.message}", "错误", JOptionPane.ERROR_MESSAGE)
+                JOptionPane.showMessageDialog(null, "写入字体文件失败: ${e.message}", "错误", JOptionPane.ERROR_MESSAGE)
                 return
             }
         }
 
-        // 转换路径为 UTF-8（确保中文路径不出问题）
-        val fontPathUtf8 = fontFile.absolutePath.toByteArray(Charsets.UTF_8).toString(Charsets.UTF_8)
-
-        val fontId = nvgCreateFont(nvg, "unifont", fontPathUtf8)
+        // 使用绝对路径加载字体（不需要 UTF-8 编码转换）
+        val fontId = nvgCreateFont(nvg, "unifont", fontFile.absolutePath)
         if (fontId == -1) {
-            JOptionPane.showMessageDialog(null, "字体加载失败 path: $fontPathUtf8", "错误", JOptionPane.ERROR_MESSAGE)
+            JOptionPane.showMessageDialog(
+                null,
+                "字体加载失败 path: ${fontFile.absolutePath}",
+                "错误",
+                JOptionPane.ERROR_MESSAGE
+            )
         }
     }
 
