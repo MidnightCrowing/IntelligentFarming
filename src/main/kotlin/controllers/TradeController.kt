@@ -1,5 +1,6 @@
 package com.midnightcrowing.controllers
 
+import com.midnightcrowing.audio.SoundEffectPlayer
 import com.midnightcrowing.gui.publics.Trade
 import com.midnightcrowing.gui.publics.TradeButton
 import com.midnightcrowing.model.item.ItemStack
@@ -65,7 +66,10 @@ open class TradeController(farmController: FarmController) {
         val tradeRecipe = selectedButton?.tradeRecipe ?: tradeList.findFirstValidTrade(slotItems) ?: return
 
         // 校验交易条件
-        if (!tradeRecipe.canTrade(slotItems)) return
+        if (!tradeRecipe.canTrade(slotItems)) {
+            SoundEffectPlayer.play("entity.villager.no")
+            return
+        }
 
         val sellItem = tradeRecipe.sell
 
@@ -83,6 +87,9 @@ open class TradeController(farmController: FarmController) {
         trade.tradeButtons.find { it.tradeRecipe == tradeRecipe }?.let {
             it.isTradeable = tradeRecipe.isTradeable
         }
+
+        // 播放交易音效
+        SoundEffectPlayer.play("entity.villager.yes")
 
         updateTrade() // 更新交易状态
     }

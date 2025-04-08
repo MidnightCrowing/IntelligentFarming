@@ -53,10 +53,10 @@ class FarmScene(window: Window) : Screen(window) {
     private val compost: Compost = Compost(this, controller.compost, z = 4)
     private val anvilButton: ItemButton = ItemButton(
         this, Items.ANVIL.id, "工具", tooltipPosition = "after-top"
-    )
+    ).apply { soundEffect = "entity.villager.trade" }
     private val villagerButton: ItemButton = ItemButton(
         this, Items.VILLAGER_SPAWN_EGG.id, "商店", tooltipPosition = "after-top"
-    )
+    ).apply { soundEffect = "entity.villager.trade" }
     private val composterButton: ItemButton = ItemButton(
         this, Items.COMPOSTER.id, "堆肥", tooltipPosition = "after-top"
     )

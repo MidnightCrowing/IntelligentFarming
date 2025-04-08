@@ -12,7 +12,6 @@ sealed class AudioResource(val path: String) {
     class Group(private val paths: List<String>) : AudioResource("") {
         fun getRandomAudioStream(): AudioInputStream {
             val randomPath = paths.random()
-            println("Random path: $randomPath")
             return AudioSystem.getAudioInputStream(
                 javaClass.getResourceAsStream(randomPath)!!.buffered()
             )

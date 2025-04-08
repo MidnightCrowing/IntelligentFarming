@@ -1,5 +1,6 @@
 package com.midnightcrowing.controllers
 
+import com.midnightcrowing.audio.SoundEffectPlayer
 import com.midnightcrowing.gui.publics.Compost
 import com.midnightcrowing.model.item.ItemList
 import com.midnightcrowing.model.item.ItemStack
@@ -69,6 +70,7 @@ class CompostController(farmController: FarmController) {
      * 模拟堆肥桶正在工作，将等级从 7 增加到 8
      */
     private fun simulateCompostingProgress() {
+        SoundEffectPlayer.play("block.composter.ready")
         compost.composterBlock.compostLevel = 8
     }
 
@@ -81,6 +83,7 @@ class CompostController(farmController: FarmController) {
         } else {
             productSlotItem.count += 1
         }
+        SoundEffectPlayer.play("block.composter.empty")
         compost.composterBlock.compostLevel = 0
     }
 
@@ -102,6 +105,7 @@ class CompostController(farmController: FarmController) {
                     compost.composterBlock.compostLevel += 1
                     removeItemFromSlot(i)
                     generateParticles()
+                    SoundEffectPlayer.play("block.composter.fill_success")
                     break // 一次只处理一个物品
                 }
 
@@ -109,6 +113,7 @@ class CompostController(farmController: FarmController) {
                     compost.composterBlock.compostLevel = minOf(level + 3, 7)
                     removeItemFromSlot(i)
                     generateParticles()
+                    SoundEffectPlayer.play("block.composter.fill_success")
                     break // 一次只处理一个物品
                 }
 

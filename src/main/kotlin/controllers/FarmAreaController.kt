@@ -1,5 +1,6 @@
 package com.midnightcrowing.controllers
 
+import com.midnightcrowing.audio.SoundEffectPlayer
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
 import com.midnightcrowing.gui.publics.CropInfoDisplay
@@ -139,6 +140,7 @@ class FarmAreaController(farmController: FarmController) {
                 if (mouseGridPosition!!.crop!!.applyBoneMeal()) {
                     generateCropGrowthParticles(mouseGridPosition!!)
                     hotController.onUseBoneMeal()
+                    SoundEffectPlayer.play("item.bone_meal.use")
                 }
             }
         }
@@ -185,6 +187,8 @@ class FarmAreaController(farmController: FarmController) {
             cropsGrid[pos.y][pos.x] = newCrop
 
             hotController.onPlantCrop()
+
+            SoundEffectPlayer.play("item.crop.plant")
         }
     }
 
@@ -204,6 +208,8 @@ class FarmAreaController(farmController: FarmController) {
             crop.cleanup()
         }
         cropsGrid[pos.y][pos.x] = null
+
+        SoundEffectPlayer.play("block.crop.break")
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.midnightcrowing.gui.bases
 
+import com.midnightcrowing.audio.SoundEffectPlayer
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.model.Texture
@@ -60,6 +61,8 @@ open class Button(parent: Widget) : Widget(parent) {
             textRenderer.textSpacing = value
         }
 
+    var soundEffect: String = "ui.button.click"
+
     /**
      * 设置按钮的边界位置。
      * @param x1 左上角 X 坐标
@@ -112,6 +115,7 @@ open class Button(parent: Widget) : Widget(parent) {
     var onClickCallback: ((e: MouseClickEvent) -> Unit)? = null
 
     override fun onClick(e: MouseClickEvent) {
+        SoundEffectPlayer.play(soundEffect)
         onClickCallback?.invoke(e) // 调用回调函数（如果有）
     }
 
