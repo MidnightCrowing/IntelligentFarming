@@ -30,10 +30,17 @@ enum class TextureResourcesEnum(private val resourcePath: String) {
     GUI_BUTTON_DEFAULT("/assets/textures/gui/button/button_default.png"),
     GUI_BUTTON_HOVER("/assets/textures/gui/button/button_hover.png"),
     GUI_BUTTON_DISABLED("/assets/textures/gui/button/button_disabled.png"),
+
+    // slider
+    GUI_SLIDER_THUMB_DEFAULT("/assets/textures/gui/slider/thumb_default.png"),
+    GUI_SLIDER_THUMB_HOVER("/assets/textures/gui/slider/thumb_hover.png"),
+    GUI_SLIDER_TRACK_DEFAULT("/assets/textures/gui/slider/track_default.png"),
+    GUI_SLIDER_TRACK_HOVER("/assets/textures/gui/slider/track_hover.png"),
     /* endregion */
 
     /* region Background */
     BG_MAIN_MENU_BACKGROUND("/assets/textures/background/main_menu.jpg"),
+    BG_OPTIONS("/assets/textures/background/options.jpg"),
     BG_FARM_BACKGROUND("/assets/textures/background/farm.png"),
     /* endregion */
 

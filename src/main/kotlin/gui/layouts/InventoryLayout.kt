@@ -1,9 +1,9 @@
 package com.midnightcrowing.gui.layouts
 
-import com.midnightcrowing.controllers.InventoryController
 import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.publics.DraggingItem
+import com.midnightcrowing.gui.publics.inventory.InventoryController
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.model.item.ItemRenderCache

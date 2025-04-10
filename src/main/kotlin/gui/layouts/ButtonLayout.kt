@@ -1,7 +1,7 @@
 package com.midnightcrowing.gui.layouts
 
-import com.midnightcrowing.gui.bases.Button
 import com.midnightcrowing.gui.bases.Widget
+import com.midnightcrowing.gui.bases.button.AbstractButton
 import com.midnightcrowing.utils.LayoutScaler
 
 class ButtonLayout(
@@ -13,14 +13,14 @@ class ButtonLayout(
     var btnGapX: Double = 0.02,
     var btnGapY: Double = 0.035,
 ) : Widget(parent, z) {
-    private var buttons = mutableMapOf<Int, MutableList<Button>>()
+    private var buttons = mutableMapOf<Int, MutableList<AbstractButton>>()
 
     /**
      * 添加按钮
      * @param row 行号
      * @param button 按钮
      */
-    fun addButton(row: Int, button: Button) {
+    fun addButton(row: Int, button: AbstractButton) {
         buttons.getOrPut(row) { mutableListOf() }.add(button)
     }
 

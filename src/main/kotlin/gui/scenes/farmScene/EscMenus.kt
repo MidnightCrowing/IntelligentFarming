@@ -1,10 +1,9 @@
 package com.midnightcrowing.gui.scenes.farmScene
 
-import com.midnightcrowing.controllers.FarmController
 import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event
-import com.midnightcrowing.gui.bases.Button
 import com.midnightcrowing.gui.bases.Widget
+import com.midnightcrowing.gui.bases.button.Button
 import com.midnightcrowing.gui.layouts.ButtonLayout
 import com.midnightcrowing.renderer.RectangleRenderer
 import com.midnightcrowing.renderer.TextRenderer
@@ -49,17 +48,17 @@ class EscMenus(parent: Widget, val controller: FarmController, z: Int? = null) :
 
     override fun containsPoint(x: Double, y: Double, event: KClass<out Event>?): Boolean = true
 
-    override fun onClick(e: MouseClickEvent) = super.onClick(e)
+    override fun onClick(e: MouseClickEvent) {}
 
-    override fun onRightClick(e: MouseRightClickEvent) = super.onRightClick(e)
+    override fun onRightClick(e: MouseRightClickEvent) {}
 
-    override fun onMousePress(e: MousePressedEvent) = super.onMousePress(e)
+    override fun onMousePress(e: MousePressedEvent) {}
 
-    override fun onMouseRelease(e: MouseReleasedEvent) = super.onMouseRelease(e)
+    override fun onMouseRelease(e: MouseReleasedEvent) {}
 
-    override fun onMouseMove(e: MouseMoveEvent) = super.onMouseMove(e)
+    override fun onMouseMove(e: MouseMoveEvent) {}
 
-    override fun onMouseScroll(e: MouseScrollEvent) = super.onMouseScroll(e)
+    override fun onMouseScroll(e: MouseScrollEvent) {}
 
     fun place(width: Int, height: Int) {
         super.place(0.0, 0.0, width.toDouble(), height.toDouble())

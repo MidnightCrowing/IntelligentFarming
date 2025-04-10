@@ -1,8 +1,7 @@
 package com.midnightcrowing.farmings
 
-import com.midnightcrowing.controllers.FarmAreaController
-import com.midnightcrowing.controllers.FarmAreaController.GridPosition
 import com.midnightcrowing.events.CustomEvent.*
+import com.midnightcrowing.farmings.FarmAreaController.GridPosition
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds

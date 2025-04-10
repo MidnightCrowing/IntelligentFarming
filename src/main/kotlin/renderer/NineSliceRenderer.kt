@@ -4,6 +4,7 @@ import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.model.Texture
 import org.lwjgl.opengl.GL46.*
 import kotlin.math.ceil
+import kotlin.math.min
 
 class NineSliceRenderer(
     var texture: Texture,
@@ -16,6 +17,8 @@ class NineSliceRenderer(
     var alpha: Double = 1.0  // 默认不透明
 
     fun render(x: Float, y: Float, width: Float, height: Float) {
+        val vertexBorder = min(vertexBorder, width - 1)
+
         glEnable(GL_TEXTURE_2D)
         texture.bind()
         glBegin(GL_QUADS)
@@ -58,7 +61,7 @@ class NineSliceRenderer(
         )
 
         // 绘制所有九宫格部分
-        slices.forEach { drawSlice(it) }
+        slices.forEach { drawSlice(it, vertexBorder) }
 
         glEnd()
         glDisable(GL_TEXTURE_2D)
@@ -94,7 +97,7 @@ class NineSliceRenderer(
     /**
      * 绘制九宫格中的一个部分，采用复制纹理的方式进行渲染。
      */
-    private fun drawSlice(q: Quad) {
+    private fun drawSlice(q: Quad, vertexBorder: Float) {
         val uw = q.tw / textureBorder * vertexBorder  // 纹理缩放后的渲染宽度
         val uh = q.th / textureBorder * vertexBorder  // 纹理缩放后的渲染高度
         val rw = q.vw / uw                            // 计算渲染宽度与纹理宽度的比率

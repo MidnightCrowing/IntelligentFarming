@@ -1,14 +1,19 @@
 package com.midnightcrowing.gui.scenes.farmScene
 
-import com.midnightcrowing.controllers.FarmController
 import com.midnightcrowing.events.CustomEvent.KeyPressedEvent
 import com.midnightcrowing.events.CustomEvent.MouseMoveEvent
 import com.midnightcrowing.farmings.FarmArea
-import com.midnightcrowing.gui.bases.ItemButton
 import com.midnightcrowing.gui.bases.Screen
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
-import com.midnightcrowing.gui.publics.*
+import com.midnightcrowing.gui.bases.button.ItemButton
+import com.midnightcrowing.gui.publics.compost.Compost
+import com.midnightcrowing.gui.publics.cropInfoDisplay.CropInfoDisplay
+import com.midnightcrowing.gui.publics.hotBar.HotBar
+import com.midnightcrowing.gui.publics.inventory.Inventory
+import com.midnightcrowing.gui.publics.options.Options
+import com.midnightcrowing.gui.publics.toolTrade.ToolTrade
+import com.midnightcrowing.gui.publics.trade.Trade
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.item.Items
 import com.midnightcrowing.renderer.TextureRenderer
@@ -70,6 +75,8 @@ class FarmScene(window: Window) : Screen(window) {
 
     private fun FloatingWidget.setHidden(hidden: Boolean) = forEach { it.setHidden(hidden) }
 
+    val options: Options = Options(this)
+
     private var activeWidget: Widget? = null
 
     init {
@@ -78,6 +85,7 @@ class FarmScene(window: Window) : Screen(window) {
         trade.setHidden(true)
         compost.setHidden(true)
         escMenus.setHidden(true)
+        options.setHidden(true)
 
         // Register button clock event callbacks
         anvilButton.onClickCallback = { showContainer(toolTrade) }
@@ -191,6 +199,8 @@ class FarmScene(window: Window) : Screen(window) {
 
         // escMenus
         escMenus.place(w, h)
+
+        options.place(w, h)
     }
 
     override fun update() {
@@ -205,6 +215,7 @@ class FarmScene(window: Window) : Screen(window) {
         composterButton.update()
         chestButton.update()
         escMenus.update()
+        options.update()
     }
 
     override fun onKeyPress(e: KeyPressedEvent): Boolean {
@@ -235,6 +246,7 @@ class FarmScene(window: Window) : Screen(window) {
         chestButton.renderItemName()
 
         escMenus.render()
+        options.render()
     }
 
     override fun doCleanup() {
@@ -251,5 +263,6 @@ class FarmScene(window: Window) : Screen(window) {
         composterButton.cleanup()
         chestButton.cleanup()
         escMenus.cleanup()
+        options.cleanup()
     }
 }
