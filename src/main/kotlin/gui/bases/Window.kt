@@ -104,8 +104,8 @@ class Window(
     }
 
     private fun initGLFW() {
-        // 设置交换缓冲区的垂直同步为开启（1表示开启垂直同步，0表示关闭）
-        glfwSwapInterval(1)
+        // 设置垂直同步
+        setSwapInterval(AppConfig.SWAP_INTERVAL)
 
         // 显示窗口（如果窗口之前被隐藏）
         glfwShowWindow(handle)
@@ -308,6 +308,16 @@ class Window(
         val ypos = DoubleArray(1)
         glfwGetCursorPos(handle, xpos, ypos)
         return Pair(xpos[0], ypos[0])
+    }
+
+    /**
+     * 设置垂直同步
+     *
+     * @param enabled 是否启用垂直同步
+     */
+    fun setSwapInterval(enabled: Boolean) {
+        // 设置交换缓冲区的垂直同步为开启（1表示开启垂直同步，0表示关闭）
+        glfwSwapInterval(if (enabled) 1 else 0)
     }
 
     /**

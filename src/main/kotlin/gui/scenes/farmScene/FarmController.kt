@@ -9,9 +9,7 @@ import com.midnightcrowing.gui.publics.inventory.InventoryController
 import com.midnightcrowing.gui.publics.toolTrade.ToolTradeController
 import com.midnightcrowing.gui.publics.trade.TradeController
 import com.midnightcrowing.gui.scenes.mainMenuScene.MainMenuScreen
-import java.awt.Desktop
-import java.net.URI
-import javax.swing.JOptionPane
+import utils.BrowserUtils.openUrl
 
 class FarmController(private val farmScreen: FarmScene) {
     private val window: Window = farmScreen.window
@@ -29,27 +27,19 @@ class FarmController(private val farmScreen: FarmScene) {
         compost.update()
     }
 
-    private fun openUrl(url: String) {
-        if (Desktop.isDesktopSupported()) {
-            val desktop = Desktop.getDesktop()
-            if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                desktop.browse(URI(url))
-            }
-        } else {
-            JOptionPane.showMessageDialog(
-                null,
-                "系统不支持 Desktop，请手动在浏览器中打开该网址：$url",
-                "错误",
-                JOptionPane.WARNING_MESSAGE
-            )
-        }
-    }
-
     // 回到游戏
     fun backToGame() = farmScreen.escMenus.setHidden(true)
 
     fun openOptions() {
         farmScreen.options.setHidden(false)
+    }
+
+    fun openProgress() {
+//        TODO("Not yet implemented")
+    }
+
+    fun openStatistics() {
+//        TODO("Not yet implemented")
     }
 
     // 提供反馈

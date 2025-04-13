@@ -17,10 +17,10 @@ class EscMenus(parent: Widget, val controller: FarmController, z: Int? = null) :
             text = "回到游戏"; textSpacing = 2.0; onClickCallback = { controller.backToGame() }
         },
         Button(buttonLayout).apply {
-            text = "进度"; textSpacing = 2.0; onClickCallback = { controller.openOptions() }
+            text = "进度"; textSpacing = 2.0; onClickCallback = { controller.openProgress() }
         },
         Button(buttonLayout).apply {
-            text = "统计信息"; textSpacing = 2.0; onClickCallback = { controller.openOptions() }
+            text = "统计信息"; textSpacing = 2.0; onClickCallback = { controller.openStatistics() }
         },
         Button(buttonLayout).apply {
             text = "选项…"; textSpacing = 2.0; onClickCallback = { controller.openOptions() }

@@ -16,4 +16,7 @@ object AppConfig {
             props.load(AppConfig::class.java.getResourceAsStream("/version.properties"))
             return props.getProperty("version")
         }
+
+    /** 垂直同步 */
+    var SWAP_INTERVAL: Boolean = true
 }

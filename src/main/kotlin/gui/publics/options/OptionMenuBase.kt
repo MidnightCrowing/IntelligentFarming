@@ -25,7 +25,7 @@ open class OptionMenuBase(parent: Options, title: String) : Widget(parent) {
 
     override fun update() = buttonLayout.update()
 
-    fun place(width: Int, height: Int) {
+    open fun place(width: Int, height: Int) {
         super.place(0.0, 0.0, width.toDouble(), height.toDouble())
 
         titleRenderer.fontSize = LayoutScaler.scaleValue(parentWidth)
