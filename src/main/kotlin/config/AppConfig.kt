@@ -17,6 +17,32 @@ object AppConfig {
             return props.getProperty("version")
         }
 
-    /** 垂直同步 */
+    /** 视频设置 */
+    // 垂直同步
     var SWAP_INTERVAL: Boolean = true
+
+    /** 音乐和声音选项 */
+    // 主音量
+    var MAIN_VOLUME: Double = 1.0
+        set(value) {
+            field = value.coerceIn(0.0, 1.0)
+        }
+
+    // 音乐音量
+    var MUSIC_VOLUME: Double = 1.0
+        set(value) {
+            field = value.coerceIn(0.0, 1.0)
+        }
+
+    // 音效音量
+    var SOUND_VOLUME: Double = 1.0
+        set(value) {
+            field = value.coerceIn(0.0, 1.0)
+        }
+
+    // UI音量
+    var UI_VOLUME: Double = 1.0
+        set(value) {
+            field = value.coerceIn(0.0, 1.0)
+        }
 }

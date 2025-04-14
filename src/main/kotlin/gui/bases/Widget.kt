@@ -19,7 +19,7 @@ open class Widget {
         private set
     private var visible: Boolean = true
     private val parentVisible: Boolean get() = parent?.visible != false && parent?.parentVisible != false
-    val isVisible: Boolean get() = visible && parentVisible
+    open val isVisible: Boolean get() = visible && parentVisible
 
     constructor(window: Window, z: Int? = null) {
         this.window = window

@@ -117,6 +117,13 @@ object BackgroundMusicPlayer {
         queuedTracks.add(audioResourcesEnum)
     }
 
+    fun setVolume(linear: Double) {
+        val db = (20 * kotlin.math.log10(linear.coerceIn(0.0001, 1.0))).toFloat()
+        volumeControl?.let {
+            it.value = db.coerceIn(it.minimum, it.maximum)
+        }
+    }
+
     private fun playNextInQueue() {
         queuedTracks.removeFirstOrNull()?.let { audioResourcesEnum ->
             play(audioResourcesEnum, loop = false)

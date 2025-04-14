@@ -9,13 +9,17 @@ import com.midnightcrowing.utils.LayoutScaler
 import utils.BrowserUtils.openUrl
 
 class AboutMenu(parent: Options) : OptionMenuBase(parent, "关于") {
-    private val descriptionLines = listOf(
+    private val descriptionLines: List<String> = listOf(
         "本游戏的灵感来源于 Minecraft，借鉴了其中与种田相关的内容。",
         "这是一个免费游戏，主要作为大学生 Java 课程设计的项目而开发。",
         "本项目完全开源，欢迎在 GitHub 上查阅源码、参与开发或提交反馈建议。",
         "感谢您体验本游戏，祝您游戏愉快！",
         "",
+        "游戏中所使用的所有资源均来自 Minecraft 原版、相关模组或公开网络资源，",
+        "具体信息请参见源码仓库中的 README 文件。",
+        "",
         "作者: MidnightCrowing",
+        "贡献者: StevenArai",
         "版本: $VERSION"
     )
 
@@ -31,14 +35,20 @@ class AboutMenu(parent: Options) : OptionMenuBase(parent, "关于") {
         onClickCallback = { openUrl("https://github.com/MidnightCrowing/IntelligentFarming") }
     }
 
+    private val readmeButton = Button(buttonLayout).apply {
+        text = "查看 README"
+        onClickCallback = { openUrl("https://github.com/MidnightCrowing/IntelligentFarming/README.md") }
+    }
+
     private val feedbackButton = Button(buttonLayout).apply {
         text = "提供反馈"
         onClickCallback = { openUrl("https://github.com/MidnightCrowing/IntelligentFarming/issues") }
     }
 
     init {
-        buttonLayout.addButton(5, githubButton)
-        buttonLayout.addButton(5, feedbackButton)
+        buttonLayout.addButton(7, githubButton)
+        buttonLayout.addButton(7, readmeButton)
+        buttonLayout.addButton(7, feedbackButton)
     }
 
     override fun place(width: Int, height: Int) {

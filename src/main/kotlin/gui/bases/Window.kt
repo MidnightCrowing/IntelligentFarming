@@ -11,7 +11,7 @@ import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.nanovg.NanoVG.nvgBeginFrame
 import org.lwjgl.nanovg.NanoVG.nvgCreateFont
-import org.lwjgl.nanovg.NanoVGGL2.*
+import org.lwjgl.nanovg.NanoVGGL3.*
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL46.*
 import org.lwjgl.stb.STBImage.*

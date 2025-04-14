@@ -18,6 +18,17 @@ open class Button(parent: Widget) : AbstractButton(parent) {
         DEFAULT, HOVER, DISABLED
     }
 
+    private var lastIsVisible: Boolean = true
+    override val isVisible: Boolean
+        get() {
+            val value = super.isVisible
+            if (value != lastIsVisible) {
+                lastIsVisible = value
+                onVisibilityChanged(value)
+            }
+            return value
+        }
+
     // 纹理映射，加载对应状态的按钮纹理
     private val textures: Map<ButtonTextures, Texture> = mapOf(
         ButtonTextures.DEFAULT to TextureResourcesEnum.GUI_BUTTON_DEFAULT.texture,
@@ -71,6 +82,15 @@ open class Button(parent: Widget) : AbstractButton(parent) {
      */
     override fun onMouseLeave() {
         isHover = false
+    }
+
+    private fun onVisibilityChanged(visible: Boolean) {
+        if (visible) {
+            val (x, y) = getCursorPos()
+            if (containsPoint(x, y)) onMouseEnter()
+        } else {
+            onMouseLeave()
+        }
     }
 
     override fun update() {
