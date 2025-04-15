@@ -29,7 +29,7 @@ class FarmAreaController(farmController: FarmController) {
     private val GridPosition.crop: FarmCropBase? get() = cropsGrid[y][x]
 
     // 农田参数
-    private lateinit var farmlandBoard: List<Int>    // 农田布局位掩码（每个Int表示一列的可用行）
+    private lateinit var farmlandBoard: FarmlandBoard    // 农田布局位掩码（每个Int表示一列的可用行）
     private var rowCount: Int = 0
     private var columnCount: Int = 0
 
@@ -79,7 +79,7 @@ class FarmAreaController(farmController: FarmController) {
     var isLeftClick: Boolean = false
     var isRightClick: Boolean = false
 
-    fun init(farmArea: FarmArea, farmlandBoard: List<Int>, rowCount: Int, columnCount: Int) {
+    fun init(farmArea: FarmArea, farmlandBoard: FarmlandBoard, rowCount: Int, columnCount: Int) {
         this.farmArea = farmArea
         this.rowCount = rowCount
         this.columnCount = columnCount
@@ -111,8 +111,8 @@ class FarmAreaController(farmController: FarmController) {
     fun update() {
         cropsGrid.forEach { row -> row.forEach { it?.update() } }
         cropInfo.update()
-        blockParticleSystem.update(0.016f) // Assuming 60 FPS, so deltaTime is approximately 1/60
-        cropGrowthParticleSystem.update(0.016f)
+        blockParticleSystem.update()
+        cropGrowthParticleSystem.update()
 
         mouseGridPosition?.let { pos ->
             activeSeedCrop?.setHidden(pos.hasCrop())

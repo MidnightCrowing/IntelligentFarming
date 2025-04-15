@@ -17,7 +17,7 @@ open class ComposterParticle(
      * 更新粒子状态
      * @param deltaTime 时间步长
      */
-    override fun update(deltaTime: Float) {
+    override fun update(deltaTime: Double) {
         super.update(deltaTime)
         position.x += velocity.x * deltaTime
         position.y -= velocity.y * deltaTime

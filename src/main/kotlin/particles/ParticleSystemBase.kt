@@ -1,6 +1,7 @@
 package com.midnightcrowing.particles
 
 import com.midnightcrowing.model.Point
+import com.midnightcrowing.utils.FPSCounter.fps
 import kotlin.random.Random
 
 /**
@@ -57,7 +58,7 @@ abstract class ParticleSystemBase<T : ParticleBase> {
      * 更新所有粒子的状态
      * @param deltaTime 时间步长
      */
-    fun update(deltaTime: Float) {
+    fun update(deltaTime: Double = 1.0 / fps) {
         particles.forEach { it.update(deltaTime) }
         particles.removeIf { it.isDead() } // 移除生命周期结束的粒子
     }

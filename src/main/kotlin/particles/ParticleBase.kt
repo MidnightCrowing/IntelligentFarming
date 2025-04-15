@@ -12,7 +12,7 @@ abstract class ParticleBase(
      * 更新粒子状态
      * @param deltaTime 时间步长
      */
-    open fun update(deltaTime: Float) {
+    open fun update(deltaTime: Double) {
         lifetime -= deltaTime
     }
 

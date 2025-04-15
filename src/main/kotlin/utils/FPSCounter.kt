@@ -1,6 +1,6 @@
 package com.midnightcrowing.utils
 
-class FPSCounter {
+object FPSCounter {
     private var lastTime = System.nanoTime()
     private var frames = 0
     var fps = 0

@@ -21,6 +21,7 @@ class AudioMenu(parent: Options) : OptionMenuBase(parent, "音乐和声音选项
         val configs = listOf(
             VolumeConfig("主音量", ::MAIN_VOLUME) { volume ->
                 MAIN_VOLUME = volume
+                BackgroundMusicPlayer.setVolume(MAIN_VOLUME * MUSIC_VOLUME)
             },
             VolumeConfig("音乐", ::MUSIC_VOLUME) { volume ->
                 MUSIC_VOLUME = volume

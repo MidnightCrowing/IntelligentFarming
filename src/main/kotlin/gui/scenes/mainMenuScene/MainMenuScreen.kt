@@ -21,10 +21,10 @@ class MainMenuScreen(window: Window) : Screen(window) {
     private val controller = MainMenuController(this)
 
     // 游戏标题
-    private val titleRenderer = TextureRenderer(TextureResourcesEnum.TITLE_INTELLFARM.texture)
+    private val titleRenderer = TextureRenderer(TextureResourcesEnum.TITLE_INTELLFARM_EDITION.texture)
     private var titleBounds: ScreenBounds = ScreenBounds.EMPTY
-    private val welcomeTextRenderer = TextRenderer(window.nvg).apply {
-        text = "welcome"; rotation = -22.0
+    private val splashTextRenderer = TextRenderer(window.nvg).apply {
+        text = "Also try Minecraft!"; rotation = -22.0
         textColor = doubleArrayOf(253.0 / 255, 252.0 / 255, 1.0 / 255, 1.0)
     }
 
@@ -74,15 +74,14 @@ class MainMenuScreen(window: Window) : Screen(window) {
 
         // titleBounds
         titleBounds.y1 = height * 0.15
-        titleBounds.y2 = height * 0.30
-        titleBounds.x1 = width.toDouble() / 2 - titleBounds.height / 158 * 1024 / 2
-        titleBounds.x2 = width.toDouble() / 2 + titleBounds.height / 158 * 1024 / 2
+        titleBounds.y2 = height * 0.37
+        titleBounds.x1 = width.toDouble() / 2 - titleBounds.height / 256 * 1024 / 2
+        titleBounds.x2 = width.toDouble() / 2 + titleBounds.height / 256 * 1024 / 2
 
-        // welcomeTextRenderer
-        welcomeTextRenderer.x = titleBounds.x2 - titleBounds.width / 665 * 35
-        welcomeTextRenderer.y = titleBounds.y2 - titleBounds.height / 102 * 17
-        welcomeTextRenderer.fontSize = LayoutScaler.scaleValue(parentWidth, 30.0, 38.0)
-        welcomeTextRenderer.textSpacing = LayoutScaler.scaleValue(parentWidth, 5.0, 10.0)
+        // splashTextRenderer
+        splashTextRenderer.x = titleBounds.x2 - titleBounds.width / 16
+        splashTextRenderer.y = titleBounds.y2 - titleBounds.height / 20 * 11
+        splashTextRenderer.fontSize = LayoutScaler.scaleValue(parentWidth, 27.0, 40.0)
 
         buttonLayout.place(width, height)
 
@@ -96,7 +95,7 @@ class MainMenuScreen(window: Window) : Screen(window) {
 
     override fun doRender() {
         titleRenderer.render(titleBounds)
-        welcomeTextRenderer.render()
+        splashTextRenderer.render()
         buttonLayout.render()
         versionRenderer.render()
         licenseRenderer.render()

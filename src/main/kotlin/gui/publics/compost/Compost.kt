@@ -1,6 +1,6 @@
 package com.midnightcrowing.gui.publics.compost
 
-import com.midnightcrowing.events.CustomEvent
+import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.layouts.InventoryLayout
@@ -225,7 +225,7 @@ class Compost(
         dragWidget.onParentMouseMove(getCursorPos())
     }
 
-    override fun onClick(e: CustomEvent.MouseClickEvent) {
+    override fun onClick(e: MouseClickEvent) {
         if (invLayout.isShiftPressed) {
             return
         }
@@ -239,17 +239,17 @@ class Compost(
         }
     }
 
-    override fun onRightClick(e: CustomEvent.MouseRightClickEvent) {
+    override fun onRightClick(e: MouseRightClickEvent) {
         mouseMaterialIndex?.let {
             handleItemInteraction(it, controller.invController::rightClickExchangeItems)
         }
     }
 
-    override fun onMousePress(e: CustomEvent.MousePressedEvent) = invLayout.onMousePress(e)
+    override fun onMousePress(e: MousePressedEvent) = invLayout.onMousePress(e)
 
-    override fun onMouseRelease(e: CustomEvent.MouseReleasedEvent) = invLayout.onMouseRelease(e)
+    override fun onMouseRelease(e: MouseReleasedEvent) = invLayout.onMouseRelease(e)
 
-    override fun onMouseMove(e: CustomEvent.MouseMoveEvent) {
+    override fun onMouseMove(e: MouseMoveEvent) {
         invLayout.onMouseMove(e)
 
         val pos = Point(e.x, e.y)

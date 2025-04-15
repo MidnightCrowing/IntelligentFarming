@@ -1,6 +1,6 @@
 package com.midnightcrowing.gui.publics.hotBar
 
-import com.midnightcrowing.events.CustomEvent
+import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.ScreenBounds
@@ -116,20 +116,20 @@ class HotBar(parent: Widget, private val controller: HotBarController) : Widget(
         }
 
     override fun containsPoint(x: Double, y: Double, event: KClass<out Event>?): Boolean {
-        return if (event == CustomEvent.MouseScrollEvent::class) {
+        return if (event == MouseScrollEvent::class) {
             true
         } else {
             super.containsPoint(x, y, event)
         }
     }
 
-    override fun onClick(e: CustomEvent.MouseClickEvent) {
+    override fun onClick(e: MouseClickEvent) {
         findGridCheckboxIdAt(e.x)?.let {
             controller.selectedGridId = it
         }
     }
 
-    override fun onMouseScroll(e: CustomEvent.MouseScrollEvent) {
+    override fun onMouseScroll(e: MouseScrollEvent) {
         if (e.offsetY < 0) {
             controller.selectedGridId = (controller.selectedGridId + 1) % 9
         } else if (e.offsetY > 0) {
@@ -137,7 +137,7 @@ class HotBar(parent: Widget, private val controller: HotBarController) : Widget(
         }
     }
 
-    override fun onKeyPress(e: CustomEvent.KeyPressedEvent): Boolean {
+    override fun onKeyPress(e: KeyPressedEvent): Boolean {
         var selectedGridId = controller.selectedGridId
         when (e.key) {
             in GLFW.GLFW_KEY_1..GLFW.GLFW_KEY_9 -> {

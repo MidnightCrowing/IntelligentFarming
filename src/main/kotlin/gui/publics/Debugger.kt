@@ -10,7 +10,6 @@ import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_MIDDLE
 class Debugger(private val window: Window) {
     private var visible: Boolean = true
 
-    private val fpsCounter = FPSCounter()
     private val fpsTextRenderer: TextRenderer = TextRenderer(window.nvg).apply {
         x = 5.0; y = 15.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
     }
@@ -23,14 +22,14 @@ class Debugger(private val window: Window) {
 
     fun update() {
         // 更新 FPS 计数器
-        fpsCounter.update()
+        FPSCounter.update()
     }
 
     fun render() {
         if (!visible) return
 
         // 渲染 FPS 和 Tick 信息
-        fpsTextRenderer.render("FPS: ${fpsCounter.fps}")
+        fpsTextRenderer.render("FPS: ${FPSCounter.fps}")
         tickTextRenderer.render("Tick: ${GameTick.tick}")
         val (mousePosX, mousePosY) = window.getCursorPos()
         mousePosRenderer.render("Mouse: X: $mousePosX, Y: $mousePosY")

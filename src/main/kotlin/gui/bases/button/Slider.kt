@@ -1,6 +1,5 @@
 package com.midnightcrowing.gui.bases.button
 
-import com.midnightcrowing.audio.SoundEffectPlayer
 import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.ScreenBounds
@@ -75,8 +74,8 @@ class Slider(parent: Widget) : AbstractButton(parent) {
     }
 
     override fun onClick(e: MouseClickEvent) {
+        super.onClick(e)
         updateValueFromMouseX(e.x)
-        SoundEffectPlayer.play(soundEffect)
         onValueChangedCallback?.invoke(value)
     }
 
@@ -91,7 +90,6 @@ class Slider(parent: Widget) : AbstractButton(parent) {
         super.onMouseRelease(e)
         if (e.button == GLFW_MOUSE_BUTTON_LEFT) {
             isLeftMousePress = false
-            SoundEffectPlayer.play(soundEffect)
         }
     }
 

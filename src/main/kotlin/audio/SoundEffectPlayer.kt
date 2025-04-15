@@ -15,7 +15,7 @@ object SoundEffectPlayer {
         thread {
             try {
                 val audioInputStream = getAudioInputStreamById(id)
-                val clip = AudioSystem.getClip().apply {
+                AudioSystem.getClip().apply {
                     open(audioInputStream)
                     setVolumeDb(getVolumeDb(id))
                     start()

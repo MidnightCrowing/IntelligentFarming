@@ -12,13 +12,45 @@ import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT
 
 /**
+ * 农田布局板（FarmlandBoard），用于定义农田中地块的分布情况。
+ *
+ * 数据结构特性：
+ * - 每个整数表示一整行地块，其二进制位从高到低依次表示该行从**右到左**的位置是否存在地块：
+ *   - 1（bit set）：该位置存在地块
+ *   - 0（bit unset）：该位置为空缺
+ *
+ * 示例：
+ * ```
+ * listOf(
+ *     0b1111111, // 第 0 行：7 个连续地块（所有二进制位为1）
+ *     0b1111111, // 第 1 行：7 个连续地块
+ *     0b0000000, // 第 2 行：空行（所有二进制位为0）
+ *     0b1111111, // 第 3 行：7 个地块
+ *     0b1111110  // 第 4 行：底部空缺（最低有效位为0）
+ * )
+ * ```
+ *
+ * 上述数据将被渲染为如下布局：
+ * ```
+ *   行号  | 0列 1列 2列 3列 4列
+ *   -----|---------------------
+ *   4    | 0   1   1   1   1
+ *   3    | 1   1   1   1   1
+ *   2    | 0   0   0   0   0
+ *   1    | 1   1   1   1   1
+ *   0    | 1   1   1   1   1
+ * ```
+ */
+typealias FarmlandBoard = List<Int>
+
+/**
  * 农场区域类，用于管理农田的布局和作物种植。
  * 继承自[Widget]，支持鼠标事件处理和渲染。
  */
 class FarmArea(
     parent: Widget,
     private val controller: FarmAreaController,
-    farmlandBoard: List<Int>,
+    farmlandBoard: FarmlandBoard,
     z: Int? = null,
 ) : Widget(parent, z) {
     // region 配置参数

@@ -1,6 +1,6 @@
 package com.midnightcrowing.gui.publics.inventory
 
-import com.midnightcrowing.events.CustomEvent
+import com.midnightcrowing.events.CustomEvent.*
 import com.midnightcrowing.events.Event
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.layouts.InventoryLayout
@@ -62,11 +62,11 @@ class Inventory(
     override fun containsPoint(x: Double, y: Double, event: KClass<out Event>?): Boolean = true
 
     // region 事件处理
-    override fun onMousePress(e: CustomEvent.MousePressedEvent) = invLayout.onMousePress(e)
+    override fun onMousePress(e: MousePressedEvent) = invLayout.onMousePress(e)
 
-    override fun onMouseRelease(e: CustomEvent.MouseReleasedEvent) = invLayout.onMouseRelease(e)
+    override fun onMouseRelease(e: MouseReleasedEvent) = invLayout.onMouseRelease(e)
 
-    override fun onMouseMove(e: CustomEvent.MouseMoveEvent) = invLayout.onMouseMove(e)
+    override fun onMouseMove(e: MouseMoveEvent) = invLayout.onMouseMove(e)
 
     // endregion
 

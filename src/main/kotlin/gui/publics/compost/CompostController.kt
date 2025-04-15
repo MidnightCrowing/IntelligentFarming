@@ -50,7 +50,7 @@ class CompostController(farmController: FarmController) {
     }
 
     fun update() {
-        particleSystem.update(0.016f) // Assuming 60 FPS, so deltaTime is approximately 1/60
+        particleSystem.update()
 
         if (timer.shouldRun()) {
             when (compost.composterBlock.compostLevel) {

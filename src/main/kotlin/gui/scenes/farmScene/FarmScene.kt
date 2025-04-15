@@ -3,6 +3,7 @@ package com.midnightcrowing.gui.scenes.farmScene
 import com.midnightcrowing.events.CustomEvent.KeyPressedEvent
 import com.midnightcrowing.events.CustomEvent.MouseMoveEvent
 import com.midnightcrowing.farmings.FarmArea
+import com.midnightcrowing.farmings.FarmlandBoard
 import com.midnightcrowing.gui.bases.Screen
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.gui.bases.Window
@@ -33,7 +34,7 @@ class FarmScene(window: Window) : Screen(window) {
         val FARM_LEFT_POINT: Point = Point(1364.0, (1564 - 37).toDouble())
         val FARM_MIDDLE_POINT: Point = Point(3140.0, (2242 + 17).toDouble())
         val FARM_RIGHT_POINT: Point = Point(4160.0, 1612.0)
-        val FARMLAND_BOARD: List<Int> = listOf(
+        val FARMLAND_BOARD: FarmlandBoard = listOf(
             0b1111111,
             0b1111111,
             0b0000000,

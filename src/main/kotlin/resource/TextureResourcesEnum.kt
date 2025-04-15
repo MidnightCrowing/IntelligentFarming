@@ -4,7 +4,7 @@ import com.midnightcrowing.model.Texture
 import java.io.InputStream
 
 enum class TextureResourcesEnum(private val resourcePath: String) {
-    TITLE_INTELLFARM("/assets/textures/title/intellfarm.png"),
+    TITLE_INTELLFARM_EDITION("/assets/textures/title/intellfarm_edition.png"),
 
     /* region GUI */
     GUI_INVENTORY("/assets/textures/gui/inventory.png"),
