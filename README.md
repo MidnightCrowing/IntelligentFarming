@@ -1,11 +1,11 @@
-<p align="center" style="margin-bottom: 0px !important;">
-<img width="500" alt="BewlyBewly icon" src="src/main/resources/assets/textures/title/intellfarm.png"><br/>
+<p align="center">
+<img width="500" alt="IntelligentFarming Title" src="src/main/resources/assets/textures/title/intellfarm.png">
 </p>
 
 # IntelligentFarming
 
 ![Language](https://img.shields.io/badge/Language-Kotlin-7f52ff?style=flat-square)
-![Version](https://img.shields.io/badge/Version-1.0-4caf50?style=flat-square)
+![Version](https://img.shields.io/badge/Version-1.0_SNAPSHOT-4caf50?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-ffca28?style=flat-square)
 
 ## 🌾 简介
