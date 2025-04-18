@@ -3,10 +3,13 @@ package com.midnightcrowing.gui.publics.hotBar
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.renderer.TextureRenderer
-import com.midnightcrowing.resource.TextureResourcesEnum
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
 
 class ItemCheckBox(parent: Widget) : Widget(parent) {
-    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.GUI_CHECK_BOX.texture)
+    override val renderer: TextureRenderer = TextureRenderer(
+        ResourceLocation(ResourceType.TE_GUI, "minecraft", "hot_bar/check_box.png")
+    )
 
     private var boundsNow: ScreenBounds = ScreenBounds.EMPTY
     private var boundsTarget: ScreenBounds = ScreenBounds.EMPTY

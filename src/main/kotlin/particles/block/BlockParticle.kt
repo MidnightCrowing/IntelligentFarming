@@ -2,8 +2,8 @@ package com.midnightcrowing.particles.block
 
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.model.Texture
 import com.midnightcrowing.particles.ParticleBase
+import com.midnightcrowing.texture.Texture
 
 /**
  * 单个粒子对象

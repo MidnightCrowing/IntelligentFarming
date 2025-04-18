@@ -1,6 +1,8 @@
 package com.midnightcrowing.gui.scenes.mainMenuScene
 
+import com.midnightcrowing.audio.AudioResource
 import com.midnightcrowing.audio.BackgroundMusicPlayer
+import com.midnightcrowing.audio.SoundEvents
 import com.midnightcrowing.config.AppConfig
 import com.midnightcrowing.gui.bases.Screen
 import com.midnightcrowing.gui.bases.Window
@@ -10,22 +12,27 @@ import com.midnightcrowing.gui.publics.options.Options
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.renderer.TextRenderer
 import com.midnightcrowing.renderer.TextureRenderer
-import com.midnightcrowing.resource.AudioResource
-import com.midnightcrowing.resource.TextureResourcesEnum
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
 import com.midnightcrowing.utils.LayoutScaler
-import org.lwjgl.nanovg.NanoVG
+import org.lwjgl.nanovg.NanoVG.*
 
 class MainMenuScreen(window: Window) : Screen(window) {
-    override val bgRenderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.BG_MAIN_MENU_BACKGROUND.texture)
+    override val bgRenderer: TextureRenderer = TextureRenderer(
+        ResourceLocation(ResourceType.TE_BACKGROUND, "minecraft", "main_menu.jpg")
+    )
 
     private val controller = MainMenuController(this)
 
     // 游戏标题
-    private val titleRenderer = TextureRenderer(TextureResourcesEnum.TITLE_INTELLFARM_EDITION.texture)
+    private val titleRenderer = TextureRenderer(
+        ResourceLocation(ResourceType.TE_GUI, "minecraft", "title/intellfarm_edition.png")
+    )
     private var titleBounds: ScreenBounds = ScreenBounds.EMPTY
     private val splashTextRenderer = TextRenderer(window.nvg).apply {
-        text = "Also try Minecraft!"; rotation = -22.0
-        textColor = doubleArrayOf(253.0 / 255, 252.0 / 255, 1.0 / 255, 1.0)
+        text = "Also try Minecraft!"; rotation = -21.0
+        textColor = doubleArrayOf(1.0, 1.0, 0.0, 1.0)
+        shadowColor = doubleArrayOf(63.0 / 255, 63.0 / 255, 0.0)
     }
 
     // 菜单按钮
@@ -45,11 +52,11 @@ class MainMenuScreen(window: Window) : Screen(window) {
     // 底部文字
     private val versionRenderer = TextRenderer(window.nvg).apply {
         text = "${AppConfig.APP_NAME} ${AppConfig.VERSION}"
-        fontSize = 18.0; textAlign = NanoVG.NVG_ALIGN_LEFT or NanoVG.NVG_ALIGN_MIDDLE
+        fontSize = 18.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
     }
     private val licenseRenderer = TextRenderer(window.nvg).apply {
         text = "Java 课设作品 by MidnightCrowing"
-        fontSize = 18.0; textAlign = NanoVG.NVG_ALIGN_RIGHT or NanoVG.NVG_ALIGN_MIDDLE
+        fontSize = 18.0; textAlign = NVG_ALIGN_RIGHT or NVG_ALIGN_MIDDLE
     }
 
     val options: Options = Options(this)
@@ -59,7 +66,9 @@ class MainMenuScreen(window: Window) : Screen(window) {
         buttonLayout.addButton(2, buttons[1])
         buttonLayout.addButton(2, buttons[2])
 
-        BackgroundMusicPlayer.play(AudioResource.BACKGROUND_MUSIC)
+        AudioResource.getByEvent(SoundEvents.BACKGROUND_MUSIC)?.random()?.let {
+            BackgroundMusicPlayer.play(it)
+        }
 
         options.setHidden(true)
     }
@@ -80,7 +89,7 @@ class MainMenuScreen(window: Window) : Screen(window) {
 
         // splashTextRenderer
         splashTextRenderer.x = titleBounds.x2 - titleBounds.width / 16
-        splashTextRenderer.y = titleBounds.y2 - titleBounds.height / 20 * 11
+        splashTextRenderer.y = titleBounds.y2 - titleBounds.height / 2
         splashTextRenderer.fontSize = LayoutScaler.scaleValue(parentWidth, 27.0, 40.0)
 
         buttonLayout.place(width, height)
@@ -100,12 +109,5 @@ class MainMenuScreen(window: Window) : Screen(window) {
         versionRenderer.render()
         licenseRenderer.render()
         options.render()
-    }
-
-    override fun doCleanup() {
-        bgRenderer.cleanup()
-        titleRenderer.cleanup()
-        buttonLayout.cleanup()
-        options.cleanup()
     }
 }

@@ -1,47 +1,29 @@
 package com.midnightcrowing.renderer
 
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.model.Texture
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.texture.TextureManager
 import org.lwjgl.opengl.GL46.*
 
 
 /**
  * 渲染器，负责渲染场景
  */
-class TextureRenderer {
-    var texture: Texture? = null
-        set(value) {
-            if (field?.id != value?.id) {
-                field = value
-                bindTexture()
-            }
-        }
-
-    var alpha: Double = 1.0  // 默认不透明
-
-    constructor()
-
-    constructor(texture: Texture) {
-        this.texture = texture
-        bindTexture()
-    }
-
-    private fun bindTexture() {
-        texture?.let {
-            glBindTexture(GL_TEXTURE_2D, it.id)
-        }
-    }
-
+class TextureRenderer(
+    var location: ResourceLocation? = null,
+    var alpha: Double = 1.0,
+) {
     fun render(
         u1: Double, v1: Double, u2: Double, v2: Double,
         x1: Double, y1: Double, x2: Double, y2: Double,
     ) {
-        if (texture == null) {
+        if (location == null) {
             return
         }
 
+        TextureManager.bindTexture(location!!)
+
         glEnable(GL_TEXTURE_2D)  // 重新启用纹理
-        texture!!.bind()
 
         glColor4f(1f, 1f, 1f, alpha.toFloat())
 
@@ -60,9 +42,5 @@ class TextureRenderer {
 
     fun render(screenBounds: ScreenBounds) {
         render(0.0, 0.0, 1.0, 1.0, screenBounds.x1, screenBounds.y1, screenBounds.x2, screenBounds.y2)
-    }
-
-    fun cleanup() {
-        texture = null
     }
 }

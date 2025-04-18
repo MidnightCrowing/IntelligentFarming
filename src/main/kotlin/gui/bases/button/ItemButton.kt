@@ -48,9 +48,4 @@ class ItemButton(
             itemRender?.renderTooltip(mousePos.x, mousePos.y, position = tooltipPosition)
         }
     }
-
-    override fun doCleanup() {
-        super.doCleanup()
-        itemRender?.cleanup()
-    }
 }

@@ -14,17 +14,19 @@
 
 ## 📸 游戏截图
 
-<div style="overflow-x: auto; white-space: nowrap;">
-  <table style="border-spacing: 12px 6px; text-align: center;">
+<div style="overflow-x: auto;">
+  <table style="border-spacing: 12px 6px; min-width: 700px;">
     <tr>
-      <td><img src="docs/screenshots/main_scene.png" alt="主界面" style="max-height:160px;" /></td>
-      <td><img src="docs/screenshots/farm_scene.png" alt="农田场景" style="max-height:160px;" /></td>
-      <td><img src="docs/screenshots/compost.png" alt="堆肥桶界面" style="max-height:160px;" /></td>
+      <td style="text-align: center;"><img src="docs/screenshots/main_scene.png" alt="主界面" style="max-height:160px;" /></td>
+      <td style="text-align: center;"><img src="docs/screenshots/farm_scene.png" alt="农田场景" style="max-height:160px;" /></td>
+      <td style="text-align: center;"><img src="docs/screenshots/farm_tarde.png" alt="农作物交易" style="max-height:160px;" /></td>
+      <td style="text-align: center;"><img src="docs/screenshots/compost.png" alt="堆肥桶界面" style="max-height:160px;" /></td>
     </tr>
     <tr>
-      <td>主界面</td>
-      <td>农田场景</td>
-      <td>堆肥桶界面</td>
+      <td style="text-align: center;">主界面</td>
+      <td style="text-align: center;">农田场景</td>
+      <td style="text-align: center;">农作物交易</td>
+      <td style="text-align: center;">堆肥桶界面</td>
     </tr>
   </table>
 </div>

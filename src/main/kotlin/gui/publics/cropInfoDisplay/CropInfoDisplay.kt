@@ -5,9 +5,11 @@ import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.model.item.ItemRenderCache
 import com.midnightcrowing.renderer.NineSliceRenderer
 import com.midnightcrowing.renderer.TextRenderer
-import com.midnightcrowing.resource.TextureResourcesEnum
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
 import com.midnightcrowing.utils.LayoutScaler
-import org.lwjgl.nanovg.NanoVG
+import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_LEFT
+import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_MIDDLE
 
 class CropInfoDisplay(
     parent: Widget,
@@ -23,22 +25,23 @@ class CropInfoDisplay(
     }
 
     private val bgRenderer = NineSliceRenderer(
-        TextureResourcesEnum.GUI_TOAST.texture, textureBorder = 4f, vertexBorder = 10f
+        ResourceLocation(ResourceType.TE_GUI, "minecraft", "toast.png"),
+        textureBorder = 4f, vertexBorder = 10f
     ).apply { alpha = 0.6 }
 
     var itemBounds: ScreenBounds = ScreenBounds.EMPTY
 
     val titleText = TextRenderer(window.nvg).apply {
-        textAlign = NanoVG.NVG_ALIGN_LEFT or NanoVG.NVG_ALIGN_MIDDLE
+        textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
         textColor = doubleArrayOf(1.0, 1.0, 1.0, 1.0)
     }
     private val descText = TextRenderer(window.nvg).apply {
         text = "生长进度："
-        textAlign = NanoVG.NVG_ALIGN_LEFT or NanoVG.NVG_ALIGN_MIDDLE
+        textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
         textColor = doubleArrayOf(0.63, 0.63, 0.63, 1.0)
     }
     private val valueText = TextRenderer(window.nvg).apply {
-        textAlign = NanoVG.NVG_ALIGN_LEFT or NanoVG.NVG_ALIGN_MIDDLE
+        textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
     }
 
     // 缓存物品，最多缓存 10 个物品
@@ -106,9 +109,5 @@ class CropInfoDisplay(
         titleText.render()
         descText.render()
         valueText.render()
-    }
-
-    override fun doCleanup() {
-        controller.itemRender?.cleanup()
     }
 }

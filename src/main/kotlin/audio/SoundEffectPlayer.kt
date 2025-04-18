@@ -1,7 +1,7 @@
 package com.midnightcrowing.audio
 
+import com.midnightcrowing.audio.AudioResource.getRandomAudioStream
 import com.midnightcrowing.config.AppConfig
-import com.midnightcrowing.resource.AudioResource
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.FloatControl
@@ -11,13 +11,13 @@ import kotlin.math.log10
 
 object SoundEffectPlayer {
 
-    fun play(id: String) {
+    fun play(sound: SoundEvents) {
         thread {
             try {
-                val audioInputStream = getAudioInputStreamById(id)
+                val audioInputStream = getAudioInputStreamByEvent(sound) ?: return@thread
                 AudioSystem.getClip().apply {
                     open(audioInputStream)
-                    setVolumeDb(getVolumeDb(id))
+                    setVolumeDb(getVolumeDb(sound))
                     start()
                     addLineListener { event ->
                         if (event.type == LineEvent.Type.STOP || event.type == LineEvent.Type.CLOSE) {
@@ -32,15 +32,12 @@ object SoundEffectPlayer {
         }
     }
 
-    private fun getAudioInputStreamById(id: String): AudioInputStream {
-        return AudioResource.getById(id).let {
-            if (it is AudioResource.Group) it.getRandomAudioStream()
-            else it.getAudioStream()
-        }
+    private fun getAudioInputStreamByEvent(sound: SoundEvents): AudioInputStream? {
+        return AudioResource.getByEvent(sound)?.getRandomAudioStream()
     }
 
-    private fun getVolumeDb(id: String): Float {
-        return when (id.substringBefore('.')) {
+    private fun getVolumeDb(sound: SoundEvents): Float {
+        return when (sound.id.substringBefore('.')) {
             "block", "entity", "item" -> {
                 linearToDb(AppConfig.MAIN_VOLUME * AppConfig.SOUND_VOLUME)
             }

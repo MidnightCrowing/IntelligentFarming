@@ -27,7 +27,7 @@ class HotBarController(farmController: FarmController) {
             }
 
             val item: Item? = ItemRegistry.getItem(itemsList[value].id)
-            hotBar.setItemLabelText(item?.name)
+            hotBar.setItemLabelText(item?.displayName)
             areaController.handheldItem = item
             areaController.activeSeedCrop = item?.getBlock(farmArea)
 

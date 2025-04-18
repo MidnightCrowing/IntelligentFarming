@@ -2,7 +2,8 @@ package com.midnightcrowing.renderer
 
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.model.item.Item
-import org.lwjgl.nanovg.NanoVG
+import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_MIDDLE
+import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_RIGHT
 
 class ItemRenderer(nvg: Long, item: Item) {
     /**
@@ -28,15 +29,15 @@ class ItemRenderer(nvg: Long, item: Item) {
     }
 
     // 渲染器
-    private val textureRenderer: TextureRenderer = TextureRenderer(item.textureEnum.texture)
+    private val textureRenderer: TextureRenderer = TextureRenderer(item.location)
     private val numTextRenderer: TextRenderer = TextRenderer(nvg).apply {
         fontSize = 32.0
-        textAlign = NanoVG.NVG_ALIGN_RIGHT or NanoVG.NVG_ALIGN_MIDDLE
+        textAlign = NVG_ALIGN_RIGHT or NVG_ALIGN_MIDDLE
 
         shadowOffsetX = 3.0
         shadowOffsetY = 3.0
     }
-    val tooltipRenderer: TooltipRenderer = TooltipRenderer(nvg, item.name)
+    val tooltipRenderer: TooltipRenderer = TooltipRenderer(nvg, item.displayName)
 
     private var bounds: ScreenBounds = ScreenBounds.EMPTY
     private val itemPadding: Double = 3.0
@@ -104,6 +105,4 @@ class ItemRenderer(nvg: Long, item: Item) {
         tooltipRenderer.position = position
         tooltipRenderer.render(mouseX, mouseY)
     }
-
-    fun cleanup() = textureRenderer.cleanup()
 }

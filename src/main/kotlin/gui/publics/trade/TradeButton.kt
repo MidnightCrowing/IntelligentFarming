@@ -10,7 +10,8 @@ import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.model.trade.TradeRecipe
 import com.midnightcrowing.renderer.ItemRenderer
 import com.midnightcrowing.renderer.TextureRenderer
-import com.midnightcrowing.resource.TextureResourcesEnum
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
 
 class TradeButton(parent: Widget, val tradeRecipe: TradeRecipe) : Button(parent) {
     companion object {
@@ -23,14 +24,16 @@ class TradeButton(parent: Widget, val tradeRecipe: TradeRecipe) : Button(parent)
         private val BASE_TRADE_ARROW_BOUNDS = ScreenBounds(x1 = 219.0, y1 = 20.0, x2 = 259.0, y2 = 56.0)
     }
 
-    private val tradeArrowRender = TextureRenderer(TextureResourcesEnum.GUI_TRADE_BUTTON_ABLE_TO_TRADE.texture)
+    private val tradeArrowRender = TextureRenderer(
+        ResourceLocation(ResourceType.TE_GUI, "minecraft", "trade/button_able_to_trade.png")
+    )
 
     var isTradeable: Boolean = true
         set(value) {
             field = value
-            tradeArrowRender.texture =
-                if (value) TextureResourcesEnum.GUI_TRADE_BUTTON_ABLE_TO_TRADE.texture
-                else TextureResourcesEnum.GUI_TRADE_BUTTON_UNABLE_TO_TRADE.texture
+            tradeArrowRender.location =
+                if (value) ResourceLocation(ResourceType.TE_GUI, "minecraft", "trade/button_able_to_trade.png")
+                else ResourceLocation(ResourceType.TE_GUI, "minecraft", "trade/button_unable_to_trade.png")
         }
 
     // 鼠标位置

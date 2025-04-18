@@ -37,7 +37,7 @@ class AboutMenu(parent: Options) : OptionMenuBase(parent, "关于") {
 
     private val readmeButton = Button(buttonLayout).apply {
         text = "查看 README"
-        onClickCallback = { openUrl("https://github.com/MidnightCrowing/IntelligentFarming/README.md") }
+        onClickCallback = { openUrl("https://github.com/MidnightCrowing/IntelligentFarming?tab=readme-ov-file#readme") }
     }
 
     private val feedbackButton = Button(buttonLayout).apply {

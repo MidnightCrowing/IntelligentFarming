@@ -1,6 +1,6 @@
 package com.midnightcrowing.renderer
 
-import org.lwjgl.nanovg.NanoVG
+import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.system.MemoryStack
 
 
@@ -69,7 +69,7 @@ class TooltipRenderer(
 
     // 物品名称渲染器
     private val nameTextRenderer = TextRenderer(nvg).apply {
-        textAlign = NanoVG.NVG_ALIGN_LEFT or NanoVG.NVG_ALIGN_MIDDLE
+        textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
     }
     private val rectangleRenderer = RectangleRenderer()
     private val lineRenderers = LineRenderer() // 边框线
@@ -81,14 +81,14 @@ class TooltipRenderer(
                 addAll(contentLines)
             }
 
-            NanoVG.nvgFontSize(nvg, fontSize.toFloat())
+            nvgFontSize(nvg, fontSize.toFloat())
             val textBounds = stack.mallocFloat(4)
             var maxWidth = 0f
             var textHeight = 0f
             var totalHeight = 0.0
 
             for ((line, _) in allLines) {
-                NanoVG.nvgTextBounds(nvg, 0f, 0f, line, textBounds)
+                nvgTextBounds(nvg, 0f, 0f, line, textBounds)
                 val lineWidth = textBounds[2] - textBounds[0]
                 val lineHeight = textBounds[3] - textBounds[1]
                 maxWidth = maxOf(maxWidth, lineWidth)

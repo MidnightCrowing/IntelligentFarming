@@ -2,24 +2,24 @@ package com.midnightcrowing.farmings.crops
 
 import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
-import com.midnightcrowing.model.Texture
 import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.model.item.Items.TOMATO
 import com.midnightcrowing.model.item.Items.TOMATO_SEED
-import com.midnightcrowing.resource.TextureResourcesEnum
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
 import com.midnightcrowing.utils.GameTick
 
 class Tomato(farmArea: FarmArea) : FarmCropBase(farmArea) {
-    override val growDuringTextures: Map<Int, Texture> = mapOf(
-        0 to TextureResourcesEnum.BLOCK_BUDDING_TOMATO_GROW_0.texture,
-        1 to TextureResourcesEnum.BLOCK_BUDDING_TOMATO_GROW_1.texture,
-        2 to TextureResourcesEnum.BLOCK_BUDDING_TOMATO_GROW_2.texture,
-        3 to TextureResourcesEnum.BLOCK_BUDDING_TOMATO_GROW_3.texture,
-        4 to TextureResourcesEnum.BLOCK_BUDDING_TOMATO_GROW_4.texture,
-        5 to TextureResourcesEnum.BLOCK_TOMATO_GROW_0.texture,
-        6 to TextureResourcesEnum.BLOCK_TOMATO_GROW_1.texture,
-        7 to TextureResourcesEnum.BLOCK_TOMATO_GROW_2.texture,
-        8 to TextureResourcesEnum.BLOCK_TOMATO_GROW_3.texture
+    override val growDuringTextures: Map<Int, ResourceLocation> = mapOf(
+        0 to ResourceLocation(ResourceType.TE_BLOCK, "farmersdelight", "tomato/budding_tomatoes0.png"),
+        1 to ResourceLocation(ResourceType.TE_BLOCK, "farmersdelight", "tomato/budding_tomatoes1.png"),
+        2 to ResourceLocation(ResourceType.TE_BLOCK, "farmersdelight", "tomato/budding_tomatoes2.png"),
+        3 to ResourceLocation(ResourceType.TE_BLOCK, "farmersdelight", "tomato/budding_tomatoes3.png"),
+        4 to ResourceLocation(ResourceType.TE_BLOCK, "farmersdelight", "tomato/budding_tomatoes4.png"),
+        5 to ResourceLocation(ResourceType.TE_BLOCK, "farmersdelight", "tomato/tomatoes0.png"),
+        6 to ResourceLocation(ResourceType.TE_BLOCK, "farmersdelight", "tomato/tomatoes1.png"),
+        7 to ResourceLocation(ResourceType.TE_BLOCK, "farmersdelight", "tomato/tomatoes2.png"),
+        8 to ResourceLocation(ResourceType.TE_BLOCK, "farmersdelight", "tomato/tomatoes3.png")
     )
 
     override fun onFarmRightClick(l: Int): Array<ItemStack>? {

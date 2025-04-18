@@ -41,7 +41,7 @@ class AudioMenu(parent: Options) : OptionMenuBase(parent, "音乐和声音选项
                 value = config.prop.get()
                 textSpacing = 2.0
                 onValueChangedCallback = { volume ->
-                    text = "${config.name}: ${volume.toPercentage()}"
+                    text = "${config.name}: ${if (volume != 0.0) volume.toPercentage() else "关"}"
                     config.onChange(volume)
                 }
             }

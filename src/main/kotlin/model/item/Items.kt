@@ -1,55 +1,207 @@
 package com.midnightcrowing.model.item
 
 import com.midnightcrowing.farmings.crops.*
-import com.midnightcrowing.resource.TextureResourcesEnum as Enum
 
 // 集中管理所有物品
 object Items {
-    // @formatter:off
-
     // ===== 作物类 =====
-    val CABBAGE      = Item("minecraft:cabbage",      "卷心菜",   Enum.ITEM_CABBAGE)
-    val CARROT       = Item("minecraft:carrot",       "胡萝卜",   Enum.ITEM_CARROT,  block = { Carrot(it) })
-    val CORN         = Item("minecraft:corn",         "玉米",     Enum.ITEM_CORN)
-    val COTTON       = Item("minecraft:cotton",       "棉花",     Enum.ITEM_COTTON)
-    val ONION        = Item("minecraft:onion",        "洋葱",     Enum.ITEM_ONION,   block = { Onion(it) })
-    val POTATO       = Item("minecraft:potato",       "土豆",     Enum.ITEM_POTATO,  block = { Potato(it) })
-    val TOMATO       = Item("minecraft:tomato",       "西红柿",   Enum.ITEM_TOMATO)
-    val WHEAT        = Item("minecraft:wheat",        "小麦",     Enum.ITEM_WHEAT)
+    val CABBAGE = Item(
+        namespace = "farmersdelight",
+        id = "cabbage",
+        displayName = "卷心菜",
+        texturePath = "cabbage.png"
+    )
+    val CARROT = Item(
+        namespace = "minecraft",
+        id = "carrot",
+        displayName = "胡萝卜",
+        texturePath = "carrot.png",
+        block = { Carrot(it) }
+    )
+    val CORN = Item(
+        namespace = "corn_delight",
+        id = "corn",
+        displayName = "玉米",
+        texturePath = "corn.png"
+    )
+    val COTTON = Item(
+        namespace = "cotton",
+        id = "cotton",
+        displayName = "棉花",
+        texturePath = "cotton.png"
+    )
+    val ONION = Item(
+        namespace = "farmersdelight",
+        id = "onion",
+        displayName = "洋葱",
+        texturePath = "onion.png",
+        block = { Onion(it) })
+    val POTATO = Item(
+        namespace = "minecraft",
+        id = "potato",
+        displayName = "土豆",
+        texturePath = "potato.png",
+        block = { Potato(it) })
+    val TOMATO = Item(
+        namespace = "farmersdelight",
+        id = "tomato",
+        displayName = "西红柿",
+        texturePath = "tomato.png"
+    )
+    val WHEAT = Item(
+        namespace = "minecraft",
+        id = "wheat",
+        displayName = "小麦",
+        texturePath = "wheat.png"
+    )
 
     // ===== 种子类 =====
-    val CABBAGE_SEED = Item("minecraft:cabbage_seed", "卷心菜种子", Enum.ITEM_CABBAGE_SEED,  block = { Cabbage(it) })
-    val CORN_SEED    = Item("minecraft:corn_seed",    "玉米种子",   Enum.ITEM_CORN_SEED,     block = { Corn(it) })
-    val COTTON_SEED  = Item("minecraft:cotton_seed",  "棉花种子",   Enum.ITEM_COTTON_SEED,   block = { Cotton(it) })
-    val TOMATO_SEED  = Item("minecraft:tomato_seed",  "西红柿种子", Enum.ITEM_TOMATO_SEED,   block = { Tomato(it) })
-    val WHEAT_SEED   = Item("minecraft:wheat_seed",   "小麦种子",   Enum.ITEM_WHEAT_SEED,    block = { Wheat(it) })
+    val CABBAGE_SEED = Item(
+        namespace = "farmersdelight",
+        id = "cabbage_seed",
+        displayName = "卷心菜种子",
+        texturePath = "cabbage_seed.png",
+        block = { Cabbage(it) })
+    val CORN_SEED = Item(
+        namespace = "corn_delight",
+        id = "corn_seed",
+        displayName = "玉米种子",
+        texturePath = "corn_seed.png",
+        block = { Corn(it) })
+    val COTTON_SEED = Item(
+        namespace = "cotton",
+        id = "cotton_seed",
+        displayName = "棉花种子",
+        texturePath = "cotton_seed.png",
+        block = { Cotton(it) })
+    val TOMATO_SEED = Item(
+        namespace = "farmersdelight",
+        id = "tomato_seed",
+        displayName = "西红柿种子",
+        texturePath = "tomato_seed.png",
+        block = { Tomato(it) })
+    val WHEAT_SEED = Item(
+        namespace = "minecraft",
+        id = "wheat_seed",
+        displayName = "小麦种子",
+        texturePath = "wheat_seed.png",
+        block = { Wheat(it) })
 
     // ===== 工具类 =====
-    val IRON_HOE      = Item("minecraft:iron_hoe",      "铁锄",     Enum.ITEM_IRON_HOE, maxCount = 1, fortune = 0)
-    val GOLDEN_HOE    = Item("minecraft:golden_hoe",    "金锄",     Enum.ITEM_GOLDEN_HOE, maxCount = 1, fortune = 1)
-    val DIAMOND_HOE   = Item("minecraft:diamond_hoe",   "钻石锄",    Enum.ITEM_DIAMOND_HOE, maxCount = 1, fortune = 2)
-    val NETHERITE_HOE = Item("minecraft:netherite_hoe", "下界合金锄", Enum.ITEM_NETHERITE_HOE, maxCount = 1, fortune = 3)
+    val IRON_HOE = Item(
+        namespace = "minecraft",
+        id = "iron_hoe",
+        displayName = "铁锄",
+        texturePath = "iron_hoe.png",
+        maxCount = 1,
+        fortune = 0
+    )
+    val GOLDEN_HOE = Item(
+        namespace = "minecraft",
+        id = "golden_hoe",
+        displayName = "金锄",
+        texturePath = "golden_hoe.png",
+        maxCount = 1,
+        fortune = 1
+    )
+    val DIAMOND_HOE = Item(
+        namespace = "minecraft",
+        id = "diamond_hoe",
+        displayName = "钻石锄",
+        texturePath = "diamond_hoe.png",
+        maxCount = 1,
+        fortune = 2
+    )
+    val NETHERITE_HOE = Item(
+        namespace = "minecraft",
+        id = "netherite_hoe",
+        displayName = "下界合金锄",
+        texturePath = "netherite_hoe.png",
+        maxCount = 1,
+        fortune = 3
+    )
 
     // ===== 容器类 =====
-    val ANVIL     = Item("minecraft:anvil",     "铁砧",   Enum.ITEM_ANVIL)
-    val CHEST     = Item("minecraft:chest",     "箱子",   Enum.ITEM_CHEST)
-    val COMPOSTER = Item("minecraft:composter", "堆肥桶", Enum.ITEM_COMPOSTER)
+    val ANVIL = Item(
+        namespace = "minecraft",
+        id = "anvil",
+        displayName = "铁砧",
+        texturePath = "anvil.png"
+    )
+    val CHEST = Item(
+        namespace = "minecraft",
+        id = "chest",
+        displayName = "箱子",
+        texturePath = "chest.png"
+    )
+    val COMPOSTER = Item(
+        namespace = "minecraft",
+        id = "composter",
+        displayName = "堆肥桶",
+        texturePath = "composter.png"
+    )
 
     // ===== 材料类 =====
-    val EMERALD       = Item("minecraft:emerald",       "绿宝石",  Enum.ITEM_EMERALD)
-    val BONE_MEAL     = Item("minecraft:bone_meal",     "骨粉",    Enum.ITEM_BONE_MEAL)
-    val GOLDEN_CARROT = Item("minecraft:golden_carrot", "金胡萝卜", Enum.ITEM_GOLDEN_CARROT)
+    val EMERALD = Item(
+        namespace = "minecraft",
+        id = "emerald",
+        displayName = "绿宝石",
+        texturePath = "emerald.png"
+    )
+    val BONE_MEAL = Item(
+        namespace = "minecraft",
+        id = "bone_meal",
+        displayName = "骨粉",
+        texturePath = "bone_meal.png"
+    )
+    val GOLDEN_CARROT = Item(
+        namespace = "minecraft",
+        id = "golden_carrot",
+        displayName = "金胡萝卜",
+        texturePath = "golden_carrot.png"
+    )
 
     // ===== 特殊类 =====
-    val WRITABLE_BOOK       = Item("minecraft:writable_book",       "书与笔",      Enum.ITEM_WRITABLE_BOOK)
-    val VILLAGER_SPAWN_EGG  = Item("minecraft:villager_spawn_egg",  "村民刷怪蛋",   Enum.ITEM_VILLAGER_SPAWN_EGG)
+    val WRITABLE_BOOK = Item(
+        namespace = "minecraft",
+        id = "writable_book",
+        displayName = "书与笔",
+        texturePath = "writable_book.png"
+    )
+    val VILLAGER_SPAWN_EGG = Item(
+        namespace = "minecraft",
+        id = "villager_spawn_egg",
+        displayName = "村民刷怪蛋",
+        texturePath = "villager_spawn_egg.png"
+    )
 
-    // @formatter:on
 
     private val all: List<Item> = listOf(
-        CABBAGE, CABBAGE_SEED, CARROT, CORN, CORN_SEED, COTTON, COTTON_SEED, ONION, POTATO, TOMATO, TOMATO_SEED,
-        WHEAT, WHEAT_SEED, ANVIL, BONE_MEAL, CHEST, COMPOSTER, DIAMOND_HOE, EMERALD, GOLDEN_CARROT, GOLDEN_HOE,
-        IRON_HOE, NETHERITE_HOE, VILLAGER_SPAWN_EGG, WRITABLE_BOOK
+        CABBAGE,
+        CABBAGE_SEED,
+        CARROT,
+        CORN,
+        CORN_SEED,
+        COTTON,
+        COTTON_SEED,
+        ONION,
+        POTATO,
+        TOMATO,
+        TOMATO_SEED,
+        WHEAT,
+        WHEAT_SEED,
+        ANVIL,
+        BONE_MEAL,
+        CHEST,
+        COMPOSTER,
+        DIAMOND_HOE,
+        EMERALD,
+        GOLDEN_CARROT,
+        GOLDEN_HOE,
+        IRON_HOE,
+        NETHERITE_HOE,
+        VILLAGER_SPAWN_EGG,
+        WRITABLE_BOOK
     )
 
     fun registerAll() {

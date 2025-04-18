@@ -1,6 +1,7 @@
 package com.midnightcrowing.gui.publics.trade
 
 import com.midnightcrowing.audio.SoundEffectPlayer
+import com.midnightcrowing.audio.SoundEvents
 import com.midnightcrowing.gui.publics.inventory.InventoryController
 import com.midnightcrowing.gui.scenes.farmScene.FarmController
 import com.midnightcrowing.model.item.ItemStack
@@ -67,7 +68,7 @@ open class TradeController(farmController: FarmController) {
 
         // 校验交易条件
         if (!tradeRecipe.canTrade(slotItems)) {
-            SoundEffectPlayer.play("entity.villager.no")
+            SoundEffectPlayer.play(SoundEvents.ENTITY_VILLAGER_NO)
             return
         }
 
@@ -89,7 +90,7 @@ open class TradeController(farmController: FarmController) {
         }
 
         // 播放交易音效
-        SoundEffectPlayer.play("entity.villager.yes")
+        SoundEffectPlayer.play(SoundEvents.ENTITY_VILLAGER_YES)
 
         updateTrade() // 更新交易状态
     }

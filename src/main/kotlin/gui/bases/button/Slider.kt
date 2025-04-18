@@ -1,26 +1,28 @@
 package com.midnightcrowing.gui.bases.button
 
 import com.midnightcrowing.events.CustomEvent.*
+import com.midnightcrowing.events.Event
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.model.Texture
 import com.midnightcrowing.renderer.NineSliceRenderer
 import com.midnightcrowing.renderer.TextRenderer
-import com.midnightcrowing.resource.TextureResourcesEnum
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
 import com.midnightcrowing.utils.LayoutScaler.scaleValue
 import org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT
+import kotlin.reflect.KClass
 
 class Slider(parent: Widget) : AbstractButton(parent) {
     private enum class TextureState { DEFAULT, HOVER }
 
-    private val thumbTextures = mapOf(
-        TextureState.DEFAULT to TextureResourcesEnum.GUI_SLIDER_THUMB_DEFAULT.texture,
-        TextureState.HOVER to TextureResourcesEnum.GUI_SLIDER_THUMB_HOVER.texture,
+    private val thumbTextures: Map<TextureState, ResourceLocation> = mapOf(
+        TextureState.DEFAULT to ResourceLocation(ResourceType.TE_GUI, "minecraft", "slider/thumb_default.png"),
+        TextureState.HOVER to ResourceLocation(ResourceType.TE_GUI, "minecraft", "slider/thumb_hover.png"),
     )
 
-    private val trackTextures = mapOf(
-        TextureState.DEFAULT to TextureResourcesEnum.GUI_SLIDER_TRACK_DEFAULT.texture,
-        TextureState.HOVER to TextureResourcesEnum.GUI_SLIDER_TRACK_HOVER.texture,
+    private val trackTextures: Map<TextureState, ResourceLocation> = mapOf(
+        TextureState.DEFAULT to ResourceLocation(ResourceType.TE_GUI, "minecraft", "slider/track_default.png"),
+        TextureState.HOVER to ResourceLocation(ResourceType.TE_GUI, "minecraft", "slider/track_hover.png"),
     )
 
     private val thumbRenderer = createRenderer(thumbTextures[TextureState.DEFAULT])
@@ -40,7 +42,7 @@ class Slider(parent: Widget) : AbstractButton(parent) {
 
     fun Double.toPercentage(): String = "${(this * 100).toInt()}%"
 
-    private fun createRenderer(texture: Texture?): NineSliceRenderer? =
+    private fun createRenderer(texture: ResourceLocation?): NineSliceRenderer? =
         texture?.let { NineSliceRenderer(it, textureBorder = 4f, vertexBorder = 10f) }
 
     override fun place(x1: Double, y1: Double, x2: Double, y2: Double) = place(ScreenBounds(x1, y1, x2, y2))
@@ -60,8 +62,15 @@ class Slider(parent: Widget) : AbstractButton(parent) {
 
     override fun update() {
         val state = if (isLeftMousePress) TextureState.HOVER else TextureState.DEFAULT
-        thumbRenderer?.texture = thumbTextures[state]!!
-        // trackRenderer?.texture = trackTextures[state]!!
+        thumbRenderer?.location = thumbTextures[state]!!
+        // trackRenderer?.location = trackTextures[state]!!
+    }
+
+    override fun containsPoint(x: Double, y: Double, event: KClass<out Event>?): Boolean {
+        if (event == MouseMoveEvent::class || event == MouseReleasedEvent::class) {
+            return isLeftMousePress
+        }
+        return super.containsPoint(x, y, event)
     }
 
     override fun onMouseEnter() {
@@ -70,7 +79,6 @@ class Slider(parent: Widget) : AbstractButton(parent) {
 
     override fun onMouseLeave() {
         isHover = false
-        isLeftMousePress = false
     }
 
     override fun onClick(e: MouseClickEvent) {

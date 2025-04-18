@@ -15,8 +15,10 @@ import com.midnightcrowing.renderer.RectangleRenderer
 import com.midnightcrowing.renderer.TextRenderer
 import com.midnightcrowing.renderer.TextureRenderer
 import com.midnightcrowing.renderer.TooltipRenderer
-import com.midnightcrowing.resource.TextureResourcesEnum
-import org.lwjgl.nanovg.NanoVG
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
+import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_LEFT
+import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_MIDDLE
 import kotlin.reflect.KClass
 
 open class Trade(
@@ -98,12 +100,14 @@ open class Trade(
     }
 
     // region 渲染器 & 组件
-    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.GUI_TRADE.texture)
+    override val renderer: TextureRenderer = TextureRenderer(
+        ResourceLocation(ResourceType.TE_GUI, "minecraft", "trade/trade.png")
+    )
     private val backgroundRender: RectangleRenderer = RectangleRenderer(
-        color = floatArrayOf(0f, 0f, 0f, 0.73f),
+        color = floatArrayOf(0f, 0f, 0f, 0.73f)
     )
     private val unableArrowRenderer: TextureRenderer = TextureRenderer(
-        TextureResourcesEnum.GUI_TRADE_UNABLE_TO_TRADE.texture
+        ResourceLocation(ResourceType.TE_GUI, "minecraft", "trade/unable_to_trade.png")
     )
     private var unableArrowBounds: ScreenBounds = ScreenBounds.EMPTY
     var showUnableArrow: Boolean = false
@@ -114,7 +118,7 @@ open class Trade(
     private val tradeTextRenderer: TextRenderer = TextRenderer.createTextRendererForGUI(window.nvg)
         .apply { text = "交易" }
     private val inventoryTextRenderer: TextRenderer = TextRenderer.createTextRendererForGUI(window.nvg)
-        .apply { text = "物品栏"; textAlign = NanoVG.NVG_ALIGN_LEFT or NanoVG.NVG_ALIGN_MIDDLE }
+        .apply { text = "物品栏"; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE }
     private val unableArrowTextRenderer: TooltipRenderer = TooltipRenderer(window.nvg, "交易数量超出限制")
 
     private val maskActiveBgRender: RectangleRenderer = RectangleRenderer(color = floatArrayOf(1f, 1f, 1f, 0.5f))
@@ -152,9 +156,9 @@ open class Trade(
     // 交易列表滚动条
     private val scrollRender: TextureRenderer = TextureRenderer(
         if (controller.tradeList.size > BUTTON_NUM) {
-            TextureResourcesEnum.GUI_TRADE_SCROLL_ACTIVE.texture
+            ResourceLocation(ResourceType.TE_GUI, "minecraft", "trade/scroll_active.png")
         } else {
-            TextureResourcesEnum.GUI_TRADE_SCROLL_DISABLED.texture
+            ResourceLocation(ResourceType.TE_GUI, "minecraft", "trade/scroll_disabled.png")
         }
     )
     private val scrollBounds: ScreenBounds = ScreenBounds.EMPTY
@@ -174,6 +178,7 @@ open class Trade(
     // 输入状态
     private var mousePosition: Point = Point.EMPTY
     private var mouseTradeIndex: Int? = null
+    private var isPressedScroll: Boolean = false
 
     /**
      * 根据索引获取交易槽位
@@ -195,6 +200,11 @@ open class Trade(
             2 -> tradeSlot2Item = item
         }
         controller.updateTrade()
+    }
+
+    private fun setScrollPlace(pos: Point) {
+        tradeButtonStartIndex = (pos.scrollPercent / buttonScrollStep).toInt()
+            .coerceIn(0, maxOf(0, tradeButtons.size - BUTTON_NUM))
     }
 
     /**
@@ -295,11 +305,13 @@ open class Trade(
     }
 
     override fun onClick(e: MouseClickEvent) {
-        if (invLayout.isShiftPressed) {
-            return
-        }
+        val pos = Point(e.x, e.y)
 
-        Point(e.x, e.y).isInTradeSlot?.let {
+        if (pos.isInScrollSlot) setScrollPlace(pos)
+
+        if (invLayout.isShiftPressed) return
+
+        pos.isInTradeSlot?.let {
             if (it == 2) {
                 handleTradeSlotInteraction()
             } else {
@@ -314,9 +326,19 @@ open class Trade(
             ?.let { handleItemInteraction(it, controller.invController::rightClickExchangeItems) }
     }
 
-    override fun onMousePress(e: MousePressedEvent) = invLayout.onMousePress(e)
+    override fun onMousePress(e: MousePressedEvent) {
+        invLayout.onMousePress(e)
+        if (invLayout.mouseLeftPressed && mousePosition.isInScrollSlot) {
+            isPressedScroll = true
+        }
+    }
 
-    override fun onMouseRelease(e: MouseReleasedEvent) = invLayout.onMouseRelease(e)
+    override fun onMouseRelease(e: MouseReleasedEvent) {
+        invLayout.onMouseRelease(e)
+        if (!invLayout.mouseLeftPressed) {
+            isPressedScroll = false
+        }
+    }
 
     override fun onMouseMove(e: MouseMoveEvent) {
         invLayout.onMouseMove(e)
@@ -331,9 +353,8 @@ open class Trade(
             maskActiveBgRender.apply { x1 = it.x1; y1 = it.y1; x2 = it.x2 + 1; y2 = it.y2 + 1 }
         }
 
-        if (invLayout.mouseLeftPressed && pos.isInScrollSlot) {
-            tradeButtonStartIndex = (pos.scrollPercent / buttonScrollStep).toInt()
-                .coerceIn(0, maxOf(0, tradeButtons.size - BUTTON_NUM))
+        if (isPressedScroll) {
+            setScrollPlace(pos)
         }
 
         renderTradeButtons
@@ -496,8 +517,6 @@ open class Trade(
         // 渲染物品名称
         itemRenderCache.getItemCache(item.id)?.renderTooltip(mousePosition.x, mousePosition.y)
     }
-
-    override fun doCleanup() = dragWidget.cleanup()
 
     // endregion
 }

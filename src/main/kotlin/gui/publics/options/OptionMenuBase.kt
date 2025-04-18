@@ -41,6 +41,4 @@ open class OptionMenuBase(parent: Options, title: String) : Widget(parent) {
         titleRenderer.render()
         buttonLayout.render()
     }
-
-    override fun doCleanup() = buttonLayout.cleanup()
 }

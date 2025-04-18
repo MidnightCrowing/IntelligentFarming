@@ -3,9 +3,9 @@ package com.midnightcrowing.gui.bases.button
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.model.Texture
 import com.midnightcrowing.renderer.NineSliceRenderer
-import com.midnightcrowing.resource.TextureResourcesEnum
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
 import com.midnightcrowing.utils.LayoutScaler.scaleValue
 
 
@@ -30,10 +30,10 @@ open class Button(parent: Widget) : AbstractButton(parent) {
         }
 
     // 纹理映射，加载对应状态的按钮纹理
-    private val textures: Map<ButtonTextures, Texture> = mapOf(
-        ButtonTextures.DEFAULT to TextureResourcesEnum.GUI_BUTTON_DEFAULT.texture,
-        ButtonTextures.HOVER to TextureResourcesEnum.GUI_BUTTON_HOVER.texture,
-        ButtonTextures.DISABLED to TextureResourcesEnum.GUI_BUTTON_DISABLED.texture
+    private val textures: Map<ButtonTextures, ResourceLocation> = mapOf(
+        ButtonTextures.DEFAULT to ResourceLocation(ResourceType.TE_GUI, "minecraft", "button/button_default.png"),
+        ButtonTextures.HOVER to ResourceLocation(ResourceType.TE_GUI, "minecraft", "button/button_hover.png"),
+        ButtonTextures.DISABLED to ResourceLocation(ResourceType.TE_GUI, "minecraft", "button/button_disabled.png"),
     )
 
     // 渲染器，默认使用 DEFAULT 纹理
@@ -108,6 +108,6 @@ open class Button(parent: Widget) : AbstractButton(parent) {
      * 设置当前按钮的纹理。
      */
     private fun setTexture(state: ButtonTextures) {
-        textures[state]?.let { nineSliceRenderer?.texture = it }
+        textures[state]?.let { nineSliceRenderer?.location = it }
     }
 }

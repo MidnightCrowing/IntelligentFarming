@@ -8,7 +8,8 @@ import com.midnightcrowing.model.item.ItemRenderCache
 import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.renderer.TextRenderer
 import com.midnightcrowing.renderer.TextureRenderer
-import com.midnightcrowing.resource.TextureResourcesEnum
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
 import com.midnightcrowing.utils.GameTick
 import org.lwjgl.glfw.GLFW
 import kotlin.reflect.KClass
@@ -39,7 +40,9 @@ class HotBar(parent: Widget, private val controller: HotBarController) : Widget(
     }
 
     // 渲染器
-    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.GUI_HOT_BAR.texture)
+    override val renderer: TextureRenderer = TextureRenderer(
+        ResourceLocation(ResourceType.TE_GUI, "minecraft", "hot_bar/hot_bar.png")
+    )
     private val itemLabelRenderer: TextRenderer = TextRenderer(window.nvg).apply { fontSize = 20.0 }
 
     // 物品选中框
@@ -181,6 +184,4 @@ class HotBar(parent: Widget, private val controller: HotBarController) : Widget(
             item?.render(stack.count)
         }
     }
-
-    override fun doCleanup() = itemCheckBox.cleanup()
 }

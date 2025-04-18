@@ -14,8 +14,10 @@ import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.renderer.RectangleRenderer
 import com.midnightcrowing.renderer.TextRenderer
 import com.midnightcrowing.renderer.TextureRenderer
-import com.midnightcrowing.resource.TextureResourcesEnum
-import org.lwjgl.nanovg.NanoVG
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
+import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_LEFT
+import org.lwjgl.nanovg.NanoVG.NVG_ALIGN_MIDDLE
 import kotlin.math.min
 import kotlin.reflect.KClass
 
@@ -104,18 +106,22 @@ class Compost(
     }
 
     // region 渲染器 & 组件
-    override val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.GUI_COMPOST.texture)
+    override val renderer: TextureRenderer = TextureRenderer(
+        ResourceLocation(ResourceType.TE_GUI, "minecraft", "compost/compost.png")
+    )
     private val backgroundRender: RectangleRenderer = RectangleRenderer(
         color = floatArrayOf(0f, 0f, 0f, 0.73f),
     )
-    private val compostAreaRender: TextureRenderer = TextureRenderer(TextureResourcesEnum.GUI_COMPOST_ARROW.texture)
+    private val compostAreaRender: TextureRenderer = TextureRenderer(
+        ResourceLocation(ResourceType.TE_GUI, "minecraft", "compost/arrow.png")
+    )
     private var progressArrowBounds: ScreenBounds = ScreenBounds.EMPTY
 
     // 文字渲染器
     private val titleTextRenderer: TextRenderer = TextRenderer.createTextRendererForGUI(window.nvg)
-        .apply { text = "堆肥"; textAlign = NanoVG.NVG_ALIGN_LEFT or NanoVG.NVG_ALIGN_MIDDLE }
+        .apply { text = "堆肥"; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE }
     private val inventoryTextRenderer: TextRenderer = TextRenderer.createTextRendererForGUI(window.nvg)
-        .apply { text = "物品栏"; textAlign = NanoVG.NVG_ALIGN_LEFT or NanoVG.NVG_ALIGN_MIDDLE }
+        .apply { text = "物品栏"; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE }
 
     private val maskActiveBgRender: RectangleRenderer = RectangleRenderer(color = floatArrayOf(1f, 1f, 1f, 0.5f))
     private var maskActiveBgBounds: ScreenBounds? = null
@@ -390,12 +396,6 @@ class Compost(
 
         // 渲染物品名称
         itemRenderCache.getItemCache(item.id)?.renderTooltip(mousePosition.x, mousePosition.y)
-    }
-
-    override fun doCleanup() {
-        composterBlock.cleanup()
-        compostAreaRender.cleanup()
-        dragWidget.cleanup()
     }
 
     // endregion

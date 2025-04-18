@@ -1,4 +1,4 @@
-package com.midnightcrowing.model
+package com.midnightcrowing.texture
 
 import org.lwjgl.stb.STBImage
 import org.lwjgl.system.MemoryUtil
@@ -62,8 +62,8 @@ data class Image(val buffer: ByteBuffer, val width: Int, val height: Int) {
         var attempts = 0
 
         while (attempts < maxAttempts) {
-            val startX = Random.nextInt(0, width - size - 100)
-            val startY = Random.nextInt(0, height - size - 100)
+            val startX = Random.Default.nextInt(0, width - size - 100)
+            val startY = Random.Default.nextInt(0, height - size - 100)
             val regionBuffer = MemoryUtil.memAlloc(size * size * pixelSize)
             var transparentPixelCount = 0
 

@@ -1,5 +1,6 @@
 package com.midnightcrowing.gui.scenes.farmScene
 
+import com.midnightcrowing.audio.SoundEvents
 import com.midnightcrowing.events.CustomEvent.KeyPressedEvent
 import com.midnightcrowing.events.CustomEvent.MouseMoveEvent
 import com.midnightcrowing.farmings.FarmArea
@@ -18,7 +19,8 @@ import com.midnightcrowing.gui.publics.trade.Trade
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.item.Items
 import com.midnightcrowing.renderer.TextureRenderer
-import com.midnightcrowing.resource.TextureResourcesEnum
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
 import org.lwjgl.glfw.GLFW.GLFW_KEY_E
 import org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE
 
@@ -43,7 +45,9 @@ class FarmScene(window: Window) : Screen(window) {
         )
     }
 
-    override val bgRenderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.BG_FARM_BACKGROUND.texture)
+    override val bgRenderer: TextureRenderer = TextureRenderer(
+        ResourceLocation(ResourceType.TE_BACKGROUND, "minecraft", "farm.png")
+    )
 
     // controller
     private val controller: FarmController = FarmController(this)
@@ -59,10 +63,10 @@ class FarmScene(window: Window) : Screen(window) {
     private val compost: Compost = Compost(this, controller.compost, z = 4)
     private val anvilButton: ItemButton = ItemButton(
         this, Items.ANVIL.id, "工具", tooltipPosition = "after-top"
-    ).apply { soundEffect = "entity.villager.trade" }
+    ).apply { soundEffect = SoundEvents.ENTITY_VILLAGER_TRADE }
     private val villagerButton: ItemButton = ItemButton(
         this, Items.VILLAGER_SPAWN_EGG.id, "商店", tooltipPosition = "after-top"
-    ).apply { soundEffect = "entity.villager.trade" }
+    ).apply { soundEffect = SoundEvents.ENTITY_VILLAGER_TRADE }
     private val composterButton: ItemButton = ItemButton(
         this, Items.COMPOSTER.id, "堆肥", tooltipPosition = "after-top"
     )
@@ -248,22 +252,5 @@ class FarmScene(window: Window) : Screen(window) {
 
         escMenus.render()
         options.render()
-    }
-
-    override fun doCleanup() {
-        bgRenderer.cleanup()
-        farmArea.cleanup()
-        cropInfoDisplay.cleanup()
-        hotBar.cleanup()
-        inventory.cleanup()
-        toolTrade.cleanup()
-        trade.cleanup()
-        compost.cleanup()
-        anvilButton.cleanup()
-        villagerButton.cleanup()
-        composterButton.cleanup()
-        chestButton.cleanup()
-        escMenus.cleanup()
-        options.cleanup()
     }
 }

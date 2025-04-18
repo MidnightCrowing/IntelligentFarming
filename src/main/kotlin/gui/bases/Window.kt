@@ -3,6 +3,10 @@ package com.midnightcrowing.gui.bases
 import com.midnightcrowing.config.AppConfig
 import com.midnightcrowing.events.EventManager
 import com.midnightcrowing.gui.publics.Debugger
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
+import com.midnightcrowing.texture.TextureErrorTracker
+import com.midnightcrowing.texture.TextureManager
 import com.midnightcrowing.utils.GameTick
 import org.lwjgl.BufferUtils
 import org.lwjgl.glfw.Callbacks
@@ -25,8 +29,8 @@ import javax.swing.JOptionPane
  * 窗口管理类，负责初始化和管理 GLFW 窗口。
  */
 class Window(
-    var name: String,  // 英文名称
-    var title: String, // 中文名称
+    var name: String,  // 游戏名称（英文）
+    var title: String, // 窗口标题
     var width: Int,
     var height: Int,
     var minWidth: Int = 0,
@@ -38,7 +42,7 @@ class Window(
          */
         fun createWindow() = Window(
             AppConfig.APP_NAME,
-            AppConfig.APP_NAME_CN,
+            "${AppConfig.APP_NAME_CN}* ${AppConfig.VERSION}",
             AppConfig.WINDOW_WIDTH,
             AppConfig.WINDOW_HEIGHT,
             AppConfig.WINDOW_MIN_WIDTH,
@@ -124,7 +128,7 @@ class Window(
     }
 
     private fun setWindowIcon() {
-        val iconPath = "/assets/farmland.png"
+        val iconPath = ResourceLocation("minecraft", "farmland.png").toAssetPath()
         val inputStream = this::class.java.getResourceAsStream(iconPath)
 
         if (inputStream == null) {
@@ -171,7 +175,11 @@ class Window(
     }
 
     private fun createFont() {
-        val fontPath = "/assets/font/unifont-16.0.02.otf"
+        val fontPath = ResourceLocation(
+            ResourceType.FONT,
+            "minecraft",
+            "unifont-16.0.02.otf"
+        ).toAssetPath()
         val fontStream = this::class.java.getResourceAsStream(fontPath) ?: run {
             JOptionPane.showMessageDialog(null, "字体资源加载失败", "错误", JOptionPane.ERROR_MESSAGE)
             return
@@ -243,7 +251,12 @@ class Window(
         debugger.render()
     }
 
-    fun renderEnd() {}
+    fun renderEnd() {
+        if (TextureErrorTracker.checkMaxErrors()) {
+            System.err.println("FATAL: Too many leaked textures, exiting.")
+            throw RuntimeException("Too many Texture leaks.")
+        }
+    }
 
     /**
      * 交换帧缓冲区
@@ -283,6 +296,9 @@ class Window(
         if (key == GLFW_KEY_F3) {
             // 切换调试信息的显示状态
             debugger.toggleVisible()
+        } else if (key == GLFW_KEY_T) {
+            println("widget tree:")
+            screen.tree()
         }
     }
 
@@ -328,6 +344,7 @@ class Window(
     fun cleanup() {
         screen.cleanup()
         nvgDelete(nvg)
+        TextureManager.cleanupAll()
         glfwCleanup()
     }
 

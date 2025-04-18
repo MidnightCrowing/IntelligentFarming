@@ -2,8 +2,8 @@ package com.midnightcrowing.particles.block
 
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.model.Texture
 import com.midnightcrowing.particles.ParticleSystemBase
+import com.midnightcrowing.texture.Texture
 import kotlin.random.Random
 
 
@@ -27,7 +27,7 @@ class BlockParticleSystem : ParticleSystemBase<BlockParticle>() {
      * @param count 生成粒子的数量
      */
     fun generateParticles(origin: Point, texture: Texture, count: Int) {
-        val (imgWidth, imgHeight) = texture.image.run { width to height }
+        val (imgWidth, imgHeight) = texture.run { width to height }
 
         repeat(count) {
             val randomPosition = generateRandomPositionForBlock(origin, positionVariation)

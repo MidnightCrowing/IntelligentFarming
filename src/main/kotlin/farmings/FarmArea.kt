@@ -265,13 +265,5 @@ class FarmArea(
         )
         handheldItemRenderer?.render()
     }
-
-    /**
-     * 清理农田和作物资源。
-     */
-    override fun doCleanup() {
-        controller.activeSeedCrop?.cleanup()
-        controller.cropsGrid.forEach { row -> row.forEach { it?.cleanup() } }
-    }
     // endregion
 }

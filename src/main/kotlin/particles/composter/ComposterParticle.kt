@@ -3,7 +3,8 @@ package com.midnightcrowing.particles.composter
 import com.midnightcrowing.model.Point
 import com.midnightcrowing.particles.ParticleBase
 import com.midnightcrowing.renderer.TextureRenderer
-import com.midnightcrowing.resource.TextureResourcesEnum
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
 
 open class ComposterParticle(
     var position: Point,             // 当前位置
@@ -11,7 +12,9 @@ open class ComposterParticle(
     var size: Int,                   // 粒子大小
     lifetime: Double,                // 剩余生命
 ) : ParticleBase(lifetime) {
-    private val renderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.PE_GLINT.texture)
+    private val renderer: TextureRenderer = TextureRenderer(
+        ResourceLocation(ResourceType.TE_PARTICLE, "minecraft", "glint.png")
+    )
 
     /**
      * 更新粒子状态

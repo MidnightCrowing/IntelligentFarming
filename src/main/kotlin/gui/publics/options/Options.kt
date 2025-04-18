@@ -12,14 +12,17 @@ import com.midnightcrowing.gui.publics.options.menus.VideoMenu
 import com.midnightcrowing.model.ScreenBounds
 import com.midnightcrowing.renderer.RectangleRenderer
 import com.midnightcrowing.renderer.TextureRenderer
-import com.midnightcrowing.resource.TextureResourcesEnum
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
 import org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE
 import kotlin.reflect.KClass
 
-class Options(parent: Screen) : Widget(parent, z = 99) {
+class Options(parent: Screen) : Widget(parent, z = 50) {
     val controller: OptionsController = OptionsController(this)
 
-    private val bgRenderer: TextureRenderer = TextureRenderer(TextureResourcesEnum.BG_OPTIONS.texture)
+    private val bgRenderer: TextureRenderer = TextureRenderer(
+        ResourceLocation(ResourceType.TE_BACKGROUND, "minecraft", "options.jpg")
+    )
     private val bgMaskRenderer: RectangleRenderer = RectangleRenderer(
         color = floatArrayOf(0f, 0f, 0f, 0.53f),
     )
@@ -101,10 +104,5 @@ class Options(parent: Screen) : Widget(parent, z = 99) {
         bgMaskRenderer.render()
         // 渲染当前显示的场景
         activeMenu?.render()
-    }
-
-    override fun doCleanup() {
-        // 清理所有场景
-        menus.values.forEach { it.cleanup() }
     }
 }

@@ -4,7 +4,8 @@ import com.midnightcrowing.gui.bases.Screen
 import com.midnightcrowing.gui.publics.trade.Trade
 import com.midnightcrowing.renderer.TextRenderer
 import com.midnightcrowing.renderer.TextureRenderer
-import com.midnightcrowing.resource.TextureResourcesEnum
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
 
 class ToolTrade(
     parent: Screen,
@@ -14,8 +15,12 @@ class ToolTrade(
     override val titleTextRenderer: TextRenderer = TextRenderer.createTextRendererForGUI(window.nvg)
         .apply { text = "工具商" }
 
-    private var tradeEmptySlot0: TextureRenderer = TextureRenderer(TextureResourcesEnum.ITEM_EMPTY_SLOT_HOE.texture)
-    private var tradeEmptySlot1: TextureRenderer = TextureRenderer(TextureResourcesEnum.ITEM_EMPTY_SLOT_EMERALD.texture)
+    private var tradeEmptySlot0: TextureRenderer = TextureRenderer(
+        ResourceLocation(ResourceType.TE_ITEM, "minecraft", "empty_slot_hoe.png")
+    )
+    private var tradeEmptySlot1: TextureRenderer = TextureRenderer(
+        ResourceLocation(ResourceType.TE_ITEM, "minecraft", "empty_slot_emerald.png")
+    )
 
     override fun doRender() {
         if (tradeSlot0Item.isEmpty()) {

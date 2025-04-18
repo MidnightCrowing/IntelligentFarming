@@ -22,7 +22,7 @@ object ItemRegistry {
     }
 
     fun createItemRender(id: String, parent: Widget): ItemRenderer? {
-        println("创建物品: $id")
+//        println("创建物品: $id")
         return items[id]?.let { ItemRenderer(parent.window.nvg, it) }
     }
 }

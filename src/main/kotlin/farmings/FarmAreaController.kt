@@ -1,6 +1,7 @@
 package com.midnightcrowing.farmings
 
 import com.midnightcrowing.audio.SoundEffectPlayer
+import com.midnightcrowing.audio.SoundEvents
 import com.midnightcrowing.gui.publics.cropInfoDisplay.CropInfoDisplay
 import com.midnightcrowing.gui.publics.cropInfoDisplay.CropInfoDisplayController
 import com.midnightcrowing.gui.publics.hotBar.HotBarController
@@ -11,6 +12,7 @@ import com.midnightcrowing.model.item.Item
 import com.midnightcrowing.model.item.Items
 import com.midnightcrowing.particles.block.BlockParticleSystem
 import com.midnightcrowing.particles.cropGrowth.CropGrowthParticleSystem
+import com.midnightcrowing.texture.TextureManager
 
 class FarmAreaController(farmController: FarmController) {
     // region controllers
@@ -37,7 +39,6 @@ class FarmAreaController(farmController: FarmController) {
     lateinit var cropsGrid: Array<Array<FarmCropBase?>>
     var activeSeedCrop: FarmCropBase? = null
         set(value) {
-            field?.cleanup()
             field = value?.apply {
                 setShadow()
                 setHidden(field?.isVisible == false)
@@ -48,19 +49,22 @@ class FarmAreaController(farmController: FarmController) {
     // 手持物品
     // 可展示的物品列表
     private val displayedItemIds: Set<String> = setOf(
+        // 作物种子
         Items.CARROT.id,
         Items.ONION.id,
-        Items.POTATO.id,                                                // 作物种子
+        Items.POTATO.id,
         Items.CABBAGE_SEED.id,
         Items.CORN_SEED.id,
         Items.COTTON_SEED.id,
         Items.TOMATO_SEED.id,
-        Items.WHEAT_SEED.id,  // 作物种子
+        Items.WHEAT_SEED.id,
         Items.IRON_HOE.id,
         Items.GOLDEN_HOE.id,
         Items.DIAMOND_HOE.id,
-        Items.NETHERITE_HOE.id,                  // 工具
-        Items.BONE_MEAL.id                                                                   // 骨粉
+        // 工具
+        Items.NETHERITE_HOE.id,
+        // 骨粉
+        Items.BONE_MEAL.id
     )
     var handheldItem: Item? = null
         set(value) {
@@ -139,7 +143,7 @@ class FarmAreaController(farmController: FarmController) {
                 if (mouseGridPosition!!.crop!!.applyBoneMeal()) {
                     generateCropGrowthParticles(mouseGridPosition!!)
                     hotController.onUseBoneMeal()
-                    SoundEffectPlayer.play("item.bone_meal.use")
+                    SoundEffectPlayer.play(SoundEvents.ITEM_BONE_MEAL_USE)
                 }
             }
         }
@@ -187,7 +191,7 @@ class FarmAreaController(farmController: FarmController) {
 
             hotController.onPlantCrop()
 
-            SoundEffectPlayer.play("item.crop.plant")
+            SoundEffectPlayer.play(SoundEvents.ITEM_CROP_PLANT)
         }
     }
 
@@ -203,12 +207,10 @@ class FarmAreaController(farmController: FarmController) {
                 invController.addItem(item)
                 hotController.update()
             }
-            // 清理作物
-            crop.cleanup()
         }
         cropsGrid[pos.y][pos.x] = null
 
-        SoundEffectPlayer.play("block.crop.break")
+        SoundEffectPlayer.play(SoundEvents.BLOCK_CROP_BREAK)
     }
 
     /**
@@ -225,9 +227,9 @@ class FarmAreaController(farmController: FarmController) {
      * @param pos 作物位置
      */
     private fun generateBlockBreakParticles(crop: FarmCropBase, pos: GridPosition) {
-        crop.nowTextures?.let {
-            blockParticleSystem.generateParticles(farmArea.getBlockBounds(pos).between, it, 40)
-        }
+        val location = crop.nowTextures ?: return
+        val texture = TextureManager.getTexture(location) ?: return
+        blockParticleSystem.generateParticles(farmArea.getBlockBounds(pos).between, texture, 40)
     }
 
     /**

@@ -17,7 +17,7 @@ class EscMenus(parent: Widget, val controller: FarmController, z: Int? = null) :
             text = "回到游戏"; textSpacing = 2.0; onClickCallback = { controller.backToGame() }
         },
         Button(buttonLayout).apply {
-            text = "进度"; textSpacing = 2.0; onClickCallback = { controller.openProgress() }
+            text = "进度"; textSpacing = 2.0; onClickCallback = { controller.openAdvancements() }
         },
         Button(buttonLayout).apply {
             text = "统计信息"; textSpacing = 2.0; onClickCallback = { controller.openStatistics() }
@@ -80,6 +80,4 @@ class EscMenus(parent: Widget, val controller: FarmController, z: Int? = null) :
         titleRenderer.render()
         buttonLayout.render()
     }
-
-    override fun doCleanup() = buttonLayout.cleanup()
 }

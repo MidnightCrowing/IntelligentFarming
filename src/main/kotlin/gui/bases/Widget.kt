@@ -14,9 +14,14 @@ open class Widget {
     val parent: Widget?
 
     protected open val renderer: TextureRenderer = TextureRenderer()
+
+    private val children = ArrayList<Widget>()
+
     val z: Int
+
     var widgetBounds: ScreenBounds = ScreenBounds.EMPTY
         private set
+
     private var visible: Boolean = true
     private val parentVisible: Boolean get() = parent?.visible != false && parent?.parentVisible != false
     open val isVisible: Boolean get() = visible && parentVisible
@@ -35,12 +40,23 @@ open class Widget {
         this.z = z ?: (parent.z + 1)
 
         registerListeners()  // 注册监听器
+        parent.addChild(this)
     }
 
     /**
      * 获取父组件的宽度
      */
     val parentWidth: Double get() = parent?.widgetBounds?.width ?: window.width.toDouble()
+
+    fun addChild(child: Widget) = children.add(child)
+
+    /**
+     * 测试方法，用于打印组件树
+     */
+    fun tree() {
+        println("  ".repeat(z) + "- ${this::class.simpleName} (z: ${z})")
+        children.forEach { child -> child.tree() }
+    }
 
     /**
      * 判断给定坐标是否在组件范围内
@@ -95,16 +111,10 @@ open class Widget {
     /**
      * 清理资源
      */
-    fun cleanup() {
-        renderer.cleanup()
+    open fun cleanup() {
         unregisterListener()
-        doCleanup() // 子类自定义清理
+        children.forEach { it.cleanup() }
     }
-
-    /**
-     * 提供钩子方法，供子类添加清理逻辑
-     */
-    protected open fun doCleanup() {}
 
     // region 事件处理
 

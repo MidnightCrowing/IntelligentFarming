@@ -30,11 +30,9 @@ class FarmController(private val farmScreen: FarmScene) {
     // 回到游戏
     fun backToGame() = farmScreen.escMenus.setHidden(true)
 
-    fun openOptions() {
-        farmScreen.options.setHidden(false)
-    }
+    fun openOptions() = farmScreen.options.setHidden(false)
 
-    fun openProgress() {
+    fun openAdvancements() {
 //        TODO("Not yet implemented")
     }
 

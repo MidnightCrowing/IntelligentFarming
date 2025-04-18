@@ -3,34 +3,20 @@ package com.midnightcrowing.renderer
 import com.midnightcrowing.model.ScreenBounds
 import org.lwjgl.opengl.GL46.*
 
-class RectangleRenderer {
-    var x1: Double
-    var y1: Double
-    var x2: Double
-    var y2: Double
-    var color: FloatArray
-
-    constructor(
-        x1: Double = 0.0,
-        y1: Double = 0.0,
-        x2: Double = 0.0,
-        y2: Double = 0.0,
-        color: FloatArray = floatArrayOf(1f, 1f, 1f, 1f), // 默认白色，不透明
-    ) {
-        this.x1 = x1
-        this.y1 = y1
-        this.x2 = x2
-        this.y2 = y2
-        this.color = color
-    }
-
-    constructor(bounds: ScreenBounds, color: FloatArray = floatArrayOf(1f, 1f, 1f, 1f)) {
-        this.x1 = bounds.x1
-        this.y1 = bounds.y1
-        this.x2 = bounds.x2
-        this.y2 = bounds.y2
-        this.color = color
-    }
+class RectangleRenderer(
+    var x1: Double = 0.0,
+    var y1: Double = 0.0,
+    var x2: Double = 0.0,
+    var y2: Double = 0.0,
+    var color: FloatArray = floatArrayOf(1f, 1f, 1f, 1f), // 默认白色，不透明
+) {
+    constructor(bounds: ScreenBounds = ScreenBounds.EMPTY, color: FloatArray = floatArrayOf(1f, 1f, 1f, 1f)) : this(
+        bounds.x1,
+        bounds.y1,
+        bounds.x2,
+        bounds.y2,
+        color
+    )
 
     fun render() {
         glColor4f(color[0], color[1], color[2], color[3])

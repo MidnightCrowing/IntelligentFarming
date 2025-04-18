@@ -1,26 +1,30 @@
 package com.midnightcrowing.renderer
 
 import com.midnightcrowing.model.ScreenBounds
-import com.midnightcrowing.model.Texture
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.texture.Texture
+import com.midnightcrowing.texture.TextureManager
 import org.lwjgl.opengl.GL46.*
 import kotlin.math.ceil
 import kotlin.math.min
 
 class NineSliceRenderer(
-    var texture: Texture,
+    var location: ResourceLocation,
     var textureBorder: Float, // 纹理边框宽度（像素单位）
     var vertexBorder: Float,  // 屏幕渲染边框宽度（屏幕单位）
 ) {
-    private val texWidth = texture.image.width
-    private val texHeight = texture.image.height
+    private val texture: Texture? get() = TextureManager.getTexture(location)
+    private val texWidth: Int = texture?.width ?: 0
+    private val texHeight: Int = texture?.height ?: 0
 
     var alpha: Double = 1.0  // 默认不透明
 
     fun render(x: Float, y: Float, width: Float, height: Float) {
         val vertexBorder = min(vertexBorder, width - 1)
 
+        TextureManager.bindTexture(location)
+
         glEnable(GL_TEXTURE_2D)
-        texture.bind()
         glBegin(GL_QUADS)
         glColor4f(1f, 1f, 1f, alpha.toFloat())
 

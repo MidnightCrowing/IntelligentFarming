@@ -1,6 +1,7 @@
 package com.midnightcrowing.audio
 
-import com.midnightcrowing.resource.AudioResource
+import com.midnightcrowing.audio.AudioResource.getAudioStream
+import com.midnightcrowing.resource.ResourceLocation
 import javax.sound.sampled.*
 import kotlin.concurrent.thread
 
@@ -13,11 +14,11 @@ object BackgroundMusicPlayer {
 
     private var volumeControl: FloatControl? = null
     private var fadeThread: Thread? = null
-    private var queuedTracks: MutableList<AudioResource> = mutableListOf()
+    private var queuedTracks: MutableList<ResourceLocation> = mutableListOf()
 
-    fun play(audioResources: AudioResource, loop: Boolean = true, fadeIn: Boolean = true) {
-        val name: String = audioResources.path
-        val audioInputStream: AudioInputStream = audioResources.getAudioStream()
+    fun play(audio: ResourceLocation, loop: Boolean = true, fadeIn: Boolean = true) {
+        val name: String = audio.toString()
+        val audioInputStream: AudioInputStream = getAudioStream(audio) ?: return
 
         if (currentTrackName == name && clip?.isActive == true) return
 
@@ -113,8 +114,8 @@ object BackgroundMusicPlayer {
         }
     }
 
-    fun queue(audioResourcesEnum: AudioResource) {
-        queuedTracks.add(audioResourcesEnum)
+    fun queue(location: ResourceLocation) {
+        queuedTracks.add(location)
     }
 
     fun setVolume(linear: Double) {
@@ -125,8 +126,8 @@ object BackgroundMusicPlayer {
     }
 
     private fun playNextInQueue() {
-        queuedTracks.removeFirstOrNull()?.let { audioResourcesEnum ->
-            play(audioResourcesEnum, loop = false)
+        queuedTracks.removeFirstOrNull()?.let { location ->
+            play(location, loop = false)
         }
     }
 

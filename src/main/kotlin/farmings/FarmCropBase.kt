@@ -1,21 +1,22 @@
 package com.midnightcrowing.farmings
 
-import com.midnightcrowing.model.Texture
 import com.midnightcrowing.model.block.Block
 import com.midnightcrowing.model.item.ItemStack
+import com.midnightcrowing.resource.ResourceLocation
+import com.midnightcrowing.resource.ResourceType
 import com.midnightcrowing.utils.GameTick
 import kotlin.math.sqrt
 import kotlin.random.Random
 
 abstract class FarmCropBase(val farmArea: FarmArea) : Block(farmArea) {
-    abstract val growDuringTextures: Map<Int, Texture>
-    protected val growInitTexture: Texture get() = growDuringTextures.values.first()
-    protected val growFullTexture: Texture get() = growDuringTextures.values.last()
+    abstract val growDuringTextures: Map<Int, ResourceLocation>
+    protected val growInitTexture: ResourceLocation get() = growDuringTextures.values.first()
+    protected val growFullTexture: ResourceLocation get() = growDuringTextures.values.last()
 
-    var nowTextures: Texture? = null
+    var nowTextures: ResourceLocation? = null
         set(value) {
             field = value
-            renderer.texture = value
+            renderer.location = value
         }
 
     protected open var plantedTick: Long = 0
@@ -87,6 +88,14 @@ abstract class FarmCropBase(val farmArea: FarmArea) : Block(farmArea) {
      * @return 掉落物列表
      */
     open fun getDrops(l: Int): Array<ItemStack> = arrayOf(ItemStack.EMPTY)
+
+    protected fun growthStagesFromList(
+        path: String,
+        stages: List<Int> = listOf(0, 1, 2, 3, 4, 5, 6, 7),
+        extension: String = ".png",
+        namespace: String = "minecraft",
+        type: ResourceType = ResourceType.TE_BLOCK,
+    ): Map<Int, ResourceLocation> = indexedResourceMap(path, stages, extension, namespace, type)
 
     /**
      * 使用三角分布生成随机值。

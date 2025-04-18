@@ -1,6 +1,7 @@
 package com.midnightcrowing.gui.bases.button
 
 import com.midnightcrowing.audio.SoundEffectPlayer
+import com.midnightcrowing.audio.SoundEvents
 import com.midnightcrowing.events.CustomEvent.MouseClickEvent
 import com.midnightcrowing.gui.bases.Widget
 import com.midnightcrowing.model.ScreenBounds
@@ -10,7 +11,7 @@ open class AbstractButton(parent: Widget) : Widget(parent) {
     // 文字渲染器
     private val textRenderer = TextRenderer(window.nvg)
 
-    var soundEffect: String = "ui.button.click"
+    var soundEffect: SoundEvents = SoundEvents.UI_BUTTON_CLICK
 
     var text: String = ""
         set(value) {
