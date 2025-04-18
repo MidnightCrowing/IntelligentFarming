@@ -1,5 +1,5 @@
 <p align="center">
-<img width="500" alt="IntelligentFarming Title" src="src/main/resources/assets/textures/title/intellfarm.png">
+<img width="500" alt="IntelligentFarming Title" src="src/main/resources/assets/minecraft/textures/gui/title/intellfarm.png">
 </p>
 
 # IntelligentFarming
