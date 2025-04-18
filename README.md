@@ -10,23 +10,35 @@
 
 ## 🌾 简介
 
-// TODO
+**IntelligentFarming（智慧农耕）** 是一款使用 LWJGL 开发的轻量级像素风模拟游戏，作为 Java
+课程设计项目的一部分，灵感来源于《Minecraft》的种田玩法。玩家可以在游戏中体验播种、收获、资源管理等农业活动，并通过交易与堆肥系统，逐步建设属于自己的小型农场。
+
+### 🎮 玩法特色
+
+- **经典耕作循环**：种植小麦、胡萝卜等基础作物，成熟后可收割并获得产出与种子
+- **模组作物拓展**：引入玉米、棉花等作物（素材来源于 MC 模组）
+- **辅助工具系统**：可使用骨粉加速作物生长，部分工具具备时运效果
+- **堆肥机制**：将作物废料投入堆肥桶，转化为骨粉资源
+- **基础交易功能**：与村民交易以获取种子、工具等物品
+
+> [!IMPORTANT]
+> 本项目为独立开发的小游戏，并非 Minecraft 模组。重点在于基本玩法还原与功能实现，仅作为学习和参考项目。
 
 ## 📸 游戏截图
 
 <div style="overflow-x: auto;">
-  <table style="border-spacing: 12px 6px; min-width: 700px;">
+  <table style="text-align: center; border-spacing: 12px 6px; min-width: 700px;">
     <tr>
-      <td style="text-align: center;"><img src="docs/screenshots/main_scene.png" alt="主界面" style="max-height:160px;" /></td>
-      <td style="text-align: center;"><img src="docs/screenshots/farm_scene.png" alt="农田场景" style="max-height:160px;" /></td>
-      <td style="text-align: center;"><img src="docs/screenshots/farm_tarde.png" alt="农作物交易" style="max-height:160px;" /></td>
-      <td style="text-align: center;"><img src="docs/screenshots/compost.png" alt="堆肥桶界面" style="max-height:160px;" /></td>
+      <td><img src="docs/screenshots/main_scene.png" alt="主界面" style="max-height:160px;" /></td>
+      <td><img src="docs/screenshots/farm_scene.png" alt="农田场景" style="max-height:160px;" /></td>
+      <td><img src="docs/screenshots/farm_tarde.png" alt="农作物交易" style="max-height:160px;" /></td>
+      <td><img src="docs/screenshots/compost.png" alt="堆肥桶界面" style="max-height:160px;" /></td>
     </tr>
     <tr>
-      <td style="text-align: center;">主界面</td>
-      <td style="text-align: center;">农田场景</td>
-      <td style="text-align: center;">农作物交易</td>
-      <td style="text-align: center;">堆肥桶界面</td>
+      <td>主界面</td>
+      <td>农田场景</td>
+      <td>农作物交易</td>
+      <td>堆肥桶界面</td>
     </tr>
   </table>
 </div>
@@ -38,6 +50,12 @@
 如果您进行二次发布或修改后的分发，请务必保留原作者署名。
 
 感谢您的理解与尊重！
+
+## 🤝 贡献者
+
+感谢以下开发者为本项目的贡献：
+
+- [StevenArai](https://github.com/StevenArai)
 
 ## ✨ 致谢
 
