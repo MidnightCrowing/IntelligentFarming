@@ -19,6 +19,9 @@ class Debugger(private val window: Window) {
     private val mousePosRenderer: TextRenderer = TextRenderer(window.nvg).apply {
         x = 5.0; y = 65.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
     }
+    private val hideTextRenderer: TextRenderer = TextRenderer(window.nvg).apply {
+        x = 5.0; y = 90.0; textAlign = NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE
+    }
 
     fun update() {
         // 更新 FPS 计数器
@@ -33,6 +36,7 @@ class Debugger(private val window: Window) {
         tickTextRenderer.render("Tick: ${GameTick.tick}")
         val (mousePosX, mousePosY) = window.getCursorPos()
         mousePosRenderer.render("Mouse: X: $mousePosX, Y: $mousePosY")
+        hideTextRenderer.render("(Press F3 to hide this)")
     }
 
     fun toggleVisible() {

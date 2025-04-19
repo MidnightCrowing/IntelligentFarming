@@ -105,7 +105,7 @@ class HotBar(parent: Widget, private val controller: HotBarController) : Widget(
         val itemBounds = calculateGridBounds(id)
         return ScreenBounds(
             x1 = itemBounds.x1 - CHECKBOX_SIZE,
-            y1 = itemBounds.y1 - CHECKBOX_SIZE - 3,
+            y1 = itemBounds.y1 - CHECKBOX_SIZE,
             x2 = itemBounds.x2 + CHECKBOX_SIZE,
             y2 = itemBounds.y2 + CHECKBOX_SIZE
         )
