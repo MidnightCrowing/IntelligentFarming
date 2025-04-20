@@ -13,16 +13,15 @@ import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.glfw.GLFWImage
-import org.lwjgl.nanovg.NanoVG.nvgBeginFrame
-import org.lwjgl.nanovg.NanoVG.nvgCreateFont
+import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.nanovg.NanoVGGL3.*
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL46.*
 import org.lwjgl.stb.STBImage.*
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
-import java.io.File
-import java.io.IOException
+import org.lwjgl.system.MemoryUtil.memAlloc
+import org.lwjgl.system.MemoryUtil.memFree
 import javax.swing.JOptionPane
 
 /**
@@ -175,51 +174,66 @@ class Window(
     }
 
     private fun createFont() {
-        val fontPath = ResourceLocation(
+        fun showErrorDialog(message: String) {
+            JOptionPane.showMessageDialog(
+                null,
+                message,
+                "字体加载错误",
+                JOptionPane.ERROR_MESSAGE
+            )
+        }
+
+        // 1. 资源路径构建优化（提前定义字体名称常量）
+        val fontName = "unifont"
+        val fontResource = ResourceLocation(
             ResourceType.FONT,
             "minecraft",
             "unifont-16.0.02.otf"
-        ).toAssetPath()
-        val fontStream = this::class.java.getResourceAsStream(fontPath) ?: run {
-            JOptionPane.showMessageDialog(null, "字体资源加载失败", "错误", JOptionPane.ERROR_MESSAGE)
+        )
+
+        // 2. 直接使用 try-with-resources 自动关闭流
+        val byteArray = try {
+            this::class.java.getResourceAsStream(fontResource.toAssetPath()).use { stream ->
+                stream?.readBytes() ?: run {
+                    showErrorDialog("字体资源不存在: ${fontResource.toAssetPath()}")
+                    return
+                }
+            }
+        } catch (e: Exception) {
+            showErrorDialog("字体资源读取失败: ${e.message}")
             return
         }
 
-        val byteArray = fontStream.readBytes()
-
-        // 获取临时目录路径
-        val tempDirPath = System.getProperty("java.io.tmpdir")
-        val tempDir = File(tempDirPath)
-        val containsChinese = tempDir.absolutePath.any { it.code > 127 }
-
-        // 如果包含中文，则 fallback 到程序当前路径下的 .IntelligentFarming 目录
-        val fallbackDir = if (containsChinese) {
-            val altDir = File(".IntelligentFarming")
-            if (!altDir.exists()) altDir.mkdirs()
-            altDir
-        } else {
-            tempDir
-        }
-
-        val fontFile = File(fallbackDir, "${name}_temp_font.otf")
-        if (!fontFile.exists()) {
-            try {
-                fontFile.writeBytes(byteArray)
-            } catch (e: IOException) {
-                JOptionPane.showMessageDialog(null, "写入字体文件失败: ${e.message}", "错误", JOptionPane.ERROR_MESSAGE)
-                return
+        // 3. 直接内存加载（跳过临时文件步骤）
+        val fontBuffer = try {
+            memAlloc(byteArray.size).apply {
+                put(byteArray)
+                flip()
             }
+        } catch (e: Exception) {
+            showErrorDialog("内存分配失败: ${e.message}")
+            return
         }
 
-        // 使用绝对路径加载字体（不需要 UTF-8 编码转换）
-        val fontId = nvgCreateFont(nvg, "unifont", fontFile.absolutePath)
-        if (fontId == -1) {
-            JOptionPane.showMessageDialog(
-                null,
-                "字体加载失败 path: ${fontFile.absolutePath}",
-                "错误",
-                JOptionPane.ERROR_MESSAGE
-            )
+        // 4. 明确内存管理标志（LWJGL 通常需要设为1）
+        val fontId = nvgCreateFontMem(
+            nvg,
+            fontName,
+            fontBuffer,
+            true // 明确指示由 nanovg 管理内存
+        )
+
+        // 5. 增强错误处理逻辑
+        when {
+            fontId == -1 -> {
+                // 先释放已分配的内存（如果 nanovg 没有接管）
+                if (fontBuffer.hasArray().not()) memFree(fontBuffer)
+                showErrorDialog("字体初始化失败")
+            }
+
+            nvgFindFont(nvg, fontName) == -1 -> {
+                showErrorDialog("字体注册失败")
+            }
         }
     }
 
