@@ -43,11 +43,26 @@
   </table>
 </div>
 
+## 🖥️ 运行环境
+
+- 需要 Java 21 或更高版本
+
+## 📦 安装与运行
+
+从 [Releases 页面](https://github.com/MidnightCrowing/IntelligentFarming/releases) 下载最新版本的 JAR 文件：
+
+- 双击 JAR 文件即可启动游戏
+- 或在命令行中运行以下命令（将 `<version>` 替换为你下载的版本号）：
+
+  ```bash
+  java -jar IntelligentFarming-<version>.jar
+  ```
+
 ## 📜 许可证
 
 本项目采用 [MIT 许可证](LICENSE) 进行授权，您可以自由使用、修改和分发本项目的代码。
 
-如果您进行二次发布或修改后的分发，请务必保留原作者署名。
+若进行二次发布或修改分发，请务必保留原作者署名。
 
 感谢您的理解与尊重！
 
@@ -72,7 +87,7 @@
 - 正交视图由模组 [Isometric Renders](https://www.curseforge.com/minecraft/mc-mods/isometric-renders) 生成
 - 游戏主界面标题由 [Blockbench](https://blockbench.net/) 制作
 
-背景图片来源于公开网络壁纸资源：
+背景图片来源于以下公开壁纸资源：
 
 - 主界面背景：https://wall.alphacoders.com/big.php?i=1117617
 - 设置界面背景：https://wallhere.com/zh/wallpaper/2220848
