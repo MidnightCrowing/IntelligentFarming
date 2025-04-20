@@ -5,7 +5,7 @@
 # IntelligentFarming
 
 ![Language](https://img.shields.io/badge/Language-Kotlin-7f52ff?style=flat-square)
-![Version](https://img.shields.io/badge/Version-1.0_SNAPSHOT-4caf50?style=flat-square)
+![Version](https://img.shields.io/badge/Version-1.0.0-4caf50?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-ffca28?style=flat-square)
 
 ## 🌾 简介
