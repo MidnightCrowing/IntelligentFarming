@@ -79,6 +79,7 @@
 感谢以下开发者为本项目的贡献：
 
 - [StevenArai](https://github.com/StevenArai)
+- [HanRabbit](https://github.com/HanRabbit)
 
 ## ✨ 致谢
 
