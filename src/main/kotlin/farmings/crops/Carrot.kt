@@ -15,7 +15,7 @@ class Carrot(farmArea: FarmArea) : FarmCropBase(farmArea) {
 
     override fun getDrops(l: Int): Array<ItemStack> = arrayOf(
         ItemStack(CARROT.id, if (isFullyGrown) 1 + generateDropCount(n = 3, l = l, p = 8.0 / 15) else 1),
-        ItemStack(CARROT.id, if (isFullyGrown) generateDropCount(n = 1, l = l, p = 1.0 / 64) else 0)
+        ItemStack(GOLDEN_CARROT.id, if (isFullyGrown) generateDropCount(n = 1, l = l, p = 1.0 / 64) else 0)
     )
 
     override fun toString(): String = "胡萝卜"
