@@ -4,6 +4,7 @@ import com.midnightcrowing.farmings.FarmArea
 import com.midnightcrowing.farmings.FarmCropBase
 import com.midnightcrowing.model.item.ItemStack
 import com.midnightcrowing.model.item.Items.CARROT
+import com.midnightcrowing.model.item.Items.GOLDEN_CARROT
 
 class Carrot(farmArea: FarmArea) : FarmCropBase(farmArea) {
     override val growDuringTextures = growthStagesFromList(
